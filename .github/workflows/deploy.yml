@@ -27,8 +27,11 @@ jobs:
 
       - name: Build with Astro
         uses: withastro/action@v3
-        # По умолчанию использует Node 22 + auto-detect package manager (npm),
-        # запускает `npm ci` и `npm run build`, грузит dist/ как pages artifact.
+        with:
+          node-version: 22
+        # withastro/action@v3 по умолчанию ставит Node 20, а Astro 6 требует >=22.12.
+        # Auto-detect package manager (npm), запускает `npm ci` и `npm run build`,
+        # грузит dist/ как pages artifact.
 
   deploy:
     needs: build
