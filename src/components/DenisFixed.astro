@@ -1,0 +1,22 @@
+---
+import denisBulgin from '../assets/images/denis-bulgin.png';
+---
+
+<!-- Закреплённое фото Дениса (только десктоп). Стоит на фиксированной правой 42% viewport.
+     Z-index не задан намеренно — слои выстраиваются по DOM-order, чтобы mix-blend в hero
+     мог смешиваться с горой и Денисом. -->
+<aside id="denis-fixed" class="hidden md:block fixed top-0 right-0 w-[42vw] h-screen pointer-events-none">
+  <img
+    src={denisBulgin.src}
+    alt=""
+    width={denisBulgin.width}
+    height={denisBulgin.height}
+    class="absolute inset-0 w-full h-full object-contain object-right-bottom scale-[1.12] origin-bottom-right"
+  />
+
+  <!-- Подпись «Тренер · Денис Булгин» в правом нижнем углу. -->
+  <div class="absolute bottom-10 right-10 lg:right-14 text-right pointer-events-auto">
+    <div class="t-eyebrow t-on-dark-muted">Тренер</div>
+    <div class="t-body-sm font-medium t-on-dark mt-1.5">Денис Булгин</div>
+  </div>
+</aside>

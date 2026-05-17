@@ -1,10 +1,37 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import DenisFixed from '../components/DenisFixed.astro';
+import Hero from '../components/Hero.astro';
+import AboutTraining from '../components/AboutTraining.astro';
+import Video from '../components/Video.astro';
+import Examples from '../components/Examples.astro';
+import OfferStats from '../components/OfferStats.astro';
+import PrpSteps from '../components/PrpSteps.astro';
+import ModalAbout from '../components/ModalAbout.astro';
+import ModalExamples from '../components/ModalExamples.astro';
 ---
 
 <BaseLayout>
-  <main>
-    <h1 class="t-display">PDCA / ПРП — Astro scaffolding</h1>
-    <p class="t-body">Полная страница появится в итерации 4.</p>
-  </main>
+  <!-- DOM-order для hero fixed-слоёв (mix-blend-difference требует одного stacking context).
+       Денис рендерится ДО hero, чтобы плотность blending'а с h1 и цитатой работала корректно. -->
+  <DenisFixed />
+
+  <Hero />
+
+  <AboutTraining />
+
+  <Video />
+
+  <Examples />
+
+  <OfferStats />
+
+  <PrpSteps />
+
+  <!-- Воздух в конце страницы: визуальный «выдох». relative + z-10 + bg обязательны,
+       иначе сквозь div просвечивают fixed-слои hero. -->
+  <div class="relative z-10 bg-wire-bg h-[clamp(2rem,5vw,5rem)]" aria-hidden="true"></div>
+
+  <ModalAbout />
+  <ModalExamples />
 </BaseLayout>

@@ -1,0 +1,76 @@
+---
+import { Icon } from 'astro-icon/components';
+import mountainsClouds from '../assets/images/mountains-clouds.jpg';
+
+interface Feature {
+  icon: string;
+  labelHtml: string;
+}
+
+const features: Feature[] = [
+  { icon: 'lucide:briefcase',            labelHtml: 'Многолетний<br />опыт' },
+  { icon: 'lucide:wrench',               labelHtml: 'Все<br />инструменты' },
+  { icon: 'lucide:award',                labelHtml: 'Сертификация' },
+  { icon: 'lucide:message-square-quote', labelHtml: 'Рекомендации' },
+  { icon: 'lucide:map-pin',              labelHtml: 'Мобильность' },
+  { icon: 'lucide:file-signature',       labelHtml: 'Работа<br />по&nbsp;договору' },
+];
+
+interface Stat {
+  number: string;
+  caption: string;
+}
+
+const stats: Stat[] = [
+  { number: '12',   caption: 'лет в бизнес-обучении' },
+  { number: '7',    caption: 'лет в сфере бережливого производства' },
+  { number: '400',  caption: 'проведённых тренингов в России, странах СНГ и Евросоюза' },
+  { number: '5000', caption: 'довольных участников' },
+];
+---
+
+<!-- ========== БЛОК «МЫ ПРЕДЛАГАЕМ + СТАТИСТИКА» ========== -->
+<section
+  id="offer-stats"
+  class="relative z-10 overflow-hidden py-[clamp(4rem,7vw,9rem)] bg-cover bg-center bg-fixed"
+  style={`background-image: url('${mountainsClouds.src}');`}
+>
+  <!-- Двухслойный overlay для читаемости белого текста. -->
+  <div class="absolute inset-0 bg-wire-dark/55" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" aria-hidden="true"></div>
+
+  <div class="relative w-full section-px">
+
+    <div class="text-center max-w-3xl mx-auto mb-[clamp(2.5rem,5vw,5rem)]">
+      <p class="t-eyebrow t-on-dark-muted mb-6">Преимущества и&nbsp;цифры</p>
+      <h2 class="t-h-section t-on-dark">
+        Мы&nbsp;<span class="text-wire-accent">предлагаем</span>
+      </h2>
+    </div>
+
+    <!-- 6 преимуществ -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+      {features.map((f) => (
+        <article class="feature-card">
+          <Icon name={f.icon} class="feature-card__icon" />
+          <p class="feature-card__label" set:html={f.labelHtml}></p>
+        </article>
+      ))}
+    </div>
+
+    <!-- 4 цифры -->
+    <div class="mt-[clamp(2.5rem,4vw,4rem)] grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+      {stats.map((s) => (
+        <article class="stat-card">
+          <div class="stat-card__number">{s.number}</div>
+          <p class="stat-card__caption" set:html={s.caption}></p>
+        </article>
+      ))}
+    </div>
+
+    <p class="mt-[clamp(2.5rem,4vw,4rem)] text-center t-meta t-on-dark-muted max-w-2xl mx-auto">
+      12&nbsp;лет опыта подкреплены сотнями тренингов и&nbsp;тысячами участников
+    </p>
+
+  </div>
+</section>

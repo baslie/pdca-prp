@@ -1,0 +1,119 @@
+---
+import iconPdfLight from '../assets/svg/icon-pdf-light.svg';
+---
+
+<!-- ========== МОДАЛЬНОЕ ОКНО «О МЕТОДЕ» ========== -->
+<dialog id="modal-about" aria-labelledby="modal-about-title" class="modal-scroll fixed inset-0 w-screen h-screen max-w-none max-h-none overflow-y-auto bg-wire-bg text-wire-text">
+
+  <!-- Sticky-полоса с кнопкой закрытия. -->
+  <div class="sticky top-0 z-30 flex justify-end px-4 sm:px-6 md:px-8 py-3 pointer-events-none">
+    <button type="button" id="btn-about-close" aria-label="Закрыть"
+      class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-wire-panel/90 text-wire-dark hover:bg-wire-dark hover:text-white transition-colors">
+      <span class="text-xl leading-none">✕</span>
+    </button>
+  </div>
+
+  <!-- Узкая центральная колонка с контентом -->
+  <div class="mx-auto w-full max-w-3xl px-6 sm:px-10 md:px-14 pt-4 md:pt-6 pb-10 md:pb-14">
+
+    <p class="t-eyebrow t-on-muted mb-6">Полное описание</p>
+
+    <h2 id="modal-about-title" class="t-h-section t-on-strong mb-7">О&nbsp;методе</h2>
+
+    <div class="space-y-5 t-body t-on-default">
+      <p>
+        Всё больше компаний во&nbsp;всём мире принимают концепцию <strong class="font-semibold t-on-strong">кайдзен</strong>
+        (бережливое производство) в&nbsp;качестве доминирующей концепции развития своего бизнеса, основы
+        эффективного менеджмента.
+      </p>
+      <p>
+        Принимая к&nbsp;воплощению в&nbsp;реальность подход, основанный на&nbsp;внесении в&nbsp;деятельность компании
+        постоянных улучшений, нельзя не&nbsp;согласиться со&nbsp;словами создателя самой концепции
+        кайдзен Масааки&nbsp;Имаи:
+      </p>
+
+      <figure class="my-8 rounded-sm bg-wire-panel p-7">
+        <blockquote class="t-quote t-on-strong">
+          Кайдзен начинается с&nbsp;проблемы, или, точнее, с&nbsp;признания, что&nbsp;она существует!
+          Там, где её&nbsp;нет, отсутствует потенциал для&nbsp;совершенствования.
+        </blockquote>
+        <figcaption class="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span class="font-semibold t-on-strong">Масааки&nbsp;Имаи</span>
+          <span class="t-meta t-on-muted">создатель концепции кайдзен</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        Умение <strong class="font-semibold t-on-strong">профессионально решать проблемы</strong>
+        (вновь возникающие или&nbsp;давно существующие) является важнейшим навыком сотрудников компании,
+        необходимым для&nbsp;осуществления менеджмента, основанного на&nbsp;принципах кайдзен.
+      </p>
+    </div>
+
+    <h3 class="t-h-sub t-on-strong mt-12 mb-5">
+      В&nbsp;основу специального учебного курса-тренинга «Профессиональное Решение Проблем» легли
+      все основные принципы и&nbsp;подходы кайдзен к&nbsp;решению проблем:
+    </h3>
+    <ul class="space-y-2 pl-5 list-disc t-body t-on-default marker:text-wire-accent">
+      <li>цикл PDCA</li>
+      <li>А3-планирование</li>
+      <li>7&nbsp;необходимых шагов и&nbsp;7&nbsp;эффективных инструментов для&nbsp;решения любой проблемы</li>
+    </ul>
+
+    <h2 class="t-h-section t-h-section--compact t-on-strong mt-14 mb-6">1-й&nbsp;день тренинга</h2>
+    <div class="space-y-5 t-body t-on-default">
+      <p>
+        В&nbsp;течение первого дня участники узнают о&nbsp;том, что процесс решения любой проблемы включает
+        в&nbsp;себя семь этапов, которые образуют цикл. На&nbsp;многочисленных примерах происходит изучение
+        этих этапов, формируется осознание важности каждого из&nbsp;них. Сотрудники получают в&nbsp;свой
+        арсенал семь эффективных инструментов, которые способствуют оптимальному прохождению
+        всех необходимых этапов при&nbsp;решении проблемы. Все инструменты обсуждаются и&nbsp;отрабатываются
+        на&nbsp;многочисленных практических заданиях, как отвлечённых, так и&nbsp;взятых из&nbsp;практики
+        российских компаний.
+      </p>
+      <p>
+        Помимо прикладных подходов и&nbsp;методов решения проблем в&nbsp;первый день тренинга участники
+        получают также общие базовые знания кайдзен, применимые к&nbsp;решению проблем: важность
+        визуализации проблемы, осознание того факта, что решение проблем является постоянной
+        и&nbsp;прямой обязанностью каждого сотрудника компании, важность и&nbsp;необходимость командной
+        работы при&nbsp;решении проблем и&nbsp;многие другие.
+      </p>
+    </div>
+
+    <h2 class="t-h-section t-h-section--compact t-on-strong mt-14 mb-6">2-й&nbsp;день тренинга</h2>
+    <p class="t-body t-on-default">
+      Во&nbsp;второй день тренинга участники переходят к&nbsp;отработке на&nbsp;практике полученных накануне
+      знаний. Формируются две-три проектные группы, каждая из&nbsp;которых выбирает реально существующую
+      актуальную проблему, связанную с&nbsp;деятельностью компании. Второй день обучения становится
+      для&nbsp;участников тренинга началом продолжительной работы над&nbsp;практическим проектом по&nbsp;решению
+      самостоятельно выбранной (или озвученной руководством) проблемы.
+    </p>
+
+    <h2 class="t-h-section t-h-section--compact t-on-strong mt-14 mb-6">Защита проекта</h2>
+    <p class="t-body t-on-default">
+      Вместе с&nbsp;проблемами группы определяют сроки защиты своих практических проектов (обычно
+      через три&nbsp;месяц после начала работы над&nbsp;проблемой). Программа обучения предполагает
+      трёхмесячное посттренинговое информационное сопровождение участников проектных групп
+      и&nbsp;оказание им&nbsp;помощи в&nbsp;подготовке к&nbsp;защитам проектов (отчёт группы о&nbsp;результатах решения
+      проблем перед заказчиком обучения).
+    </p>
+
+    <h2 class="t-h-section t-h-section--compact t-on-strong mt-14 mb-6">Вместо заключения</h2>
+    <p class="t-body t-on-default">
+      Прохождение ключевыми сотрудниками компании тренинга «Профессиональное Решение Проблем»
+      является весьма желательным фактором, так&nbsp;как приобретение и&nbsp;постоянное применение
+      в&nbsp;профессиональной деятельности навыков профессионального решения проблем позволяет
+      компании обеспечить единство подходов и&nbsp;принципов кайдзен во&nbsp;всех подразделениях.
+      Это в&nbsp;свою очередь ведёт к&nbsp;построению целостной и&nbsp;эффективно действующей корпоративной
+      Системы Профессионального Решения Проблем.
+    </p>
+
+    <div class="mt-14 flex justify-center">
+      <a href="#" class="inline-flex items-center gap-3 px-6 py-3.5 bg-wire-dark text-white hover:bg-wire-accent transition-colors text-base font-medium">
+        <img src={iconPdfLight.src} alt="" loading="lazy" class="h-5 w-auto shrink-0" />
+        <span>Скачать описание тренинга</span>
+      </a>
+    </div>
+
+  </div>
+</dialog>

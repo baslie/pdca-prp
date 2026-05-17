@@ -1,0 +1,84 @@
+---
+import iconPdf from '../assets/svg/icon-pdf.svg';
+---
+
+<!-- ========== БЛОК «О ЧЁМ ЭТОТ ТРЕНИНГ» ========== -->
+<section id="about-training" class="relative z-10 bg-wire-bg section-py">
+  <div class="w-full section-px">
+
+    <div class="grid lg:grid-cols-[minmax(170px,22fr)_78fr] gap-x-[clamp(2.5rem,6vw,8rem)] gap-y-[clamp(2rem,4vw,4rem)] items-center">
+
+      <!-- Иероглиф для lg+: левая колонка grid'а. На mobile скрыт — дублирован у кнопок ниже. -->
+      <div class="hidden lg:order-1 lg:flex lg:flex-col items-center justify-center lg:gap-[clamp(0.75rem,1.4vw,1.25rem)] py-[clamp(1rem,3vw,4rem)]">
+        <div class="kanji text-wire-dark text-[clamp(110px,11vw,200px)] [writing-mode:vertical-rl]">改善</div>
+        <p class="t-meta t-on-muted text-center max-w-[14rem]">
+          <em class="italic">кайдзен</em>&nbsp;(яп.)&nbsp;— «перемены к&nbsp;лучшему»
+        </p>
+      </div>
+
+      <div class="order-1 lg:order-2 flex flex-col gap-[clamp(2rem,3.5vw,4.5rem)]">
+
+        <div>
+          <p class="t-eyebrow t-on-muted mb-6">О&nbsp;тренинге</p>
+          <h2 class="t-h-section t-on-strong">
+            Философия постоянных <span class="text-wire-accent">улучшений</span>
+          </h2>
+        </div>
+
+        <div class="space-y-[clamp(1.25rem,1.9vw,2rem)] t-on-default">
+
+          <p class="t-body">
+            Всё больше компаний во&nbsp;всём мире принимают концепцию <strong class="font-semibold t-on-strong">кайдзен</strong>
+            (бережливое производство) в&nbsp;качестве доминирующей концепции развития своего бизнеса, основы
+            эффективного менеджмента.
+          </p>
+
+          <p class="t-body">
+            Принимая к&nbsp;воплощению в&nbsp;реальность подход, основанный на&nbsp;внесении в&nbsp;деятельность компании
+            постоянных улучшений, нельзя не&nbsp;согласиться со&nbsp;словами создателя самой концепции
+            кайдзен Масааки&nbsp;Имаи:
+          </p>
+
+          <figure class="my-[clamp(2rem,3.5vw,3.5rem)] rounded-sm bg-wire-panel p-[clamp(1.75rem,3vw,3rem)]">
+            <blockquote class="t-quote t-on-strong">
+              Кайдзен начинается с&nbsp;проблемы, или, точнее, с&nbsp;признания, что&nbsp;она существует!
+              Там, где её&nbsp;нет, отсутствует потенциал для&nbsp;совершенствования.
+            </blockquote>
+            <figcaption class="mt-[clamp(1.25rem,2vw,1.75rem)] flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span class="font-semibold t-on-strong">Масааки&nbsp;Имаи</span>
+              <span class="t-meta t-on-muted">создатель концепции кайдзен</span>
+            </figcaption>
+          </figure>
+
+          <p class="t-body">
+            Умение <strong class="font-semibold t-on-strong">профессионально решать проблемы</strong>
+            (вновь возникающие или&nbsp;давно существующие) является важнейшим навыком сотрудников компании,
+            необходимым для&nbsp;осуществления менеджмента, основанного на&nbsp;принципах кайдзен.
+          </p>
+
+        </div>
+
+        <!-- CTA + иероглиф (mobile только) -->
+        <div id="cta-row" class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 sm:gap-x-8 pt-2 lg:flex lg:flex-wrap lg:items-center lg:gap-x-6 lg:gap-y-4">
+
+          <div class="flex flex-col items-stretch gap-3 min-w-0 lg:contents">
+            <button type="button" id="btn-about-open" class="btn-primary !min-w-0 lg:!min-w-[13rem]">Подробнее</button>
+            <a href="#" class="inline-flex items-center gap-2.5 t-body-sm t-on-muted hover:text-wire-dark transition-colors group">
+              <img src={iconPdf.src} alt="" loading="lazy" class="h-5 w-auto shrink-0" />
+              <span class="underline decoration-dashed underline-offset-[6px]">Скачать описание тренинга</span>
+            </a>
+          </div>
+
+          <div class="lg:hidden flex flex-col items-center gap-2 text-center">
+            <div class="kanji text-wire-dark text-[56px] sm:text-[72px] [writing-mode:vertical-rl]">改善</div>
+            <p class="t-hint t-on-muted max-w-[10rem]">
+              <em class="italic">кайдзен</em>&nbsp;(яп.)<br />«перемены к&nbsp;лучшему»
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>

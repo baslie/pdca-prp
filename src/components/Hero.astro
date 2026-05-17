@@ -1,0 +1,94 @@
+---
+import Logo from './Logo.astro';
+import denisBulgin from '../assets/images/denis-bulgin.png';
+import mountain from '../assets/images/mountain.jpg';
+---
+
+<section class="relative min-h-screen overflow-hidden">
+
+  <!-- DESKTOP-overlay контактов (≥lg). По центру шапки на одной линии с лого. -->
+  <div class="hidden lg:flex absolute top-0 left-0 right-0 z-30 pt-14 justify-center pointer-events-none">
+    <div class="pointer-events-auto inline-flex items-center h-11 gap-x-5 font-normal tracking-tight whitespace-nowrap text-lg">
+      <a href="tel:+74957408340" class="link-contact">8 495 740-83-40</a>
+      <!-- Знак умножения U+00D7 — «бренд × бренд» из визуального языка коллабораций. -->
+      <span aria-hidden="true" class="text-wire-muted select-none">×</span>
+      <a href="mailto:info@pdca-consulting.ru" class="link-contact">info@pdca-consulting.ru</a>
+    </div>
+  </div>
+
+  <!-- MOBILE/TABLET-контакты (<lg) в правом верхнем углу. -->
+  <div class="lg:hidden absolute top-0 right-0 z-30
+              pt-10 md:pt-14 pr-6 sm:pr-10 md:pr-12
+              flex flex-col items-end sm:flex-row sm:items-center
+              gap-y-0.5 sm:gap-x-3
+              text-xs sm:text-sm md:text-base
+              font-normal tracking-tight text-right">
+    <a href="tel:+74957408340" class="link-contact">8 495 740-83-40</a>
+    <span aria-hidden="true" class="hidden sm:inline text-wire-muted select-none">×</span>
+    <a href="mailto:info@pdca-consulting.ru" class="link-contact">info@pdca-consulting.ru</a>
+  </div>
+
+  <!-- Декоративная гора в левом нижнем углу.
+       На mobile — absolute внутри hero, на md+ — fixed к viewport (вместе с Денисом). -->
+  <img
+    id="mountain-fixed"
+    src={mountain.src}
+    alt=""
+    width={mountain.width}
+    height={mountain.height}
+    class="absolute md:fixed bottom-0 left-0 w-[clamp(425px,33vw,760px)] h-auto pointer-events-none select-none"
+  />
+
+  <!-- Сетка: 58/42 — даёт типографике чуть больше воздуха, фото остаётся весомым. -->
+  <div class="relative grid grid-cols-1 md:grid-cols-[58fr_42fr] min-h-screen">
+
+    <!-- Левая колонка: текст. На мобильном внизу резерв для фото Дениса (≈55vh). -->
+    <div class="flex flex-col justify-between section-px pt-10 md:pt-14 pb-[55vh] md:pb-14 relative">
+
+      <div>
+        <Logo />
+      </div>
+
+      <!-- Героика -->
+      <div class="my-auto py-10 md:py-0 space-y-10 md:space-y-12">
+
+        <div class="t-eyebrow t-on-muted">Тренинг</div>
+
+        <h1 class="t-display">
+          <span class="text-white mix-blend-difference">Профессиональное</span><br />
+          <span class="text-wire-accent">решение</span><span class="text-white mix-blend-difference"> проблем</span>
+        </h1>
+
+        <p class="t-lead t-on-dark mix-blend-difference max-w-2xl">
+          Узнайте, как&nbsp;улучшить бизнес-процессы и&nbsp;достичь цели компании без&nbsp;существенных капиталовложений.
+        </p>
+
+        <div class="pt-4 md:pt-6">
+          <a href="#about-training" class="btn-primary">Подробнее</a>
+        </div>
+      </div>
+
+      <div></div>
+    </div>
+
+    <!-- Правая колонка: место под fixed-фото (desktop). Само фото — <aside> до hero. -->
+    <div class="hidden md:block" aria-hidden="true"></div>
+  </div>
+
+  <!-- Мобильное фото: в нижнем-правом углу, смещено за правый край. -->
+  <div class="md:hidden absolute bottom-0 right-0 w-[88%] aspect-[3/4] translate-x-[8%] pointer-events-none z-0">
+    <img
+      src={denisBulgin.src}
+      alt="Денис Булгин — тренер"
+      width={denisBulgin.width}
+      height={denisBulgin.height}
+      class="w-full h-full object-contain object-bottom"
+    />
+  </div>
+
+  <!-- Мобильная подпись. Через mix-blend-difference инвертируется на любом фоне. -->
+  <div class="md:hidden absolute left-6 bottom-[53vw] text-left z-20 mix-blend-difference">
+    <div class="t-eyebrow t-on-dark-muted">Тренер</div>
+    <div class="t-body-sm font-medium t-on-dark mt-1">Денис Булгин</div>
+  </div>
+</section>

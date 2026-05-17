@@ -1,0 +1,58 @@
+---
+interface Props {
+  code: string;
+  title?: string;
+  autoplay?: boolean;
+}
+
+const {
+  code,
+  title = 'Видео',
+  autoplay = false,
+} = Astro.props;
+
+const src = `https://play.boomstream.com/${code}?color=false&title=0`;
+---
+
+<div class="relative w-full aspect-video bg-wire-panel overflow-hidden rounded-sm shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]">
+  <iframe
+    class="absolute inset-0 w-full h-full"
+    src={src}
+    frameborder="0"
+    scrolling="no"
+    allow="autoplay; fullscreen"
+    loading="lazy"
+    title={title}
+    data-bs-code={code}
+    data-bs-autoplay={autoplay ? '1' : '0'}
+  ></iframe>
+</div>
+
+{autoplay && (
+  <script is:inline define:vars={{ code }}>
+    (function () {
+      var BS_ORIGIN = 'https://play.boomstream.com';
+      var started = false;
+
+      function sendAction(action, data) {
+        var frame = document.querySelector('iframe[src*="' + code + '"]');
+        if (!frame || !frame.contentWindow) return;
+        frame.contentWindow.postMessage(
+          { code: code, method: 'action', action: action, data: data || '' },
+          BS_ORIGIN
+        );
+      }
+
+      window.addEventListener('message', function (e) {
+        if (e.origin !== BS_ORIGIN) return;
+        var d = e.data;
+        if (!d || d.code !== code) return;
+        if (d.method === 'loaded' && !started) {
+          started = true;
+          sendAction('mute');
+          sendAction('play');
+        }
+      }, false);
+    })();
+  </script>
+)}
