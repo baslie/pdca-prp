@@ -1,0 +1,30 @@
+# OS
+Thumbs.db
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Dependencies / build
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+.vercel/
+
+# Playwright / тестовые артефакты
+.playwright-mcp/
+two-lines-*.png

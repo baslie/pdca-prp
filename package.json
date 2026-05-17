@@ -1,0 +1,14 @@
+{
+  "name": "pdca-prp",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Лендинг учебного курса «Профессиональное Решение Проблем».",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
