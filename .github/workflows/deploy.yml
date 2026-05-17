@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Триггер на каждый push в main.
+  push:
+    branches: [main]
+  # Возможность ручного запуска из вкладки Actions.
+  workflow_dispatch:
+
+# Разрешения, нужные для clone + создания Pages-деплоя.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Параллельно идущие деплои не нужны — отменяем «старые», ждём свежий.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build with Astro
+        uses: withastro/action@v3
+        # По умолчанию использует Node 22 + auto-detect package manager (npm),
+        # запускает `npm ci` и `npm run build`, грузит dist/ как pages artifact.
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
