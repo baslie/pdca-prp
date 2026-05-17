@@ -1,0 +1,448 @@
+/* ============================================================
+   Tailwind CSS v4 — глобальный стилевой файл проекта PDCA / ПРП.
+
+   Подключается из src/layouts/BaseLayout.astro:
+     import '../styles/global.css';
+
+   Vite-плагин Tailwind v4 (@tailwindcss/vite) сам сканирует
+   src/**/*.{astro,ts,js,tsx} — явные @source больше не нужны.
+
+   Принципы (см. docs/TYPOGRAPHY.md и CLAUDE.md проекта):
+     - Дизайн-токены живут в @theme (CSS-переменные namespace --color-*, --font-*,
+       --text-*, --tracking-*, --container-*).
+     - Базовые HTML-сбросы и типографическая шкала — @layer base.
+     - Микротексты, кнопки, повторяющиеся композиции, диаграмма ПРП — @layer components.
+     - Доступ к токенам в произвольных правилах — через var(--color-wire-X),
+       НЕ через theme('colors.wire.X') (v3-синтаксис, удалён в v4).
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ============================================================
+   ДИЗАЙН-ТОКЕНЫ
+   ============================================================ */
+@theme {
+  /* Палитра wire-* — используется в HTML как bg-wire-bg, text-wire-text и т.д. */
+  --color-wire-bg: #FFFFFF;
+  --color-wire-panel: #F7F7F7;
+  --color-wire-surface: #EBEBEB;
+  --color-wire-border: #D4D4D4;
+  --color-wire-muted: #8B8B8B;
+  --color-wire-text: #2B2B2B;
+  --color-wire-dark: #0C0C0C;
+  --color-wire-accent: #e84249;   /* Pantone Red 032 C */
+  --color-wire-accent2: #003154;  /* Pantone 648 C (запас, на текущем макете не используется) */
+
+  /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
+  --font-sans: Inter, system-ui, -apple-system, sans-serif;
+
+  /* Кастомные text-* (микротексты).
+     v4 синтаксис: --text-NAME + --text-NAME--line-height / --letter-spacing / --font-weight. */
+  --text-eyebrow: 0.6875rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.32em;
+  --text-eyebrow--font-weight: 600;
+
+  --text-meta: 0.875rem;
+  --text-meta--line-height: 1.45;
+
+  --text-hint: 0.75rem;
+  --text-hint--line-height: 1.4;
+
+  /* tracking-* */
+  --tracking-display: -0.03em;
+  --tracking-heading: -0.02em;
+  --tracking-label: 0.32em;
+
+  /* max-w-* (в v4 namespace --container-* отвечает за max-w-*). */
+  --container-prose: 65ch;
+  --container-prose-narrow: 52ch;
+}
+
+/* ============================================================
+   @layer base — глобальные сбросы и типографическая шкала.
+   ============================================================ */
+@layer base {
+  html, body { @apply bg-wire-bg text-wire-text; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  img { -webkit-user-drag: none; user-select: none; }
+  .kanji { font-family: 'Yuji Mai', serif; line-height: 1; }
+
+  /* ============================================================
+     ТИПОГРАФИЧЕСКАЯ ШКАЛА (см. docs/TYPOGRAPHY.md)
+     Fluid-роли: размер растёт линейно с шириной viewport через
+     clamp(min, ax + b, max). Минимум всегда ≥ 17px для body —
+     это база читаемости WCAG.
+
+     8 ролей закрывают 95% текста на странице:
+       .t-display     — герой H1 (один на странице)
+       .t-h-section   — H2 секций; --compact для модалок
+       .t-h-sub       — H3 / подзаголовки
+       .t-lead        — лид под H1/H2
+       .t-body        — основной текст
+       .t-body-sm     — уменьшенный body, ссылки в списках
+       .t-quote       — цитаты blockquote
+     Микротексты (.t-eyebrow, .t-meta, .t-hint) — статика, в @layer
+     components ниже.
+     ============================================================ */
+  .t-display {
+    font-size: clamp(2.25rem, 5.4vw, 9rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-weight: 900;
+  }
+  .t-h-section {
+    font-size: clamp(2rem, 3.6vw, 3.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 900;
+  }
+  .t-h-section.t-h-section--compact {
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .t-h-sub {
+    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  .t-lead {
+    font-size: clamp(1.0625rem, 1.25vw, 1.375rem);
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    font-weight: 400;
+  }
+  /* .t-body: формула пересчитана. Старая `clamp(1rem, 1.05vw, 1.25rem)`
+     работала только в одной точке — на 1024px давала 16px (срабатывал
+     min); 20px достигалось только при vw ≥ 1905px. Новая формула
+     clamp(min, ax + b, max) растёт линейно от 17px до 20px на дельте
+     360–1280px. */
+  .t-body    { font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem); line-height: 1.65; }
+  .t-body-sm { font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem); line-height: 1.55; }
+  .t-quote   {
+    font-size: clamp(1.125rem, 1.4vw, 1.625rem);
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    font-weight: 500;
+    font-style: italic;
+  }
+  dialog { padding: 0; border: none; background: transparent; color: inherit; max-width: none; max-height: none; }
+  /* Backdrop не блюрим: модаль занимает весь viewport, под ней ничего не видно. */
+  body.modal-open { overflow: hidden; }
+
+  /* Стильный скролл внутри модалки */
+  .modal-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent; scrollbar-gutter: stable; }
+  .modal-scroll::-webkit-scrollbar { width: 6px; }
+  .modal-scroll::-webkit-scrollbar-track { background: transparent; }
+  .modal-scroll::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.12); }
+  .modal-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(0,0,0,0.22); }
+
+  /* Модалка категорий — fullscreen-overlay со скроллом всей карточки. */
+  dialog#modal-examples {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    background: transparent;
+    border: none;
+    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  dialog#modal-examples::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+  }
+  dialog#modal-examples[open]::backdrop { animation: backdropIn 0.18s ease-out; }
+  .modal-examples-card {
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    max-width: min(720px, 92vw);
+    width: 100%;
+    margin: 0 auto;
+    animation: modalIn 0.18s ease-out;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+  @keyframes backdropIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+}
+
+/* ============================================================
+   @layer components — микротексты, контрастная сетка, кнопки,
+   композиционные классы, диаграмма ПРП.
+   ============================================================ */
+@layer components {
+  /* ============================================================
+     МИКРОТЕКСТЫ — статичные размеры (см. docs/TYPOGRAPHY.md)
+     Не делаются fluid: ярлыки, подписи и техн. пометки должны
+     быть стабильно мелкими на всех viewport.
+     ============================================================ */
+  .t-eyebrow {
+    @apply uppercase font-semibold;
+    font-size: 0.6875rem; /* 11px */
+    letter-spacing: 0.32em;
+    line-height: 1.4;
+  }
+  .t-meta { font-size: 0.875rem; line-height: 1.45; }
+  .t-hint { font-size: 0.75rem;  line-height: 1.4;  }
+
+  /* ============================================================
+     СЕТКА КОНТРАСТА ТЕКСТА — 4 уровня на светлом + 3 на тёмном.
+     В HTML используется ТОЛЬКО эти классы; ad-hoc text-wire-text/N
+     и text-white/N — запрещены (см. docs/TYPOGRAPHY.md, антипаттерны).
+     ============================================================ */
+  .t-on-strong      { @apply text-wire-dark; }
+  .t-on-default     { @apply text-wire-text; }
+  .t-on-muted       { color: rgb(43 43 43 / 0.70); }   /* #2B2B2B @ 70% */
+  .t-on-soft        { color: rgb(43 43 43 / 0.45); }
+  .t-on-dark        { @apply text-white; }
+  .t-on-dark-muted  { color: rgb(255 255 255 / 0.75); }
+  .t-on-dark-soft   { color: rgb(255 255 255 / 0.55); }
+
+  /* DOM-компонент списка проектов в #modal-examples. */
+  .t-modal-list-item {
+    @apply flex items-start gap-3 -mx-3 px-4
+           transition-colors duration-100;
+  }
+  .t-modal-list-item:hover { @apply bg-wire-surface; }
+  .t-modal-list-item__dot {
+    @apply mt-2 w-1.5 h-1.5 rounded-full bg-wire-dark shrink-0
+           transition-colors duration-100;
+  }
+  /* Инлайн t-body-sm (определён в @layer base; в v4 @apply на base-классы ненадёжен). */
+  .t-modal-list-item__text {
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.55;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center whitespace-nowrap bg-wire-dark text-wire-bg font-semibold transition-all duration-200;
+    padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
+    font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
+    letter-spacing: 0.005em;
+    min-width: clamp(13rem, 18vw, 19rem);
+  }
+  .btn-primary:hover { @apply bg-wire-accent text-white; box-shadow: 0 10px 30px -10px rgba(232, 66, 73, 0.45); }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center border border-wire-dark text-wire-dark font-semibold transition-all duration-200;
+    padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
+    font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
+    letter-spacing: 0.005em;
+    min-width: clamp(13rem, 18vw, 19rem);
+  }
+  .btn-secondary:hover { @apply bg-wire-dark text-wire-bg; }
+
+  /* ============================================================
+     COMPOSITION-классы — повторяющиеся Tailwind-цепочки.
+     ============================================================ */
+  .section-px { @apply px-6 sm:px-10 md:px-12 lg:px-20; }
+  .section-py { @apply py-[clamp(3rem,6vw,8rem)]; }
+  .link-contact { @apply text-wire-dark hover:text-wire-accent transition-colors duration-200; }
+
+  /* Строка-категория в секции #examples. */
+  .category-row { @apply w-full text-left flex items-center gap-6 py-6; transition: padding-left 0.2s ease; }
+  .category-row:hover { padding-left: 12px; }
+  .category-row:hover .category-row__title { color: var(--color-wire-accent); }
+  .category-row__icon { @apply w-14 h-14 shrink-0 bg-wire-dark/5 text-wire-dark flex items-center justify-center; }
+  .category-row__title {
+    @apply block leading-tight;
+    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: var(--color-wire-dark);
+  }
+  .category-row__caption {
+    @apply block mt-1;
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.55;
+    color: rgb(43 43 43 / 0.70);
+  }
+  .category-row__arrow {
+    @apply text-2xl;
+    opacity: 0;
+    transform: translateX(24px);
+    color: var(--color-wire-accent);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .category-row:hover .category-row__arrow { opacity: 1; transform: translateX(0); }
+
+  /* Glass-карточки поверх горной панорамы в секции #offer-stats. */
+  .feature-card { @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-4 py-7 sm:py-8; }
+  .feature-card__icon { @apply w-10 h-10 mb-5; color: #fff; }
+  .feature-card__label { @apply text-[11px] md:text-xs font-semibold uppercase tracking-wider leading-snug; color: #fff; }
+  .stat-card { @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-6 py-8 md:px-7 md:py-10; container-type: inline-size; }
+  .stat-card__number {
+    @apply font-black leading-none tracking-display;
+    color: #fff;
+    font-size: clamp(1.75rem, 36cqi, 4.5rem);
+  }
+  .stat-card__caption {
+    @apply mt-4;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: rgb(255 255 255 / 0.75);
+  }
+
+  /* ============================================================
+     ДИАГРАММА «Шаги по внедрению системы ПРП».
+     ============================================================ */
+  .prp-diagram-stage { position: relative; width: 100%; --prp-oct: clamp(300px, 80vw, 380px); }
+
+  .prp-diagram {
+    --prp-gap-m: clamp(2.75rem, 8vw, 4rem);
+    position: relative;
+    list-style: none; margin: 0;
+    padding: 0 clamp(40px, 13vw, 60px);
+    display: flex; flex-direction: column; align-items: center;
+    gap: var(--prp-gap-m);
+  }
+
+  .prp-octagon {
+    position: relative;
+    container-type: inline-size;
+    width: var(--prp-oct);
+    aspect-ratio: 1 / 1;
+  }
+  .prp-octagon__shape {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    overflow: visible; z-index: 0;
+    color: var(--color-wire-dark); pointer-events: none;
+  }
+  .prp-octagon__body {
+    position: absolute; inset: 12%; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; gap: 0.5rem;
+  }
+  .prp-octagon__num  { font-size: clamp(1.35rem, 8.5cqi, 2.3rem); font-weight: 600; line-height: 1; }
+  .prp-octagon__text { font-size: clamp(0.8rem, 5cqi, 1.25rem); line-height: 1.3;
+                       text-wrap: pretty; }
+
+  .prp-octagon:not(.prp-octagon--5)::after {
+    content: ""; position: absolute; left: 50%;
+    bottom: calc(-1 * var(--prp-gap-m) + 12px);
+    width: 2px; height: calc(var(--prp-gap-m) - 20px);
+    background: var(--color-wire-accent);
+    transform: translateX(-50%);
+  }
+  .prp-octagon:not(.prp-octagon--5) > .prp-octagon__arrowhead {
+    display: block; position: absolute; left: 50%;
+    bottom: calc(-1 * var(--prp-gap-m) + 8px);
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 9px solid var(--color-wire-accent);
+    transform: translateX(-50%); z-index: 2;
+  }
+
+  .prp-intro {
+    display: block;
+    max-width: 65ch;
+    margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+    text-align: center;
+  }
+
+  .prp-arrows { position: absolute; pointer-events: none; overflow: visible; }
+  .prp-arrows--desktop, .prp-ornament { display: none; }
+
+  /* PRE-STATE для GSAP-анимации блока (см. src/scripts/prp-diagram-scroll.ts).
+     Класс .js-prp-animate ставится синхронно inline-script'ом в <head> ДО
+     парсинга <body>. */
+  .js-prp-animate .prp-octagon { opacity: 0.15; }
+  .js-prp-animate .prp-arrows--desktop path { opacity: 0.15; }
+  .js-prp-animate .prp-ornament__path {
+    fill-opacity: 0;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js-prp-animate .prp-octagon,
+    .js-prp-animate .prp-arrows--desktop path { opacity: 1; }
+    .js-prp-animate .prp-ornament__path {
+      fill-opacity: 1;
+      stroke-opacity: 0;
+      stroke-dasharray: none;
+    }
+  }
+  /* Возвратная стрелка 5→2 (mobile) — CSS-«скобка» [ в левом жёлобе колонки. */
+  .prp-return {
+    --prp-ret-w: clamp(22px, 5.5vw, 32px);
+    position: absolute;
+    left: 50%;
+    transform: translateX(calc(-1 * var(--prp-oct) / 2 - var(--prp-ret-w) - 2px));
+    top: calc(1.5 * var(--prp-oct) + var(--prp-gap-m));
+    bottom: calc(0.5 * var(--prp-oct));
+    width: var(--prp-ret-w);
+    border: 2px solid var(--color-wire-accent);
+    border-right: none;
+    border-radius: 18px 0 0 18px;
+    pointer-events: none;
+  }
+  .prp-return::after {
+    content: ""; position: absolute; left: calc(100% - 11px); top: -6px;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 7px 0 7px 11px;
+    border-color: transparent transparent transparent var(--color-wire-accent);
+  }
+
+  /* ≥1280px — композиция «КРЕСТ». */
+  @media (min-width: 1280px) {
+    .prp-diagram-stage {
+      aspect-ratio: 13 / 10;
+      max-width: clamp(900px, 94vw, 1680px);
+      margin-inline: auto;
+    }
+    .prp-diagram {
+      position: absolute; inset: 0;
+      display: block; padding: 0;
+    }
+    .prp-octagon { position: absolute; width: 21%; }
+    .prp-octagon--1 { left: 0;     top: 36.35%; }
+    .prp-octagon--2 { left: 28%;   top: 36.35%; }
+    .prp-octagon--3 { left: 51.8%; top: 5.45%;  }
+    .prp-octagon--4 { left: 75.6%; top: 36.35%; }
+    .prp-octagon--5 { left: 51.8%; top: 67.25%; }
+    .prp-octagon:not(.prp-octagon--5)::after { content: none; }
+    .prp-octagon:not(.prp-octagon--5) > .prp-octagon__arrowhead { display: none; }
+    .prp-return { display: none; }
+    .prp-arrows--desktop {
+      display: block; inset: 0; width: 100%; height: 100%;
+    }
+    .prp-ornament {
+      display: block; position: absolute; left: 62.3%; top: 50%;
+      width: clamp(90px, 11vw, 132px); aspect-ratio: 1;
+      transform: translate(-50%, -50%); pointer-events: none;
+    }
+    .prp-intro {
+      position: absolute;
+      top: 3.5%; left: 0;
+      width: 48%;
+      max-width: none;
+      margin: 0;
+      aspect-ratio: 2 / 1;
+      display: flex;
+      align-items: center;
+      padding: clamp(1rem, 1.4vw, 2rem) clamp(1.25rem, 2vw, 2.5rem);
+      text-align: left;
+    }
+    .prp-intro__text {
+      line-height: 1.45;
+      hyphens: auto;
+      text-wrap: pretty;
+    }
+  }
+}
