@@ -19,11 +19,10 @@ yarn-debug.log*
 
 # Dependencies / build
 node_modules/
+
+# Astro
+.astro/
 dist/
-build/
-.next/
-.turbo/
-.vercel/
 
 # Playwright / тестовые артефакты
 .playwright-mcp/
