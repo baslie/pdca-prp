@@ -5,7 +5,7 @@
      import '../styles/global.css';
 
    Vite-плагин Tailwind v4 (@tailwindcss/vite) сам сканирует
-   src/**/*.{astro,ts,js,tsx} — явные @source больше не нужны.
+   .astro/.ts/.js/.tsx файлы в src/ — явные @source больше не нужны.
 
    Принципы (см. docs/TYPOGRAPHY.md и CLAUDE.md проекта):
      - Дизайн-токены живут в @theme (CSS-переменные namespace --color-*, --font-*,

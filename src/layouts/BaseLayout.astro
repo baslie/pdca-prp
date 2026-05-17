@@ -1,0 +1,120 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Профессиональное решение проблем — тренинг Дениса Булгина',
+  description = 'Корпоративный тренинг «Профессиональное решение проблем» по методологии кайдзен. 2 дня обучения + 3 месяца сопровождения проектной работы. Денис Булгин, PDCA Consulting.',
+} = Astro.props;
+
+// Нормализуем base так, чтобы он всегда заканчивался на «/». Astro может отдавать
+// BASE_URL и со слешем, и без — конкатенация без нормализации даёт /pdca-prpfavicon.ico.
+const baseRaw = import.meta.env.BASE_URL;
+const base = baseRaw.endsWith('/') ? baseRaw : `${baseRaw}/`;
+const canonical = new URL(base, Astro.site).toString();
+const ogImage = new URL(`${base}og-image.png`, Astro.site).toString();
+
+const courseSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Course',
+  name: 'Профессиональное решение проблем',
+  description:
+    'Корпоративный тренинг по методологии кайдзен: 2 дня обучения + 3 месяца посттренингового сопровождения проектной работы.',
+  url: canonical,
+  inLanguage: 'ru',
+  provider: {
+    '@type': 'Organization',
+    name: 'PDCA Consulting',
+    url: canonical,
+    telephone: '+7 495 740-83-40',
+    email: 'info@pdca-consulting.ru',
+  },
+  instructor: {
+    '@type': 'Person',
+    name: 'Денис Булгин',
+    jobTitle: 'Бизнес-тренер',
+  },
+  hasCourseInstance: {
+    '@type': 'CourseInstance',
+    courseMode: 'onsite',
+    courseWorkload: 'PT16H',
+  },
+};
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Сайт в разработке: запрещаем индексацию и сохранение для всех ботов.
+       Чек-лист снятия noindex — в CLAUDE.md, раздел «Деплой». -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="yandex" content="noindex, nofollow, noarchive" />
+
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="color-scheme" content="light" />
+
+  <!-- Favicons / app icons. Источник — public/icons/, base учитывается через BASE_URL.
+       Покрытие: SVG (Chrome/FF/Edge), .ico (legacy + Яндекс), apple-touch (iOS),
+       192/512 PNG + manifest (Android/PWA + Google), maskable (Android adaptive). -->
+  <link rel="icon" href={`${base}favicon.ico`} sizes="any" />
+  <link rel="icon" type="image/svg+xml" href={`${base}icons/favicon.svg`} />
+  <link rel="icon" type="image/png" sizes="16x16" href={`${base}icons/favicon-16.png`} />
+  <link rel="icon" type="image/png" sizes="32x32" href={`${base}icons/favicon-32.png`} />
+  <link rel="icon" type="image/png" sizes="48x48" href={`${base}icons/favicon-48.png`} />
+  <link rel="icon" type="image/png" sizes="192x192" href={`${base}icons/icon-192.png`} />
+  <link rel="icon" type="image/png" sizes="512x512" href={`${base}icons/icon-512.png`} />
+  <link rel="apple-touch-icon" sizes="180x180" href={`${base}icons/apple-touch-icon.png`} />
+  <link rel="manifest" href={`${base}site.webmanifest`} />
+  <meta name="application-name" content="PDCA ПРП" />
+  <meta name="apple-mobile-web-app-title" content="PDCA ПРП" />
+  <meta name="msapplication-TileColor" content="#F04E53" />
+  <meta name="msapplication-TileImage" content={`${base}icons/icon-192.png`} />
+  <meta name="msapplication-config" content={`${base}browserconfig.xml`} />
+
+  <title>{title}</title>
+
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+
+  <!-- Open Graph (Facebook, VK, Telegram, LinkedIn) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:site_name" content="PDCA Consulting" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content="Корпоративный тренинг по методологии кайдзен: 2 дня обучения и 3 месяца сопровождения проекта." />
+  <meta property="og:url" content={canonical} />
+  <!-- TODO: создать отдельный 1200×630 OG-баннер. Пока используем существующий портрет. -->
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content="Денис Булгин — бизнес-тренер PDCA Consulting" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content="Корпоративный тренинг по методологии кайдзен: 2 дня + 3 месяца сопровождения." />
+  <meta name="twitter:image" content={ogImage} />
+
+  <!-- Structured data: Course + Instructor. https://schema.org/Course -->
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(courseSchema)}></script>
+
+  <!-- Класс ставится синхронно ДО парсинга <body> — даёт CSS-каскаду шанс
+       применить пре-стейт (opacity 0.15) к октагонам/стрелкам блока #prp-steps
+       раньше, чем браузер их отрисует. Устраняет FOUC при F5 на середине страницы. -->
+  <script is:inline>document.documentElement.classList.add('js-prp-animate');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap&text=%E6%94%B9%E5%96%84" rel="stylesheet" />
+</head>
+<body class="min-h-screen">
+  <slot />
+</body>
+</html>
