@@ -4,63 +4,73 @@
 
 ## Стек
 
-Статический сайт без сборки и npm-зависимостей:
-
-- HTML + Tailwind CSS через **CDN** (`cdn.tailwindcss.com`) с inline-конфигом
-  темы и `@apply`-компонентами внутри `<style type="text/tailwindcss">` в
-  `index.html`.
-- Ванильный JS, разнесён по модулям (`main.js`, `modal.js`, `examples.js`).
-- Иконки — Lucide (CDN), шрифт — Inter (Google Fonts).
-- Видеохостинг — BoomStream (прямой `<iframe>` без SDK).
-- Хостинг — GitHub Pages, ветка `main`, root.
-
-`package.json` и `node_modules/` намеренно отсутствуют — сайт открывается
-двойным кликом по `index.html`. `npx live-server` нужен только для
-live-reload в процессе разработки.
+- **Astro 6** — статический сайт (`output: "static"`), компонентная декомпозиция,
+  один Layout + одна страница + ~10 компонентов в `src/components/`.
+- **Tailwind CSS v4** — через официальный Vite-плагин `@tailwindcss/vite`,
+  единый стилевой файл `src/styles/global.css` (`@import "tailwindcss"`,
+  `@theme`-токены, `@layer base/components`).
+- **TypeScript** (strict, через `astro/tsconfigs/strict`) для всей логики
+  в `src/scripts/`.
+- **GSAP 3 + ScrollTrigger** (npm) — анимация диаграммы ПРП.
+- **astro-icon + @iconify-json/lucide** — иконки рендерятся как inline SVG
+  на build-time (без CDN, без runtime-замены).
+- **Inter** (Google Fonts) + **Yuji Mai** (только один иероглиф 改善).
+- **BoomStream** — видеоплеер, прямой `<iframe>` без SDK.
+- **GitHub Actions** (`withastro/action@v3` + `actions/deploy-pages@v4`) —
+  CI/CD на каждом push в `main`.
+- **GitHub Pages** — хостинг, custom-домен `roman-purtow.ru`, project page
+  под путём `/pdca-prp/`.
 
 ## Структура
 
 ```
 .
-├── index.html                ← разметка + inline Tailwind (@layer base/components)
-├── robots.txt                ← запрет индексации (сайт в разработке)
-├── .nojekyll                 ← отключает Jekyll-обработку на GitHub Pages
-├── CLAUDE.md                 ← инструкции для AI-агента (и людей-разработчиков)
-├── README.md                 ← этот файл
-├── assets/
-│   ├── js/
-│   │   ├── tailwind-config.js    конфиг темы Tailwind (цвета, fontSize, tracking)
-│   │   ├── main.js               общая инициализация, Lucide-иконки
-│   │   ├── modal.js              общий хелпер модалок (PDCAModal)
-│   │   └── examples.js           логика секции «Примеры решения проблем»
-│   ├── images/                   фото Дениса, гора, облака
-│   └── svg/                      логотип, иконки PDF
-├── scripts/
-│   ├── dev.ps1                   ЕДИНАЯ точка входа для dev-сервера
-│   └── typography.py             вспомогательные скрипты по тексту
-└── docs/
-    ├── TYPOGRAPHY.md             источник правды по тексту (см. ниже)
-    └── …                         брифы, PDF, видео, схемы (не для прода)
+├── astro.config.mjs           ← site, base, integrations (icon, tailwind vite)
+├── tsconfig.json              ← extends astro/tsconfigs/strict
+├── package.json               ← scripts: dev / build / preview / check
+├── .github/workflows/
+│   └── deploy.yml             ← CI: withastro/action + deploy-pages
+├── src/
+│   ├── layouts/BaseLayout.astro       ← <head>, SEO, JSON-LD, anti-FOUC inline-script
+│   ├── pages/index.astro              ← главная страница (сборка компонентов)
+│   ├── components/                    ← Hero, AboutTraining, Video, Examples,
+│   │                                    OfferStats, PrpSteps, Modal*, BoomStreamPlayer,
+│   │                                    DenisFixed, Logo
+│   ├── scripts/                       ← modal.ts, modal-about.ts, examples.ts,
+│   │                                    prp-diagram-scroll.ts (TS, build-bundled)
+│   ├── styles/global.css              ← Tailwind v4 + @theme + @layer base/components
+│   └── assets/                        ← images, svg — через Vite asset pipeline (hashed URLs)
+├── public/                    ← статика «как есть»: favicon.ico, icons/, og-image.png,
+│                                site.webmanifest, browserconfig.xml, robots.txt
+├── docs/
+│   └── TYPOGRAPHY.md          ← источник правды по тексту (см. ниже)
+├── CLAUDE.md                  ← инструкции для AI-агента и людей-разработчиков
+└── README.md
 ```
 
-## Локальный dev-сервер
-
-Запускать **только** через единую точку входа:
+## Локальный dev
 
 ```powershell
-pwsh scripts/dev.ps1
+npm install                     # один раз после клона
+npm run dev                     # http://localhost:4321/pdca-prp/
 ```
 
-Скрипт сам глушит висячие `live-server`-процессы, ждёт освобождения порта и
-поднимает один свежий сервер на `http://localhost:8765/index.html` с
-авто-перезагрузкой страницы при изменении файлов.
+Astro поднимает встроенный dev-сервер с HMR. Tailwind собирается на лету через
+Vite-плагин. Учитывает `base: '/pdca-prp'` из `astro.config.mjs` — открывать
+надо именно с этим префиксом.
 
-Альтернативный порт: `pwsh scripts/dev.ps1 -Port 8766`.
+Прод-проверка:
 
-Прямые вызовы `npx live-server`, `npm start`, `npx serve`, Python `http.server`
-и прочее — **запрещены**. `live-server` при занятом порте не выходит, а
-накапливает висячие процессы; единая точка входа сначала глушит, потом
-запускает. Подробности — в `CLAUDE.md`.
+```powershell
+npm run build                   # генерирует dist/
+npm run preview                 # отдаёт dist/ как настоящий статик
+```
+
+Типы:
+
+```powershell
+npm run check                   # astro check (TypeScript + Astro)
+```
 
 ## Типографика
 
@@ -72,36 +82,43 @@ pwsh scripts/dev.ps1
 
 Единственный источник правды — [`docs/TYPOGRAPHY.md`](docs/TYPOGRAPHY.md).
 Открыть и прочитать **перед** любой правкой текста, заголовков, подписей
-или стилей. Там же — список анти-паттернов и grep-проверка перед коммитом.
+или стилей. Там же — список анти-паттернов.
 
 ## Деплой
 
-Сайт публикуется на GitHub Pages:
+Сайт публикуется на GitHub Pages автоматически через GitHub Actions:
 
-- Репозиторий: `github.com/baslie/pdca-prp`, branch `main`, path `/` (root).
-- Публичный URL: `https://roman-purtow.ru/pdca-prp/` (custom-домен, HTTPS).
-- `.nojekyll` в корне отключает Jekyll-обработку — статика отдаётся как есть.
+- Репозиторий: `github.com/baslie/pdca-prp`, ветка `main`.
+- Workflow: `.github/workflows/deploy.yml` — `withastro/action@v3` →
+  `npm ci && npm run build` → `actions/deploy-pages@v4`.
+- Публичный URL: `https://roman-purtow.ru/pdca-prp/` (project page под
+  user-доменом `baslie.github.io` → `roman-purtow.ru`, отсюда base `/pdca-prp`).
 
-После `git push origin main` GitHub Pages выкатывает изменения за ~1–2 минуты.
+**Разовая настройка** (выполнена при миграции на Astro): в репозитории
+**Settings → Pages → Build and deployment → Source = «GitHub Actions»** (вместо
+устаревшего «Deploy from a branch»). Иначе workflow собирает артефакт,
+но Pages не публикует.
+
+После push в `main` сборка идёт ~1–2 минуты, статус — на вкладке Actions.
 
 ## Индексация
 
 На время разработки сайт закрыт от индексации:
 
-- `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">`
-  в `<head>` (плюс отдельные `googlebot` и `yandex` теги).
-- `robots.txt` с `Disallow: /` для всех ботов.
+- `<meta name="robots" content="noindex, ...">` в `BaseLayout.astro` (плюс
+  отдельные `googlebot` и `yandex` теги).
+- `public/robots.txt` с `Disallow: /` для всех ботов.
 
-Перед публичным анонсом обе меры нужно снять.
+Перед публичным анонсом обе меры нужно снять — чек-лист в `CLAUDE.md`.
 
 ## Соглашения для контрибьютора
 
 - Перед правкой текста — открыть `docs/TYPOGRAPHY.md`.
-- Перед добавлением блока после hero — прочитать раздел «Стэкинг и fixed-слои
-  hero» в `CLAUDE.md` (нужны `relative z-10` + непрозрачный фон, иначе
-  fixed-слои героики проступают сквозь блок).
+- Перед добавлением блока после hero — раздел «Стэкинг и fixed-слои hero»
+  в `CLAUDE.md` (нужны `relative z-10` + непрозрачный фон, иначе fixed-слои
+  героики проступают сквозь блок).
 - Коммиты — в стиле уже имеющихся в репозитории (`git log -5 --oneline`):
-  префикс типа (`feat:`/`fix:`/`style:`/`refactor:`/`docs:`/`chore:`), затем
-  область в скобках, затем суть на русском.
+  префикс типа (`feat:`/`fix:`/`style:`/`refactor:`/`docs:`/`ci:`/`chore:`),
+  затем суть на русском (можно с английским lead'ом в первой строке).
 - Не использовать `--no-verify`, `--amend`, `git reset --hard`, force-push без
   явной необходимости.

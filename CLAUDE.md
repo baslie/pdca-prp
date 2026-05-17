@@ -68,111 +68,89 @@
 
 ## Деплой
 
-Прод-сайт публикуется на GitHub Pages.
+Прод-сайт публикуется на GitHub Pages автоматически через GitHub Actions.
 
-- Репозиторий: `github.com/baslie/pdca-prp`, branch `main`, path `/` (root).
-- Публичный URL: `https://roman-purtow.ru/pdca-prp/` (custom-домен, SSL enforced).
-- `.nojekyll` в корне отключает Jekyll-обработку — статика отдаётся как есть.
-- На время разработки сайт закрыт от индексации: `robots.txt` + `<meta name="robots" content="noindex,...">`. Перед публичным анонсом — снять оба.
+- Репозиторий: `github.com/baslie/pdca-prp`, ветка `main`.
+- Workflow: `.github/workflows/deploy.yml` — `withastro/action@v3` (npm ci + npm run build, upload `dist/` как Pages artifact) → `actions/deploy-pages@v4`.
+- Публичный URL: `https://roman-purtow.ru/pdca-prp/` (project page под user-доменом `baslie.github.io` → `roman-purtow.ru`).
+- `astro.config.mjs` фиксирует `site: 'https://roman-purtow.ru'` + `base: '/pdca-prp'` — все ссылки/ассеты автоматически с правильным префиксом.
+- Триггер — каждый push в `main` или ручной запуск из вкладки Actions.
+- На время разработки сайт закрыт от индексации: `public/robots.txt` (`Disallow: /`) + `<meta name="robots" content="noindex,...">` в `BaseLayout.astro`. Перед публичным анонсом — снять оба.
+
+### Разовая настройка репозитория
+
+В GitHub → **Settings → Pages → Build and deployment → Source = «GitHub Actions»** (вместо «Deploy from a branch»). Если стоит «from a branch», workflow собирает артефакт, но Pages его не публикует.
 
 ### Чек-лист перед публичным анонсом
 
-1. Снять `noindex` из `<meta name="robots">`, `googlebot`, `yandex` (index.html, строки 8-10).
-2. В `robots.txt` заменить `Disallow: /` на `Allow: /` (или удалить директиву).
-3. Сверить, что `<link rel="canonical">` указывает на актуальный домен (index.html, в SEO-блоке после `<title>`).
-4. По возможности — сгенерировать настоящий OG-баннер 1200×630 и заменить `og:image` (см. TODO в head).
-5. Опубликовать `sitemap.xml` (опционально — JSON-LD Course уже даёт схему).
+1. Снять `noindex` из `<meta name="robots">`, `googlebot`, `yandex` в `src/layouts/BaseLayout.astro`.
+2. В `public/robots.txt` заменить `Disallow: /` на `Allow: /` (или удалить файл).
+3. Сверить, что canonical (`new URL(base, Astro.site)` в `BaseLayout.astro`) даёт актуальный URL.
+4. По возможности — сгенерировать настоящий 1200×630 OG-баннер, заменить `public/og-image.png` (сейчас это копия `denis-bulgin.png`).
+5. Опубликовать `sitemap.xml` (опционально — JSON-LD Course уже даёт схему). Astro умеет через интеграцию `@astrojs/sitemap`.
 
-## Сборка CSS (Tailwind v4)
+## Стек и сборка
 
-Tailwind подключается **локально**, через собранный файл `assets/css/tailwind.css`.
-Раньше использовался CDN (`cdn.tailwindcss.com`), но он официально не для прода и
-выкидывал warning в DevTools — заменили на полноценную сборку.
-
-### Архитектура
-
-| Файл | Назначение |
-|---|---|
-| `src/input.css` | Единый исходник: `@import "tailwindcss"`, `@theme` (токены), `@layer base/components` |
-| `assets/css/tailwind.css` | Готовый минифицированный output (~45 КБ). **Коммитится в git** — GitHub Pages не запускает сборку |
-| `package.json` | npm scripts `build:css` / `watch:css`, devDeps `tailwindcss` + `@tailwindcss/cli` v4 |
-| `node_modules/` | Игнорируется git (см. `.gitignore`) |
+| Слой | Технология | Где править |
+|---|---|---|
+| Фреймворк | Astro 6 (static output) | `astro.config.mjs` |
+| Стили | Tailwind v4 через `@tailwindcss/vite` Vite-плагин | `src/styles/global.css` |
+| Дизайн-токены | CSS-переменные namespace (`--color-*`, `--font-*`, `--text-*`, `--tracking-*`, `--container-*`) | блок `@theme { ... }` в `src/styles/global.css` |
+| Логика | TypeScript (strict) | `src/scripts/*.ts`, подключаются `<script>` в компонентах |
+| Иконки | `astro-icon` + `@iconify-json/lucide` (build-time inline SVG) | `<Icon name="lucide:..." />` в .astro |
+| Анимация | `gsap` + `gsap/ScrollTrigger` из npm | `src/scripts/prp-diagram-scroll.ts` |
+| Шрифты | Inter + Yuji Mai через Google Fonts CDN (`<link>` в BaseLayout) | `src/layouts/BaseLayout.astro` |
+| Видео | BoomStream `<iframe>` без SDK | `src/components/BoomStreamPlayer.astro` |
+| CI/CD | GitHub Actions: `withastro/action@v3` + `actions/deploy-pages@v4` | `.github/workflows/deploy.yml` |
 
 ### Команды
 
 ```powershell
-# Один раз при клоне репо или после обновления package.json:
-npm install
-
-# Прод-сборка (минифицированный output). Запускать перед коммитом, если правил input.css / index.html:
-npm run build:css
-
-# Ручной watch-режим (обычно не нужен — встроен в pwsh scripts/dev.ps1):
-npm run watch:css
+npm install         # первый запуск / после правок package.json
+npm run dev         # dev-сервер с HMR -> http://localhost:4321/pdca-prp/
+npm run build       # прод-сборка в dist/
+npm run preview     # отдать dist/ как настоящий статик
+npm run check       # astro check (TypeScript + Astro диагностика)
 ```
 
 ### Дизайн-токены — где править
 
 Все цвета `wire-*`, шрифт `font-sans`, кастомные `text-eyebrow/meta/hint`,
-`tracking-display/heading/label`, `max-w-prose/prose-narrow` живут в `src/input.css`
-внутри блока `@theme { ... }`. Раньше эти токены лежали в `assets/js/tailwind-config.js`
-(файл удалён) — теперь источник правды один.
+`tracking-display/heading/label`, `max-w-prose/prose-narrow` живут в
+`src/styles/global.css` внутри блока `@theme { ... }`. Источник правды один.
 
 ### Антипаттерны
 
 - `theme('colors.wire.X')` в CSS — **v3-синтаксис, удалён в v4**. Используй `var(--color-wire-X)`.
-- Возврат CDN `cdn.tailwindcss.com` — нельзя, прод-WARN-инг в DevTools.
-- Правка `assets/css/tailwind.css` напрямую — бесполезно, перезатрётся ближайшим `build:css` / `watch:css`. Меняй `src/input.css`.
+- Возврат CDN `cdn.tailwindcss.com` — нельзя, прод-warning в DevTools.
+- Правка `dist/_astro/*.css` напрямую — бесполезно, перезатрётся следующим `astro build`. Меняй `src/styles/global.css`.
+- Хардкод путей `/pdca-prp/...` в `<img src=...>` — используй ES-импорт ассета (`import x from '../assets/...'`) или `import.meta.env.BASE_URL`. base может смениться.
 
 ## Локальный dev-сервер
 
-### Запуск — ТОЛЬКО через единую точку входа
+### Запуск
 
 ```powershell
-pwsh scripts/dev.ps1
+npm run dev
 ```
 
-Скрипт сам:
-1. Глушит все висячие процессы `live-server` и `tailwindcss --watch` (даже на других портах) — устраняет накопление сессий между перезапусками.
-2. Ждёт освобождения целевого порта (по умолчанию 8765).
-3. Если порт занят посторонним процессом — падает с понятным сообщением, **не** пытается запустить параллельный сервер.
-4. Стартует Tailwind watcher в фоне (пересобирает `assets/css/tailwind.css` при изменениях `src/input.css` или сканируемых файлов).
-5. Поднимает один свежий live-server в foreground.
-6. По Ctrl+C — гасит и live-server, и фоновый Tailwind watcher через try/finally.
+Astro поднимает встроенный dev-сервер с HMR на `http://localhost:4321/pdca-prp/`
+(порт по умолчанию — 4321; `base: '/pdca-prp'` обязателен в URL — Astro учитывает базу). Tailwind собирается на лету через Vite-плагин, TypeScript-скрипты в `src/scripts/` бандлятся и type-check'аются.
 
-Альтернативный порт: `pwsh scripts/dev.ps1 -Port 8766`.
+### Правила для AI-агента
 
-### Активный сервер (источник истины)
-
-| Параметр | Значение |
-|---|---|
-| Инструмент | `live-server` (через `npx --yes`, обёртка — `scripts/dev.ps1`) |
-| Порт | **8765** |
-| Хост | `127.0.0.1` |
-| URL | `http://localhost:8765/index.html` |
-| Корень | `C:\Users\Roman\Desktop\pdca-prp` |
-| CSS watcher | `tailwindcss --watch` в фоне; `src/input.css` → `assets/css/tailwind.css` |
-| Особенность | Авто-перезагрузка страницы при изменении любого файла в проекте |
-
-### Жёсткие правила для AI-агента
-
-1. **Сервер запускает пользователь, не Claude.** При обычной работе Claude вообще не трогает `scripts/dev.ps1` — его инициирует человек, когда хочет визуально проверить вёрстку. Если по задаче нужно убедиться, что сервер уже работает — проверка через:
+1. **Сервер запускает пользователь, не Claude.** При обычной работе Claude вообще не трогает `npm run dev` — его инициирует человек, когда хочет визуально проверить вёрстку. Если по задаче нужно убедиться, что сервер уже работает — проверка через:
    ```powershell
-   Get-NetTCPConnection -LocalPort 8765 -State Listen -ErrorAction SilentlyContinue
+   Get-NetTCPConnection -LocalPort 4321 -State Listen -ErrorAction SilentlyContinue
    ```
 
-2. **Прямые вызовы `npx live-server`, `live-server`, `npm start`, `npx serve` и т. п. запрещены.** Любая необходимость поднять сервер закрывается одним `pwsh scripts/dev.ps1`. Это устраняет накопление висячих процессов: `live-server` при port-busy **не выходит**, а виснет в памяти; единая точка входа сначала глушит, потом запускает.
+2. **Для проверки сборки используй `npm run build`** (быстро, ~1.5 сек) и при необходимости `npm run preview`. `npm run check` — для type-чек'а Astro/TS без рендера.
 
-3. **Никаких альтернатив** — Python `http.server`, `vite`, `serve` и пр. не использовать. Нужен именно `live-server` ради live-reload.
-
-4. **Если порт 8765 нужно изменить** (постоянная коллизия с другим сервисом):
-   - Обнови поле «Порт» и «URL» в таблице выше — это единый источник истины.
-   - Отдельный коммит `chore: dev-сервер на порту NNNN`.
-   - Передай флаг в скрипт: `pwsh scripts/dev.ps1 -Port NNNN`.
+3. **Никаких альтернатив** — Python `http.server`, vanilla `vite`, `serve` и пр. не использовать. Astro дев-сервер сам всё умеет.
 
 ### Кэш браузера
 
-Если вкладка была открыта до запуска текущей сессии live-server, в неё мог не попасть watch-скрипт. После первого запуска сервера в новой сессии Claude напомни пользователю обновить вкладку через **Ctrl+F5**.
+После значительных правок CSS/токенов или смены ассетов на хэшированные URL — рекомендуй пользователю Ctrl+F5.
 
 ## Видео BoomStream
 
@@ -180,7 +158,7 @@ pwsh scripts/dev.ps1
 
 ### Текущий embed
 
-В `index.html` встроен **прямым `<iframe>`** по официальной рекомендации BoomStream: https://boomstream.ru/documentation/developers/adaptive-style. Без SDK biframesdk.js — адаптивность даёт CSS-контейнер.
+В `src/components/BoomStreamPlayer.astro` встроен **прямым `<iframe>`** по официальной рекомендации BoomStream: https://boomstream.ru/documentation/developers/adaptive-style. Без SDK biframesdk.js — адаптивность даёт CSS-контейнер. Внешний компонент `<Video />` (`src/components/Video.astro`) использует его как `<BoomStreamPlayer code="nm7YeR0q" />`.
 
 ```html
 <div class="relative w-full aspect-video bg-wire-panel overflow-hidden rounded-sm ...">
@@ -214,7 +192,7 @@ pwsh scripts/dev.ps1
 
 Документация прямо говорит: *«muted required when auto-starting on load»* — автоплей со звуком блокируют сами браузеры (Autoplay Policy), это не ограничение BoomStream. Корректный паттерн — стартовать без звука, пользователь сам включает.
 
-Готовый сниппет (положить inline-скриптом сразу после `<iframe>` BoomStream в `index.html` или в `assets/js/main.js`):
+Встроен в `BoomStreamPlayer.astro` — включается флагом `autoplay`: `<BoomStreamPlayer code="..." autoplay />`. Готовый сниппет (для справки — он уже внутри компонента под `{autoplay && (<script>...)}`):
 
 ```html
 <script>
