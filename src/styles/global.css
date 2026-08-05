@@ -476,7 +476,9 @@
   .prp-octagon__shape {
     position: absolute; inset: 0; width: 100%; height: 100%;
     overflow: visible; z-index: 0;
-    color: var(--color-wire-dark); pointer-events: none;
+    /* Обводка октагона рисуется fill="currentColor" в <symbol id="prp-octagon-shape">
+       (см. PrpSteps.astro) — цвет задаётся здесь, через токен фирменного синего. */
+    color: var(--color-wire-accent2); pointer-events: none;
   }
   .prp-octagon__body {
     position: absolute; inset: 12%; z-index: 1;
