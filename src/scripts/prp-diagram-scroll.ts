@@ -83,8 +83,14 @@ if (!section) {
   if (!stage || octagons.length !== 5) {
     dropPreState();
   } else {
-    // Откладываем инициализацию до window.load — шрифты Inter могут прилететь позже,
-    // ScrollTrigger корректно посчитает позиции только когда вся вёрстка осела.
+    // Инициализируем СРАЗУ: бандл — type=module, выполняется после парсинга DOM.
+    // Ждать window.load нельзя — зависший субресурс (iframe BoomStream при VPN
+    // у посетителя) откладывает load бесконечно, и блок навсегда остался бы
+    // в pre-state (opacity 0.15). Поздняя догрузка шрифтов не страшна:
+    //  - ScrollTrigger сам делает refresh() по window.load (autoRefreshEvents);
+    //  - document.fonts.ready ниже даёт ещё один refresh после шрифтов;
+    //  - end задан функцией + invalidateOnRefresh — диапазон пересчитывается
+    //    на каждом refresh.
     const init = () => {
       const mm = gsap.matchMedia();
       mm.add(
@@ -109,8 +115,7 @@ if (!section) {
       }
     };
 
-    if (document.readyState === 'complete') init();
-    else window.addEventListener('load', init, { once: true });
+    init();
   }
 }
 

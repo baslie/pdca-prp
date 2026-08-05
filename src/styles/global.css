@@ -489,6 +489,19 @@
     line-height: 1.55;
   }
 
+  /* Кнопка «Попробовать снова» в оверлее-фолбэке BoomStream-плеера
+     (BoomStreamPlayer.astro + src/scripts/boomstream-watchdog.ts).
+     Палитра — как у .btn-primary, габариты служебные, как у .btn-modal-back:
+     это ремонтная кнопка, не CTA. Кегль — формула t-body-sm инлайном. */
+  .btn-video-retry {
+    @apply inline-flex items-center justify-center h-10 px-5
+           bg-wire-accent text-wire-bg font-semibold
+           transition-colors duration-200;
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.55;
+  }
+  .btn-video-retry:hover { @apply bg-wire-accent2 text-white; }
+
   /* ============================================================
      COMPOSITION-классы — повторяющиеся Tailwind-цепочки.
      ============================================================ */

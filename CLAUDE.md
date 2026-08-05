@@ -213,6 +213,16 @@ Astro поднимает встроенный dev-сервер с HMR на `http
 - **Actions в плеер**: `play`, `pause`, `seek`, `mute`, `unmute`, `volume`, `useLastTime`, `previous`, `next`, `fullScreen`, `toggleFullScreenButtonState`. Отправляются через `frame.contentWindow.postMessage({ code: '<CODE>', method: 'action', action: '<ACTION>', data: '' }, 'https://play.boomstream.com')`.
 - **iframe должен содержать** `allow="autoplay; fullscreen"` — в текущей разметке прописано вручную (см. блок «Текущий embed» выше).
 
+### Watchdog: fallback при недоступности видеохостинга
+
+У посетителей с VPN запрос к `play.boomstream.com` может «висеть» — iframe остаётся пустым, а поймать провал штатно нельзя (`load` у cross-origin iframe срабатывает даже на странице ошибки, `error` не срабатывает вовсе). Решение — `src/scripts/boomstream-watchdog.ts` (подключён в `BoomStreamPlayer.astro`):
+
+- Сигнал успеха — **любой** postMessage плеера с нашим `code` (не только `loaded`).
+- Когда обёртка `[data-bs-player]` приближается к вьюпорту (IntersectionObserver, rootMargin 200px), взводится таймер 12 с. Не пришло ни одного сообщения — поверх панели показывается оверлей `[data-bs-overlay]` («Видео не загрузилось… отключите VPN») с кнопкой `[data-bs-retry]` («Попробовать снова» = переустановка `src` + новый таймер). Позднее сообщение плеера снимает оверлей автоматически.
+- Кнопка — класс `.btn-video-retry` в `global.css` (палитра `.btn-primary`, габариты `.btn-modal-back`).
+
+По той же причине `src/scripts/prp-diagram-scroll.ts` **не ждёт `window.load`** — init вызывается сразу (зависший iframe откладывал бы load бесконечно, и блок `#prp-steps` навсегда оставался бы в pre-state opacity 0.15). Пересчёт позиций после догрузки шрифтов обеспечивают `document.fonts.ready` + autoRefreshEvents самого ScrollTrigger. **Не возвращать ожидание load.**
+
 ### Muted-autoplay — как включить
 
 Документация прямо говорит: *«muted required when auto-starting on load»* — автоплей со звуком блокируют сами браузеры (Autoplay Policy), это не ограничение BoomStream. Корректный паттерн — стартовать без звука, пользователь сам включает.

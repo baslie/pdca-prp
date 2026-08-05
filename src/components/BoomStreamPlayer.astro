@@ -14,7 +14,10 @@ const {
 const src = `https://play.boomstream.com/${code}?color=false&title=0`;
 ---
 
-<div class="relative w-full aspect-video bg-wire-panel overflow-hidden rounded-sm shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]">
+<div
+  class="relative w-full aspect-video bg-wire-panel overflow-hidden rounded-sm shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]"
+  data-bs-player
+>
   <iframe
     class="absolute inset-0 w-full h-full"
     src={src}
@@ -26,7 +29,26 @@ const src = `https://play.boomstream.com/${code}?color=false&title=0`;
     data-bs-code={code}
     data-bs-autoplay={autoplay ? '1' : '0'}
   ></iframe>
+
+  <!-- Оверлей-фолбэк: показывает src/scripts/boomstream-watchdog.ts, если за
+       12 секунд после приближения к вьюпорту плеер не прислал ни одного
+       postMessage (типичный случай — у посетителя VPN и запрос «висит»).
+       Скрыт классом hidden; watchdog переключает hidden <-> flex и aria-hidden. -->
+  <div
+    class="absolute inset-0 z-10 hidden flex-col items-center justify-center gap-5 bg-wire-panel px-6 text-center"
+    data-bs-overlay
+    role="status"
+    aria-live="polite"
+    aria-hidden="true"
+  >
+    <p class="t-body-sm t-on-default max-w-prose-narrow">Видео не загрузилось. Если у вас включён VPN&nbsp;— попробуйте его отключить.</p>
+    <button type="button" class="btn-video-retry" data-bs-retry>Попробовать снова</button>
+  </div>
 </div>
+
+<script>
+  import '../scripts/boomstream-watchdog';
+</script>
 
 {autoplay && (
   <script is:inline define:vars={{ code }}>
