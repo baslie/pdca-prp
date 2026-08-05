@@ -1,6 +1,6 @@
 ---
 import BoomStreamPlayer from './BoomStreamPlayer.astro';
-import mountainsNight from '../assets/images/mountains-night.jpg';
+import mountainsValley from '../assets/images/mountains-valley.jpg';
 ---
 
 <!-- ========== БЛОК «ВИДЕО-ПРИГЛАШЕНИЕ» ========== -->
@@ -10,10 +10,10 @@ import mountainsNight from '../assets/images/mountains-night.jpg';
 <section
   id="video"
   class="relative z-10 overflow-hidden bg-cover bg-center bg-fixed section-py"
-  style={`background-image: url('${mountainsNight.src}');`}
+  style={`background-image: url('${mountainsValley.src}');`}
 >
-  <!-- Оверлей в модификации --soft: снимок ночной, сам по себе тёмный, и полная
-       альфа .steel-overlay (0.84) съела бы горы в чёрное. -->
+  <!-- Оверлей в модификации --soft: полная альфа .steel-overlay (0.84)
+       съела бы фактуру ч/б-панорамы в чёрное. -->
   <div class="absolute inset-0 steel-overlay steel-overlay--soft" aria-hidden="true"></div>
   <div class="absolute inset-0 bg-gradient-to-b from-wire-accent2/45 via-transparent to-wire-accent2/35" aria-hidden="true"></div>
 
