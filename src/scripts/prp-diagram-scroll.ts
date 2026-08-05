@@ -2,14 +2,24 @@
 // Окраска октагонов привязана к СКРОЛЛУ (scrub), а не к таймеру: прогресс
 // прокрутки = прогресс окраски, движение обратимо при скролле вверх.
 //
-// ≥1280px («крест»): один общий scrub-timeline на всю диаграмму —
-//   октагон 1 → стрелка → … → октагон 5 → замыкающая стрелка → кайдзен-орнамент
-//   (draw + fill). Без pin: stage выше viewport, пиннить нечего.
-//   Путь скролла считается от высоты stage (см. desktopScrollDistance).
-// 768–1279px и <768px (вертикальная колонка): у каждого октагона собственный
-//   scrub-триггер — карточка прокрашивается, пока проходит через экран.
-//   Планшет и мобилка отличаются только точками start/end: доля экрана,
-//   которую занимает карточка, там разная.
+// ДИАПАЗОН — один и тот же на всех ширинах и равен проходу самого блока:
+//   старт  — верхний край секции коснулся верхней кромки окна ('top top');
+//   финиш  — нижний край секции дошёл до нижней кромки окна ('bottom bottom').
+// То есть анимация идёт ровно столько, сколько пользователь прокручивает блок,
+// и раньше времени не «догорает». Путь = высота секции − высота окна, считается
+// функцией (blockScrollDistance) и пересматривается на каждом refresh.
+// Разводить константы по брейкпоинтам не нужно: формула самомасштабируется —
+// на мобилке секция ~2900px и путь ~2200px, на планшете ~1900px, на десктопе
+// ~500px, потому что там композиция плотнее.
+//
+// Содержимое timeline зависит от раскладки:
+//   ≥1280px («крест»)  — октагон 1 → стрелка → … → октагон 5 → замыкающая
+//                        стрелка → кайдзен-орнамент (draw + fill). Без pin:
+//                        stage выше окна, пиннить нечего.
+//   <1280px (колонка)  — только 5 октагонов равными долями: соединительные
+//                        линии и стрелки вниз это псевдоэлементы самого <li>,
+//                        они прокрашиваются вместе с карточкой, а орнамент и
+//                        десктопные стрелки в этой раскладке display:none.
 // prefers-reduced-motion: reduce — без анимации (финальное состояние из CSS).
 //
 // Pre-state (opacity 0.15) задаётся синхронно из CSS-каскада через класс
@@ -21,10 +31,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 // Все «магические» числа анимации собраны в один объект.
 const A = {
   PRE_OPACITY: 0.15,
-  OCT_START_SCALE: 0.85,
 
-  // --- Десктоп: доли безразмерного timeline, который растягивается на весь
-  //     scrub-диапазон. Важны их ПРОПОРЦИИ, не абсолютные значения.
+  // --- Диапазон скролла (общий для всех раскладок).
+  BLOCK_START: 'top top',
+  // Пол на случай, если секция окажется ниже окна (очень высокий viewport):
+  // без него 'bottom bottom' наступил бы раньше 'top top' и вся окраска
+  // схлопнулась бы в один кадр.
+  BLOCK_MIN_VH: 0.5,
+  SCRUB: 0.6,
+
+  // --- Доли безразмерного timeline, который растягивается на весь диапазон.
+  //     Важны их ПРОПОРЦИИ, не абсолютные значения.
+  OCT_START_SCALE: 0.85,
   OCT_DURATION: 0.4,
   ARROW_DURATION: 0.3,
   ORN_DRAW_DURATION: 0.7,
@@ -36,27 +54,9 @@ const A = {
   ORN_FILL_OVERLAP: '-=0.3',
   ORN_STROKE_OVERLAP: '-=0.15',
 
-  DESKTOP_START: 'top 80%',
-  DESKTOP_SCRUB: 0.6,
-  // Путь скролла десктопной анимации = высота stage − 15% viewport
-  // (к финалу низ «креста» почти у нижней кромки экрана), но не короче
-  // 0.6 экрана и не длиннее 1.2 экрана — иначе на очень высоких/низких
-  // viewport'ах анимация выходит либо рваной, либо бесконечной.
-  DESKTOP_END_VH_OFFSET: 0.15,
-  DESKTOP_END_MIN_VH: 0.6,
-  DESKTOP_END_MAX_VH: 1.2,
-
-  // --- Колонка (планшет/мобилка): собственный триггер на каждый октагон.
+  // --- Колонка: карточка крупная, сильный scale читается как рывок.
   COLUMN_START_SCALE: 0.94,
-  COLUMN_SCRUB: 0.4,
-  // Планшет: карточка (до 380px) занимает ~⅓ высоты экрана — докрашиваем,
-  // когда она встаёт примерно по центру.
-  TABLET_START: 'top 85%',
-  TABLET_END: 'bottom 62%',
-  // Мобилка: карточка занимает ~45% экрана — старт ниже, финал чуть раньше,
-  // иначе низ карточки уезжает за кромку недокрашенным.
-  MOBILE_START: 'top 90%',
-  MOBILE_END: 'bottom 70%',
+  COLUMN_OCT_DURATION: 1,
 };
 
 const html = document.documentElement;
@@ -83,18 +83,17 @@ if (!section) {
       mm.add(
         {
           desktopScrub: '(min-width: 1280px) and (prefers-reduced-motion: no-preference)',
-          tabletScrub:
-            '(min-width: 768px) and (max-width: 1279px) and (prefers-reduced-motion: no-preference)',
-          mobileScrub: '(max-width: 767px) and (prefers-reduced-motion: no-preference)',
+          columnScrub: '(max-width: 1279px) and (prefers-reduced-motion: no-preference)',
           reduceMotion: '(prefers-reduced-motion: reduce)',
         },
         (ctx) => {
-          const { desktopScrub, tabletScrub, mobileScrub, reduceMotion } = ctx.conditions ?? {};
+          const { desktopScrub, columnScrub, reduceMotion } = ctx.conditions ?? {};
           // При reduce-motion CSS @media reduce уже даёт финальное состояние.
           if (reduceMotion) return;
-          if (desktopScrub) return setupDesktopScrub(stage, octagons, desktopPaths, ornamentPaths);
-          if (tabletScrub) return setupColumnScrub(octagons, A.TABLET_START, A.TABLET_END);
-          if (mobileScrub) return setupColumnScrub(octagons, A.MOBILE_START, A.MOBILE_END);
+          if (desktopScrub) {
+            return setupDesktopScrub(section, octagons, desktopPaths, ornamentPaths);
+          }
+          if (columnScrub) return setupColumnScrub(section, octagons);
         },
       );
 
@@ -108,26 +107,39 @@ if (!section) {
   }
 }
 
+// Общий scroll-диапазон: от «верх секции у верха окна» до «низ секции у низа окна».
+// Возвращает готовый timeline, к которому вызывающий доклеивает свои tween'ы.
+function createBlockTimeline(section: HTMLElement): gsap.core.Timeline {
+  return gsap.timeline({
+    defaults: { ease: 'none' },
+    scrollTrigger: {
+      trigger: section,
+      start: A.BLOCK_START,
+      // Функция, а не строка: пересчитывается на каждом ScrollTrigger.refresh()
+      // (resize, дозагрузка шрифтов, смена ориентации).
+      end: () => `+=${blockScrollDistance(section)}`,
+      scrub: A.SCRUB,
+      invalidateOnRefresh: true,
+    },
+  });
+}
+
+// Длина диапазона в пикселях скролла = эквивалент end: 'bottom bottom',
+// но с полом в половину экрана.
+function blockScrollDistance(section: HTMLElement): number {
+  const vh = window.innerHeight || 800;
+  return Math.round(Math.max(section.offsetHeight - vh, vh * A.BLOCK_MIN_VH));
+}
+
 function setupDesktopScrub(
-  stage: HTMLElement,
+  section: HTMLElement,
   octagons: NodeListOf<HTMLElement>,
   paths: NodeListOf<SVGPathElement>,
   ornamentPaths: NodeListOf<SVGPathElement>,
 ): void {
   try {
     setPreState(octagons, paths, ornamentPaths);
-    const tl = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: stage,
-        start: A.DESKTOP_START,
-        // Функция, а не строка: пересчитывается на каждом ScrollTrigger.refresh()
-        // (resize, дозагрузка шрифтов, смена ориентации).
-        end: () => `+=${desktopScrollDistance(stage)}`,
-        scrub: A.DESKTOP_SCRUB,
-        invalidateOnRefresh: true,
-      },
-    });
+    const tl = createBlockTimeline(section);
     buildArrowsTimeline(tl, octagons, paths);
     buildOrnamentTimeline(tl, ornamentPaths);
   } catch (e) {
@@ -138,14 +150,27 @@ function setupDesktopScrub(
   }
 }
 
-// Длина scrub-диапазона десктопной анимации в пикселях скролла.
-// Старт — верх stage на 80% экрана; финал — низ stage почти у нижней кромки.
-function desktopScrollDistance(stage: HTMLElement): number {
-  const vh = window.innerHeight || 800;
-  const raw = stage.offsetHeight - vh * A.DESKTOP_END_VH_OFFSET;
-  const min = vh * A.DESKTOP_END_MIN_VH;
-  const max = vh * A.DESKTOP_END_MAX_VH;
-  return Math.round(Math.min(Math.max(raw, min), max));
+// Вертикальная колонка (<1280px): те же 5 октагонов, но равными долями
+// диапазона. Позиции карточек в колонке распределены равномерно, поэтому
+// равномерный timeline попадает почти в такт: карточка начинает краснеть,
+// когда выходит из-за нижней кромки, и дозаливается вскоре после того,
+// как оказалась в кадре целиком.
+function setupColumnScrub(section: HTMLElement, octagons: NodeListOf<HTMLElement>): void {
+  try {
+    gsap.set(octagons, {
+      opacity: A.PRE_OPACITY,
+      scale: A.COLUMN_START_SCALE,
+      transformOrigin: 'center center',
+    });
+    const tl = createBlockTimeline(section);
+    octagons.forEach((oct) => {
+      tl.to(oct, { opacity: 1, scale: 1, duration: A.COLUMN_OCT_DURATION });
+    });
+  } catch (e) {
+    dropPreState();
+    gsap.set(octagons, { opacity: 1, scale: 1, clearProps: 'transform' });
+    console.warn('[prp-diagram-scroll] column scrub init failed:', e);
+  }
 }
 
 function setPreState(
@@ -241,40 +266,5 @@ function forceVisibleState(
       fillOpacity: 1,
       strokeOpacity: 0,
     });
-  }
-}
-
-// Вертикальная колонка (<1280px): каждый октагон — свой scrub-триггер.
-// Соединительная линия и стрелка вниз — псевдоэлементы самого <li>,
-// поэтому прокрашиваются вместе с карточкой, отдельная анимация не нужна.
-function setupColumnScrub(
-  octagons: NodeListOf<HTMLElement>,
-  start: string,
-  end: string,
-): void {
-  try {
-    octagons.forEach((oct) => {
-      gsap.fromTo(
-        oct,
-        { opacity: A.PRE_OPACITY, scale: A.COLUMN_START_SCALE },
-        {
-          opacity: 1,
-          scale: 1,
-          ease: 'none',
-          transformOrigin: 'center center',
-          scrollTrigger: {
-            trigger: oct,
-            start,
-            end,
-            scrub: A.COLUMN_SCRUB,
-            invalidateOnRefresh: true,
-          },
-        },
-      );
-    });
-  } catch (e) {
-    dropPreState();
-    gsap.set(octagons, { opacity: 1, scale: 1, clearProps: 'transform' });
-    console.warn('[prp-diagram-scroll] column scrub init failed:', e);
   }
 }
