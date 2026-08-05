@@ -591,6 +591,98 @@
   }
 
   /* ============================================================
+     ЗНАЧОК «?» С ПОДСКАЗКОЙ К ТЕРМИНУ (src/components/TermTip.astro).
+     Показ без JS: :hover только для мыши (на тач-устройствах он залипает
+     после тапа — та же оговорка, что у .certificate-doc__hint) и :focus
+     на кнопке, который и отрабатывает тап.
+     ============================================================ */
+  .termtip {
+    position: relative;
+    display: inline-block;
+    line-height: 0;          /* значок не должен раздвигать строки абзаца */
+    vertical-align: 0.32em;  /* надстрочная посадка относительно базовой линии */
+    margin-left: 0.2em;
+  }
+  .termtip__btn {
+    @apply inline-flex items-center justify-center rounded-full border;
+    width: 1.0625rem;
+    height: 1.0625rem;
+    font-size: 0.6875rem;    /* кегль .t-eyebrow — самый мелкий в проекте */
+    font-weight: 600;
+    line-height: 1;
+    border-color: var(--color-wire-border);
+    color: rgb(43 43 43 / 0.70);   /* инлайн t-on-muted: @apply на классы того же слоя ненадёжен */
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .termtip__btn:focus-visible {
+    outline: 2px solid var(--color-wire-accent2);
+    outline-offset: 2px;
+  }
+  .termtip__bubble {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.5rem);
+    z-index: 30;
+    width: max-content;
+    max-width: min(17rem, 68vw);
+    padding: 0.5rem 0.75rem;
+    background: var(--color-wire-dark);
+    color: #fff;
+    font-size: 0.875rem;     /* кегль .t-meta */
+    line-height: 1.45;
+    font-weight: 400;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* --termtip-shift ставит скрипт компонента: у значка в конце строки
+       центрированный пузырь вылезает за край вьюпорта, сдвиг возвращает его
+       внутрь. По умолчанию 0 — если JS не отработал, поведение прежнее. */
+    transform: translate(calc(-50% + var(--termtip-shift, 0px)), 4px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  }
+  /* Хвостик пузыря — треугольник под значком. Сдвиг пузыря компенсируется
+     обратным сдвигом хвостика, иначе он уедет вместе с ним. */
+  .termtip__bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: calc(50% - var(--termtip-shift, 0px));
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 5px 0 5px;
+    border-color: var(--color-wire-dark) transparent transparent transparent;
+    transform: translateX(-50%);
+  }
+  @media (hover: hover) {
+    .termtip:hover .termtip__btn {
+      background-color: var(--color-wire-accent2);
+      border-color: var(--color-wire-accent2);
+      color: #fff;
+    }
+    .termtip:hover .termtip__bubble {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(calc(-50% + var(--termtip-shift, 0px)), 0);
+    }
+  }
+  .termtip__btn:focus {
+    background-color: var(--color-wire-accent2);
+    border-color: var(--color-wire-accent2);
+    color: #fff;
+  }
+  .termtip__btn:focus + .termtip__bubble {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(calc(-50% + var(--termtip-shift, 0px)), 0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .termtip__btn,
+    .termtip__bubble { transition: none; }
+  }
+
+  /* ============================================================
      БЛОК «СЕРТИФИКАТ» (#certificate).
      ============================================================ */
 

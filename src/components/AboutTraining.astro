@@ -1,5 +1,6 @@
 ---
 import iconPdf from '../assets/svg/icon-pdf.svg';
+import TermTip from './TermTip.astro';
 ---
 
 <!-- ========== БЛОК «О ЧЁМ ЭТОТ ТРЕНИНГ» ========== -->
@@ -28,8 +29,10 @@ import iconPdf from '../assets/svg/icon-pdf.svg';
         <div class="space-y-[clamp(1.25rem,1.9vw,2rem)] t-on-default">
 
           <p class="t-body">
-            Всё больше компаний во&nbsp;всём мире принимают концепцию <strong class="font-semibold t-on-strong">кайдзен</strong>
-            (бережливое производство) в&nbsp;качестве доминирующей концепции развития своего бизнеса, основы
+            Всё больше компаний во&nbsp;всём мире принимают концепцию <strong class="font-semibold t-on-strong">кайдзен</strong><TermTip
+              term="кайдзен"
+              text="яп. 改善 — «перемены к лучшему»"
+            />{' '}в&nbsp;качестве доминирующей концепции развития своего бизнеса, основы
             эффективного менеджмента.
           </p>
 
@@ -51,7 +54,7 @@ import iconPdf from '../assets/svg/icon-pdf.svg';
           </figure>
 
           <p class="t-body">
-            Умение <strong class="font-semibold t-on-strong">профессионально решать проблемы</strong>
+            Умение <strong class="font-semibold t-on-strong">профессионально решать проблемы</strong>{' '}
             (вновь возникающие или&nbsp;давно существующие) является важнейшим навыком сотрудников компании,
             необходимым для&nbsp;осуществления менеджмента, основанного на&nbsp;принципах кайдзен.
           </p>
