@@ -633,20 +633,22 @@
      стоять на одной вертикали с лидом и заголовком. */
   .credential-card {
     @apply flex flex-col;
-    padding: 1.5rem 0;
+    padding: 1.5rem;
     border-bottom: 1px solid var(--color-wire-border);
   }
   @media (min-width: 40rem) {
+    /* У центральной вертикали отступ шире контурного: 1.5rem с двух сторон
+       линии зрительно слипаются в один узкий жёлоб. */
     .credential-card:nth-child(odd)  { padding-right: 2rem; }
     .credential-card:nth-child(even) {
       padding-left: 2rem;
       border-left: 1px solid var(--color-wire-border);
     }
     /* Печать института — финальная строка во всю ширину таблицы. Идёт после
-       nth-child, чтобы снять правый отступ нечётной позиции. */
+       nth-child, чтобы вернуть контурный отступ вместо приле́гающего к вертикали. */
     .credential-card--seal {
       grid-column: 1 / -1;
-      padding-right: 0;
+      padding-right: 1.5rem;
     }
   }
   /* Плакатный размер вне 8-ролевой шкалы — как .stat-card__number.
