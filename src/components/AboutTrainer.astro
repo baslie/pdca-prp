@@ -54,7 +54,7 @@ const clients: string[] = [
 ---
 
 <!-- ========== БЛОК «О ТРЕНЕРЕ» ========== -->
-<section id="about-trainer" class="relative z-10 bg-wire-bg">
+<section id="about-trainer" class="relative z-10 bg-wire-accent2">
   <div class="grid grid-cols-1 lg:grid-cols-12">
 
     <!-- Портрет — edge-to-edge, на lg+ тянется на всю высоту контентной колонки. -->
@@ -67,37 +67,37 @@ const clients: string[] = [
     <!-- Контент лентой -->
     <div class="lg:col-span-7 section-px py-[clamp(3rem,6vw,8rem)]">
 
-      <p class="t-eyebrow t-on-muted mb-6">О тренере</p>
-      <h2 class="t-h-section t-on-strong">
+      <p class="t-eyebrow t-on-dark-muted mb-6">О тренере</p>
+      <h2 class="t-h-section t-on-dark">
         Денис <span class="text-wire-accent">Булгин</span>
       </h2>
 
-      <p class="t-lead t-on-default mt-8 max-w-prose">
+      <p class="t-lead t-on-dark mt-8 max-w-prose">
         Бизнес-тренер. Специалист по&nbsp;бережливому производству
         и&nbsp;персональной эффективности.
       </p>
-      <p class="t-body-sm t-on-muted mt-4 max-w-prose">
+      <p class="t-body-sm t-on-dark-muted mt-4 max-w-prose">
         Директор и&nbsp;собственник группы компаний СОЮЗЛИФТ
         и&nbsp;тренинговой компании PDCA-Consulting.
       </p>
 
-      <p class="t-eyebrow t-on-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Образование</p>
+      <p class="t-eyebrow t-on-dark-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Образование</p>
       <ol class="grid sm:grid-cols-2 gap-x-8">
         {education.map((e) => (
-          <li class="py-3 border-b border-neutral-200">
-            <p class="t-meta t-on-muted tabular-nums">{e.years}</p>
-            <p class="t-body-sm font-semibold t-on-strong mt-0.5">{e.school}</p>
-            <p class="t-meta t-on-muted">{e.program}</p>
+          <li class="py-3 border-b border-white/15">
+            <p class="t-meta t-on-dark-muted tabular-nums">{e.years}</p>
+            <p class="t-body-sm font-semibold t-on-dark mt-0.5">{e.school}</p>
+            <p class="t-meta t-on-dark-muted">{e.program}</p>
           </li>
         ))}
       </ol>
 
-      <p class="t-eyebrow t-on-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Специализация · семинары и&nbsp;тренинги</p>
+      <p class="t-eyebrow t-on-dark-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Специализация · семинары и&nbsp;тренинги</p>
       <ul class="grid sm:grid-cols-2 gap-x-8">
         {trainings.map((t) => (
           <li class="flex gap-3 py-1.5">
             <span class="mt-[0.55em] w-1.5 h-1.5 shrink-0 bg-wire-accent" aria-hidden="true"></span>
-            <span class="t-body-sm t-on-default">{t}</span>
+            <span class="t-body-sm t-on-dark">{t}</span>
           </li>
         ))}
       </ul>
@@ -105,15 +105,16 @@ const clients: string[] = [
     </div>
   </div>
 
-  <!-- Полоса клиентов на всю ширину -->
-  <div class="bg-wire-panel">
+  <!-- Полоса клиентов на всю ширину: чуть темнее основного синего — инверсия
+       прежней пары «белая секция + серая панель». -->
+  <div class="bg-black/15">
     <div class="section-px py-[clamp(2.5rem,5vw,4.5rem)]">
-      <p class="t-eyebrow t-on-muted mb-5">Опыт обучения сотрудников организаций</p>
+      <p class="t-eyebrow t-on-dark-muted mb-5">Опыт обучения сотрудников организаций</p>
       <ul class="flex flex-wrap items-center gap-2">
         {clients.map((c) => (
           <li class="trainer-pill">{c}</li>
         ))}
-        <li class="t-meta t-on-muted">и&nbsp;др.</li>
+        <li class="t-meta t-on-dark-muted">и&nbsp;др.</li>
       </ul>
     </div>
   </div>
