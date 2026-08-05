@@ -36,11 +36,17 @@ export default defineConfig({
       },
       SVG: true,
       Action: {
+        // Заменять файл только если сжатая версия реально меньше исходной.
+        // Buffer здесь — union: string | ArrayBufferView | Iterable |
+        // AsyncIterable | Stream. Размер известен только у первых двух;
+        // для потоковых вариантов считаем, что выигрыша нет.
         Passed: async ({ Before, Buffer: buf }) => {
           const after =
             typeof buf === 'string'
               ? Buffer.byteLength(buf, 'utf-8')
-              : buf.byteLength;
+              : ArrayBuffer.isView(buf)
+                ? buf.byteLength
+                : Number.POSITIVE_INFINITY;
           return Before > after;
         },
       },

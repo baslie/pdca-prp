@@ -4,7 +4,7 @@
 
 ## Стек
 
-- **Astro 6** — статический сайт (`output: "static"`), компонентная декомпозиция,
+- **Astro 7** — статический сайт (`output: "static"`), компонентная декомпозиция,
   один Layout + одна страница + ~10 компонентов в `src/components/`.
 - **Tailwind CSS v4** — через официальный Vite-плагин `@tailwindcss/vite`,
   единый стилевой файл `src/styles/global.css` (`@import "tailwindcss"`,

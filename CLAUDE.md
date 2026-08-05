@@ -93,7 +93,7 @@
 
 | Слой | Технология | Где править |
 |---|---|---|
-| Фреймворк | Astro 6 (static output) | `astro.config.mjs` |
+| Фреймворк | Astro 7 (static output, Rust-компилятор, Vite 8) | `astro.config.mjs` |
 | Стили | Tailwind v4 через `@tailwindcss/vite` Vite-плагин | `src/styles/global.css` |
 | Дизайн-токены | CSS-переменные namespace (`--color-*`, `--font-*`, `--text-*`, `--tracking-*`, `--container-*`) | блок `@theme { ... }` в `src/styles/global.css` |
 | Логика | TypeScript (strict) | `src/scripts/*.ts`, подключаются `<script>` в компонентах |
@@ -119,12 +119,37 @@ npm run check       # astro check (TypeScript + Astro диагностика)
 `tracking-display/heading/label`, `max-w-prose/prose-narrow` живут в
 `src/styles/global.css` внутри блока `@theme { ... }`. Источник правды один.
 
+### `overrides` в package.json — не удалять
+
+```jsonc
+"overrides": {
+  "sharp": "^0.35.3",           // @playform/compress пинит уязвимый 0.34.5
+  "svgo": "^4.0.2",             // он же пинит уязвимый 4.0.1
+  "@iconify/tools": { "svgo": "^3.3.4" }  // тут нужна ветка 3.x, svgo 4 её сломает
+}
+```
+
+`@playform/compress` объявляет `sharp` и `svgo` **точными** версиями, поэтому
+`npm audit fix` их не поднимает, а `npm audit fix --force` вместо этого
+откатывает сам compress до 0.2.0. Единственный рабочий вариант — overrides.
+Вложенный override для `@iconify/tools` обязателен: у него svgo ветки 3.x с
+несовместимым API, глобальный `^4.0.2` сломал бы сборку иконок.
+
+При апгрейде `@playform/compress` проверить, не подтянул ли он безопасные версии
+сам (`npm view @playform/compress dependencies`) — тогда overrides можно убрать.
+
 ### Антипаттерны
 
 - `theme('colors.wire.X')` в CSS — **v3-синтаксис, удалён в v4**. Используй `var(--color-wire-X)`.
 - Возврат CDN `cdn.tailwindcss.com` — нельзя, прод-warning в DevTools.
 - Правка `dist/_astro/*.css` напрямую — бесполезно, перезатрётся следующим `astro build`. Меняй `src/styles/global.css`.
 - Хардкод путей `/pdca-prp/...` в `<img src=...>` — используй ES-импорт ассета (`import x from '../assets/...'`) или `import.meta.env.BASE_URL`. base может смениться.
+- Незакрытые теги в `.astro`. Astro 7 собирает Rust-компилятором: он требует
+  закрывающий тег у **каждого** невоидного элемента и больше не «чинит»
+  невалидный HTML молча — падает на этапе сборки.
+- Расчёт на HTML-правила пробелов между тегами. В Astro 7 `compressHTML`
+  по умолчанию `'jsx'`: пробелы с переносом строки между элементами
+  вырезаются. Нужен именно пробел в вёрстке — ставь `&nbsp;` или `{' '}`.
 
 ## Локальный dev-сервер
 
