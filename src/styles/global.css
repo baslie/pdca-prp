@@ -635,6 +635,13 @@
     @apply flex flex-col;
     padding: 1.5rem;
     border-bottom: 1px solid var(--color-wire-border);
+    transition: background-color 0.2s ease;
+  }
+  /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
+     и подсвеченная ячейка остаётся висеть (та же оговорка, что у
+     .certificate-doc__hint). Заливка — фирменный wire-panel. */
+  @media (hover: hover) {
+    .credential-card:hover { background-color: var(--color-wire-panel); }
   }
   @media (min-width: 40rem) {
     /* У центральной вертикали отступ шире контурного: 1.5rem с двух сторон
