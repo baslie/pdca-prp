@@ -364,6 +364,77 @@
            transition-colors;
   }
 
+  /* Модалка полного отзыва (#reviews) — та же схема, что у #modal-examples:
+     fullscreen-overlay со скроллом всей карточки. Карточка — текстовая
+     figure-цитата на белом с крестиком в углу. */
+  dialog#modal-review {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    background: transparent;
+    border: none;
+    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition:
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-review[open] {
+    transition:
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  dialog#modal-review::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition:
+      opacity var(--modal-dur-out) var(--modal-ease),
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-review[open]::backdrop {
+    opacity: 1;
+    transition:
+      opacity var(--modal-dur-in) var(--modal-ease),
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  @starting-style {
+    dialog#modal-review[open]::backdrop { opacity: 0; }
+  }
+  /* position: relative — якорь для абсолютного крестика внутри карточки. */
+  .modal-review-card {
+    position: relative;
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    max-width: min(720px, 92vw);
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(1.75rem, 3vw, 3rem);
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity   var(--modal-dur-out) var(--modal-ease),
+      transform var(--modal-dur-out) var(--modal-ease);
+  }
+  dialog#modal-review[open] .modal-review-card {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity   var(--modal-dur-in) var(--modal-ease),
+      transform var(--modal-dur-in) var(--modal-ease);
+  }
+  @starting-style {
+    dialog#modal-review[open] .modal-review-card {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+  }
+
   /* Уважаем системную настройку: все модалки открываются/закрываются мгновенно.
      Перечисляем и [open]-варианты: @media не добавляет специфичности, а без них
      transition из правил входа перебил бы этот сброс. */
@@ -383,7 +454,13 @@
     dialog#modal-certificate::backdrop,
     dialog#modal-certificate[open]::backdrop,
     .modal-certificate-card,
-    dialog#modal-certificate[open] .modal-certificate-card {
+    dialog#modal-certificate[open] .modal-certificate-card,
+    dialog#modal-review,
+    dialog#modal-review[open],
+    dialog#modal-review::backdrop,
+    dialog#modal-review[open]::backdrop,
+    .modal-review-card,
+    dialog#modal-review[open] .modal-review-card {
       transition: none;
       clip-path: none;
       opacity: 1;
@@ -945,4 +1022,68 @@
       text-wrap: pretty;
     }
   }
+
+  /* ============================================================
+     БЛОК «ОТЗЫВЫ» (#reviews) — бегущие ряды карточек.
+     ============================================================ */
+  /* Карточка отзыва: без обводки, лёгкая серая заливка; ховер — инверсия в
+     фирменный синий. Кегли текста — штатные роли (t-body-sm/t-meta/t-hint)
+     в разметке, здесь только фон и цветовая инверсия (см. TYPOGRAPHY.md §5). */
+  .review-card {
+    background-color: var(--color-wire-panel);
+    transition: background-color 0.2s ease;
+  }
+  /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
+     и синяя карточка оставалась бы «включённой» (та же оговорка, что у
+     .credential-card). Цвета инверсии — t-on-dark / t-on-dark-muted инлайном:
+     @apply на классы того же @layer components в v4 ненадёжен. */
+  @media (hover: hover) {
+    .review-card:hover { background-color: var(--color-wire-accent2); }
+    .review-card:hover .review-card__text,
+    .review-card:hover .review-card__name { color: #fff; }
+    .review-card:hover .review-card__meta { color: rgb(255 255 255 / 0.75); }
+  }
+
+  /* Бегущий ряд: трек = два одинаковых набора карточек (второй — aria-hidden
+     дубликат), translateX(-50%) даёт бесшовный цикл. Зазор — margin-right на
+     карточке, НЕ gap на треке: gap не входит в ширину половины трека, и стык
+     цикла дёргается. Keyframes marquee-l/marquee-r — в конце файла, вне слоёв. */
+  .marquee { overflow: hidden; }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee-l var(--marquee-dur, 120s) linear infinite;
+  }
+  .marquee__track--r { animation-name: marquee-r; }
+  @media (hover: hover) {
+    .marquee:hover .marquee__track { animation-play-state: paused; }
+  }
+  /* Пауза и при клавиатурной фокусировке карточки внутри ряда. */
+  .marquee:focus-within .marquee__track { animation-play-state: paused; }
+  /* Ветка prefers-reduced-motion конвейера — в конце файла, ВНЕ слоёв:
+     display: none для [data-dup] отсюда проигрывал бы утилите `flex`
+     на карточке (layer utilities сильнее layer components). */
+}
+
+/* ============================================================
+   Keyframes бегущих рядов блока «Отзывы» — единственные @keyframes
+   в проекте. Держим вне каскадных слоёв: имена анимаций слоями не
+   скоупятся, а снаружи их проще найти.
+   ============================================================ */
+@keyframes marquee-l {
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-r {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* Уважаем системную настройку: ряды конвейера стоят и листаются вручную,
+   дубликаты бесшовного цикла скрыты. Блок держим вне каскадных слоёв
+   сознательно: display: none обязан перебить утилиту `flex` на карточке,
+   а нерасслоённый CSS сильнее любого @layer (utilities в том числе). */
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; }
+  .marquee__track { animation: none; width: auto; }
+  .marquee__track [data-dup] { display: none; }
 }

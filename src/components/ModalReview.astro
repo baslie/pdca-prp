@@ -1,0 +1,31 @@
+---
+---
+
+<!-- ========== МОДАЛКА ПОЛНОГО ОТЗЫВА ==========
+     Открывается по клику на любую карточку [data-review-card] в #reviews.
+     Контент заполняется JS-ом (src/scripts/reviews.ts): текст берётся из DOM
+     самой карточки (line-clamp прячет его только визуально), имя/должность/
+     город — из data-атрибутов. -->
+<dialog id="modal-review" aria-label="Отзыв целиком" class="modal-scroll">
+  <figure class="modal-review-card">
+    <button type="button" id="modal-review-close" aria-label="Закрыть"
+            class="absolute top-4 right-4 w-9 h-9 flex items-center justify-center bg-wire-panel text-wire-dark hover:bg-wire-dark hover:text-white transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Роль текста ставит reviews.ts: короткий отзыв — .t-quote, длинный — .t-body
+         (90-словный абзац в кегле цитаты превращается в простыню).
+         pr-10 бережёт первые строки от крестика. -->
+    <blockquote id="modal-review-text" class="t-quote t-on-strong pr-10"></blockquote>
+    <figcaption class="mt-[clamp(1.25rem,2vw,1.75rem)] flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <span id="modal-review-name" class="font-semibold t-on-strong"></span>
+      <span id="modal-review-meta" class="t-meta t-on-muted"></span>
+    </figcaption>
+  </figure>
+</dialog>
+
+<script>
+  import '../scripts/reviews';
+</script>
