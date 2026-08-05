@@ -1,0 +1,116 @@
+---
+import denisBulgin3 from '../assets/images/denis-bulgin-3.jpg';
+
+interface EduItem {
+  years: string;
+  school: string;
+  program: string;
+}
+
+// Хронологически по году начала обучения (пары «годы — вуз» сверены с резюме 2026).
+const education: EduItem[] = [
+  { years: '1998–2003', school: 'МГУКИ, специалитет',                           program: 'Режиссура театрализованных представлений' },
+  { years: '2005–2006', school: 'Институт развития тренеров Achieve Global',    program: 'Train the trainer' },
+  { years: '2012–2013', school: 'Институт Тренинга АРБ-ПРО',                    program: 'Программа подготовки тренеров' },
+  { years: '2016–2022', school: 'Институт внутреннего развития Advance AG',     program: 'Мастерство тренера' },
+  { years: '2019–2020', school: 'Открытый Тренерский Университет М. Кукушкина', program: 'Курс методической подготовки тренеров команд' },
+  { years: '2020–2021', school: 'МГСУ, дополнительное проф. образование',       program: 'Проектирование, монтаж и сертификация лифтов' },
+  { years: '2021–2023', school: 'ТГУ, магистратура',                            program: 'Психология безопасности и здоровья' },
+  { years: '2023–2024', school: 'Европейская Академия Раджа Йоги RYTT',         program: 'Преподаватель Раджа Йоги и медитации' },
+];
+
+const trainings: string[] = [
+  '«Кайдзен-менеджмент»',
+  '«Профессиональное решение проблем»',
+  '«Poka-Yoke — бездефектное производство»',
+  '«Культура производственной безопасности»',
+  '«Дистанционный менеджмент»',
+  '«Технология больших продаж»',
+  '«Деловые переговоры»',
+  '«Качественный сервис»',
+  '«Профессиональные навыки наставничества»',
+  '«Персональная эффективность»',
+  '«Харизма лидера»',
+  '«Стресс-менеджмент»',
+  '«Жизнестойкость — отвага быть!»',
+  '«Управление жизненным тонусом и здоровьем»',
+  '«Профилактика профессионального выгорания»',
+  '«Теория и практика медитации»',
+];
+
+const clients: string[] = [
+  'Abbott', 'AbbVie', 'BASF', 'Billa', 'Boots Healthcare', 'Cersanit', 'Dentsply Sirona',
+  'Freedom International Group', 'Hubert Burda Media', 'IPSEN', 'Janssen (Johnson & Johnson)',
+  'Japan Tobacco International', 'JGL (Jadran)', 'Makita', 'Mettler Toledo', 'MSD',
+  'Novo Nordisk', 'Recordati', 'Roche Pharma', 'Rittal', 'Sanofi', 'Schindler',
+  'Sotex «Pharm Firm»', 'Takeda (Nycomed)', 'Tikkurila (PPG)', 'Veeam Software', 'Whirlpool',
+  'Авито', 'Банк ВТБ', 'Вертолёты России', 'ВТБ-страхование', 'Департ. здравоохранения',
+  'ЛокоТех', 'Лукойл', 'МГИМО', 'МГУ', 'Министерство культуры', 'Министерство соц. защиты',
+  'Министерство финансов', 'Министерство экологии', 'Мособлгаз', 'MPA-ИГСУ', 'НАМИ',
+  'Пиканта', 'Промет', 'РАНХиГС', 'РЖД', 'Ростелеком', 'Сапсан-недвижимость', 'Сбербанк',
+  'ТехноНИКОЛЬ', 'Экспедиция', 'Экспобанк', 'Эльдорадо', 'и др.',
+];
+
+const clientsLine = clients.join(' / ');
+---
+
+<!-- ========== БЛОК «О ТРЕНЕРЕ» ========== -->
+<section id="about-trainer" class="relative z-10 bg-wire-bg">
+  <div class="grid grid-cols-1 lg:grid-cols-12">
+
+    <!-- Портрет — edge-to-edge, на lg+ тянется на всю высоту контентной колонки. -->
+    <div class="relative lg:col-span-5">
+      <img src={denisBulgin3.src} alt="Денис Булгин — бизнес-тренер"
+           width={denisBulgin3.width} height={denisBulgin3.height} loading="lazy"
+           class="block w-full aspect-[3/4] max-lg:max-h-[80vh] object-cover object-top lg:absolute lg:inset-0 lg:h-full lg:w-full lg:aspect-auto" />
+    </div>
+
+    <!-- Контент лентой -->
+    <div class="lg:col-span-7 section-px py-[clamp(3rem,6vw,8rem)]">
+
+      <p class="t-eyebrow t-on-muted mb-6">О тренере</p>
+      <h2 class="t-h-section t-on-strong">
+        Денис <span class="text-wire-accent">Булгин</span>
+      </h2>
+
+      <p class="t-lead t-on-default mt-8 max-w-prose">
+        Бизнес-тренер. Специалист по&nbsp;бережливому производству
+        и&nbsp;персональной эффективности.
+      </p>
+      <p class="t-body-sm t-on-muted mt-4 max-w-prose">
+        Директор и&nbsp;собственник группы компаний СОЮЗЛИФТ
+        и&nbsp;тренинговой компании PDCA-Consulting.
+      </p>
+
+      <p class="t-eyebrow t-on-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Образование</p>
+      <ol class="grid sm:grid-cols-2 gap-x-8">
+        {education.map((e) => (
+          <li class="py-3 border-b border-neutral-200">
+            <p class="t-meta t-on-muted tabular-nums">{e.years}</p>
+            <p class="t-body-sm font-semibold t-on-strong mt-0.5">{e.school}</p>
+            <p class="t-meta t-on-muted">{e.program}</p>
+          </li>
+        ))}
+      </ol>
+
+      <p class="t-eyebrow t-on-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Специализация · семинары и&nbsp;тренинги</p>
+      <ul class="grid sm:grid-cols-2 gap-x-8">
+        {trainings.map((t) => (
+          <li class="flex gap-3 py-1.5">
+            <span class="t-body-sm t-on-soft" aria-hidden="true">—</span>
+            <span class="t-body-sm t-on-default">{t}</span>
+          </li>
+        ))}
+      </ul>
+
+    </div>
+  </div>
+
+  <!-- Полоса клиентов на всю ширину -->
+  <div class="bg-wire-panel">
+    <div class="section-px py-[clamp(2.5rem,5vw,4.5rem)]">
+      <p class="t-eyebrow t-on-muted mb-5">Опыт обучения сотрудников организаций</p>
+      <p class="trainer-clients">{clientsLine}</p>
+    </div>
+  </div>
+</section>
