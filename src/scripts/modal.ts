@@ -38,13 +38,17 @@ export function setupModal(
   function open(trigger?: HTMLElement | null) {
     onOpen?.(trigger);
     dlg!.showModal();
+    // Сброс прокрутки — строго ПОСЛЕ showModal(): у скрытого <dialog>
+    // нет скролл-бокса, присвоение scrollTop до открытия игнорируется.
+    dlg!.scrollTop = 0;
     lock();
   }
   function close() {
     dlg!.close();
   }
 
-  triggers.forEach((t) => t && t.addEventListener('click', () => open()));
+  // Триггер передаём в open() — по нему onOpen считает, откуда «расти» модалке.
+  triggers.forEach((t) => t && t.addEventListener('click', () => open(t)));
   closeBtns.forEach((b) => b && b.addEventListener('click', close));
 
   // Клик в пустую зону вокруг карточки → закрытие. Для fullscreen-модалок

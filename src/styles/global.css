@@ -133,9 +133,56 @@
     font-weight: 500;
     font-style: italic;
   }
+  /* Tailwind v4 убрал button { cursor: pointer } из preflight — возвращаем.
+     Покрывает .btn-primary, .category-row, крестики модалок и кнопки «Назад». */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
+
   dialog { padding: 0; border: none; background: transparent; color: inherit; max-width: none; max-height: none; }
   /* Backdrop не блюрим: модаль занимает весь viewport, под ней ничего не видно. */
   body.modal-open { overflow: hidden; }
+
+  /* ============================================================
+     АНИМАЦИЯ МОДАЛОК — общие тайминги для #modal-about и #modal-examples.
+     Схема CSS-only: @starting-style задаёт состояние «на входе»,
+     transition-behavior: allow-discrete на display/overlay даёт выход
+     без JS-таймеров (close() в modal.ts остаётся мгновенным вызовом).
+     Браузеры без @starting-style (Firefox < 129) просто открывают
+     модалку мгновенно — деградация мягкая.
+     ============================================================ */
+  :root {
+    --modal-dur:  350ms;
+    --modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Модалка «О методе» — circular reveal из кнопки-триггера.
+     Координаты и радиус круга ставит JS (src/scripts/modal-about.ts);
+     фолбэк-значения — из центра viewport. */
+  dialog#modal-about {
+    clip-path: circle(0px at var(--reveal-x, 50vw) var(--reveal-y, 50vh));
+    transition:
+      clip-path var(--modal-dur) var(--modal-ease),
+      display   var(--modal-dur) allow-discrete,
+      overlay   var(--modal-dur) allow-discrete;
+  }
+  dialog#modal-about[open] {
+    clip-path: circle(var(--reveal-r, 150vmax) at var(--reveal-x, 50vw) var(--reveal-y, 50vh));
+  }
+  @starting-style {
+    dialog#modal-about[open] {
+      clip-path: circle(0px at var(--reveal-x, 50vw) var(--reveal-y, 50vh));
+    }
+  }
+
+  /* Контент проявляется следом за кругом. opacity самого <dialog> не трогаем —
+     иначе fade задваивается с clip-path и раскрытие выглядит мутным. */
+  .modal-about-content { opacity: 0; transition: opacity 220ms ease 80ms; }
+  dialog#modal-about[open] .modal-about-content { opacity: 1; }
+  @starting-style {
+    dialog#modal-about[open] .modal-about-content { opacity: 0; }
+  }
+  /* На закрытии гасим без задержки, чтобы контент не «догонял» схлопывание круга. */
+  dialog#modal-about:not([open]) .modal-about-content { transition-delay: 0ms; }
 
   /* Стильный скролл внутри модалки */
   .modal-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent; scrollbar-gutter: stable; }
@@ -156,27 +203,56 @@
     padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
     overflow-y: auto;
     overflow-x: hidden;
+    transition:
+      display var(--modal-dur) allow-discrete,
+      overlay var(--modal-dur) allow-discrete;
   }
   dialog#modal-examples::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(3px);
+    opacity: 0;
+    transition:
+      opacity var(--modal-dur) var(--modal-ease),
+      display var(--modal-dur) allow-discrete,
+      overlay var(--modal-dur) allow-discrete;
   }
-  dialog#modal-examples[open]::backdrop { animation: backdropIn 0.18s ease-out; }
+  dialog#modal-examples[open]::backdrop { opacity: 1; }
+  @starting-style {
+    dialog#modal-examples[open]::backdrop { opacity: 0; }
+  }
   .modal-examples-card {
     background: #fff;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
     max-width: min(720px, 92vw);
     width: 100%;
     margin: 0 auto;
-    animation: modalIn 0.18s ease-out;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity   var(--modal-dur) var(--modal-ease),
+      transform var(--modal-dur) var(--modal-ease);
   }
-  @keyframes modalIn {
-    from { opacity: 0; transform: translateY(8px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  dialog#modal-examples[open] .modal-examples-card { opacity: 1; transform: none; }
+  @starting-style {
+    dialog#modal-examples[open] .modal-examples-card {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
   }
-  @keyframes backdropIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+
+  /* Уважаем системную настройку: обе модалки открываются/закрываются мгновенно. */
+  @media (prefers-reduced-motion: reduce) {
+    dialog#modal-about,
+    dialog#modal-about[open],
+    .modal-about-content,
+    dialog#modal-examples,
+    dialog#modal-examples::backdrop,
+    .modal-examples-card {
+      transition: none;
+      clip-path: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
@@ -214,14 +290,21 @@
 
   /* DOM-компонент списка проектов в #modal-examples. */
   .t-modal-list-item {
-    @apply flex items-start gap-3 -mx-3 px-4
+    @apply flex items-start gap-2 -mx-3 px-4
            transition-colors duration-100;
   }
   .t-modal-list-item:hover { @apply bg-wire-surface; }
-  .t-modal-list-item__dot {
-    @apply mt-2 w-1.5 h-1.5 rounded-full bg-wire-dark shrink-0
-           transition-colors duration-100;
+  /* Порядковый номер вместо буллита. w-8 + text-right + tabular-nums держат
+     «1.» и «40.» в одной колонке; line-height совпадает с __text, поэтому
+     номер садится на базовую линию первой строки без ручного mt-*. */
+  .t-modal-list-item__num {
+    @apply shrink-0 w-8 text-right tabular-nums transition-colors duration-100;
+    color: rgb(43 43 43 / 0.45);   /* инлайн t-on-soft: @apply на components-классы внутри того же слоя ненадёжен */
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.55;
   }
+  .t-modal-list-item__num::after { content: '.'; }
+  .t-modal-list-item:hover .t-modal-list-item__num { @apply text-wire-dark; }
   /* Инлайн t-body-sm (определён в @layer base; в v4 @apply на base-классы ненадёжен). */
   .t-modal-list-item__text {
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
@@ -246,6 +329,17 @@
     min-width: clamp(13rem, 18vw, 19rem);
   }
   .btn-secondary:hover { @apply bg-wire-accent2 border-wire-accent2 text-white; }
+
+  /* Служебная кнопка «← Назад» в модалках. Намеренно тише .btn-secondary
+     (тот плакатный: min-width 13rem и кегль до 1.5rem) — это навигация,
+     а не CTA. Габариты и палитра — как у соседнего крестика. */
+  .btn-modal-back {
+    @apply inline-flex items-center gap-2 h-10 px-4
+           bg-wire-panel/90 text-wire-dark
+           hover:bg-wire-dark hover:text-white transition-colors;
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.55;
+  }
 
   /* ============================================================
      COMPOSITION-классы — повторяющиеся Tailwind-цепочки.

@@ -59,15 +59,18 @@ if (dlg && listEl && dataRoot && iconEl && titleEl && countEl) {
     countEl!.textContent = getCountLabel(items.length);
 
     listEl!.innerHTML = '';
-    items.forEach((srcLi) => {
+    items.forEach((srcLi, i) => {
       const li = document.createElement('li');
-      const dot = document.createElement('span');
+      const num = document.createElement('span');
       const text = document.createElement('span');
       li.className = 't-modal-list-item';
-      dot.className = 't-modal-list-item__dot';
+      num.className = 't-modal-list-item__num';
+      // Нумерация по видимому (отсортированному) порядку. Точка после числа
+      // рисуется через ::after в CSS — здесь только само число.
+      num.textContent = String(i + 1);
       text.className = 't-modal-list-item__text';
       text.textContent = (srcLi.textContent ?? '').trim();
-      li.appendChild(dot);
+      li.appendChild(num);
       li.appendChild(text);
       listEl!.appendChild(li);
     });
@@ -95,8 +98,7 @@ if (dlg && listEl && dataRoot && iconEl && titleEl && countEl) {
     e.preventDefault();
     const key = trigger.dataset.category;
     if (!key || !populate(key, trigger)) return;
-    // Скролл у самого <dialog> — сбрасываем, чтобы новая категория всегда открывалась с верха.
-    dlg.scrollTop = 0;
+    // Скролл сбрасывает сам setupModal — после showModal(), иначе не применится.
     modal.open(trigger);
   });
 }
