@@ -31,7 +31,7 @@
   --color-wire-text: #2B2B2B;
   --color-wire-dark: #0C0C0C;
   --color-wire-accent: #e84249;   /* Pantone Red 032 C — акцент в заголовках + кнопки в покое */
-  --color-wire-accent2: #003154;  /* Pantone 648 C — ховер кнопок + дуотон горы в hero (#mountain-duotone) */
+  --color-wire-accent2: #003154;  /* Pantone 648 C — ховер кнопок + дуотон горы в hero (#mountain-duotone) + иероглифы 改善 */
 
   /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
   --font-sans: Inter, system-ui, -apple-system, sans-serif;
