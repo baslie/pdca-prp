@@ -30,8 +30,8 @@
   --color-wire-muted: #8B8B8B;
   --color-wire-text: #2B2B2B;
   --color-wire-dark: #0C0C0C;
-  --color-wire-accent: #e84249;   /* Pantone Red 032 C — акцент в заголовках + кнопки в покое */
-  --color-wire-accent2: #003154;  /* Pantone 648 C — ховер кнопок + дуотон горы в hero (#mountain-duotone) + иероглифы 改善 */
+  --color-wire-accent: #e84249;   /* Pantone Red 032 C — акцент в заголовках + кнопки в покое + верх градиента .kanji--gradient */
+  --color-wire-accent2: #003154;  /* Pantone 648 C — ховер кнопок + дуотон горы в hero (#mountain-duotone) + низ градиента .kanji--gradient */
 
   /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
   --font-sans: Inter, system-ui, -apple-system, sans-serif;
@@ -72,6 +72,27 @@
   }
   img { -webkit-user-drag: none; user-select: none; }
   .kanji { font-family: 'Yuji Mai', serif; line-height: 1; }
+
+  /* Градиентная заливка иероглифов: акцентный красный сверху → фирменный
+     тёмно-синий снизу (в vertical-rl это ровно 改 → 善).
+     Ровно два цвета палитры, без промежуточных стопов и без
+     OKLCH-интерполяции — та уводила середину в маджента-фиолетовый.
+     Стопы 38% / 70% держат каждый иероглиф в своём чистом цвете, а смешение
+     сжато в узкую полосу на стыке. */
+  .kanji--gradient {
+    color: var(--color-wire-accent2);
+    background-image: linear-gradient(
+      162deg,
+      var(--color-wire-accent) 38%,
+      var(--color-wire-accent2) 70%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .kanji--gradient { color: transparent; }
+  }
 
   /* ============================================================
      ТИПОГРАФИЧЕСКАЯ ШКАЛА (см. docs/TYPOGRAPHY.md)

@@ -182,7 +182,10 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 а не текст:
 
 - **Иероглиф 改善** (kanji): `text-[clamp(110px,11vw,200px)]` (desktop) /
-  `text-[56px] sm:text-[72px]` (mobile). Шрифт `Yuji Mai`.
+  `text-[56px] sm:text-[72px]` (mobile). Шрифт `Yuji Mai`. Цвет задаёт не
+  утилита `text-*`, а класс `.kanji--gradient` (`background-clip: text` +
+  двухцветный градиент `wire-accent → wire-accent2`). Утилиту
+  `text-wire-*` на него не вешать — она перебьёт `color: transparent`.
 - **Цифры stat-card** (`22 / 17 / 850 / 13 000`): `font-black tracking-display`,
   размер — `clamp(1.5rem, 29cqi, 4.5rem)` (container query, `container-type:
   inline-size` на `.stat-card`, так что `cqi` считается от контент-бокса карточки).
