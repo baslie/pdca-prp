@@ -1,0 +1,59 @@
+---
+---
+
+<!-- ========== МОДАЛКА ВИДЕООТЗЫВА ==========
+     Один <dialog> на все 12 видео: iframe ЕДИНСТВЕННЫЙ и без src — адрес
+     плеера устанавливает src/scripts/video-reviews.ts при открытии (ничего
+     не грузится заранее), при закрытии src сбрасывается в about:blank
+     (мгновенная остановка звука). Оверлей-фолбэк тот же, что у статического
+     BoomStreamPlayer.astro, но обёртка помечена data-bs-player-modal —
+     автоскан watchdog'а её не трогает, таймером управляет arm()/disarm(). -->
+<dialog id="modal-video-review" aria-label="Видеоотзыв" class="modal-scroll">
+  <button type="button" id="modal-video-close" aria-label="Закрыть" class="modal-video-close">
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <figure class="modal-video-card">
+    <div class="relative w-full aspect-video bg-wire-dark overflow-hidden" data-bs-player-modal>
+      <iframe
+        id="modal-video-iframe"
+        class="absolute inset-0 w-full h-full"
+        frameborder="0"
+        scrolling="no"
+        allow="autoplay; fullscreen"
+        title="Видеоотзыв участника тренинга"
+        data-bs-code=""
+      ></iframe>
+
+      <!-- Оверлей-фолбэк watchdog'а (VPN и пр.) — переключает
+           boomstream-watchdog.ts: hidden <-> flex + aria-hidden. -->
+      <div
+        class="absolute inset-0 z-10 hidden flex-col items-center justify-center gap-5 bg-wire-panel px-6 text-center"
+        data-bs-overlay
+        role="status"
+        aria-live="polite"
+        aria-hidden="true"
+      >
+        <p class="t-body-sm t-on-default max-w-prose-narrow">Видео не загрузилось. Если у вас включён VPN&nbsp;— попробуйте его отключить.</p>
+        <button type="button" class="btn-video-retry" data-bs-retry>Попробовать снова</button>
+      </div>
+    </div>
+
+    <div class="p-[clamp(1.75rem,3vw,3rem)]">
+      <figcaption id="modal-video-caption" class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-[clamp(1rem,2vw,1.5rem)]">
+        <span id="modal-video-name" class="font-semibold t-on-strong"></span>
+        <span id="modal-video-meta" class="t-meta t-on-muted"></span>
+      </figcaption>
+
+      <!-- Абзацы расшифровки клонируются из <template> карточки
+           (уже с классами t-body t-on-default). -->
+      <div id="modal-video-transcript" class="space-y-[1em]"></div>
+    </div>
+  </figure>
+</dialog>
+
+<script>
+  import '../scripts/video-reviews';
+</script>

@@ -1,4 +1,6 @@
 ---
+import VideoReviews from './VideoReviews.astro';
+
 /* 41 настоящий отзыв участников тренинга ПРП. Тексты дословные; правка только
    типографская (тире, «ёлочки»). Порядок курированный: сильные отзывы и панчи
    распределены так, чтобы раздача по трём рядам (шаг 3) дала каждому ряду
@@ -109,19 +111,22 @@ const rowConfig = [
 ---
 
 <!-- ========== БЛОК «ОТЗЫВЫ» ==========
-     Последняя секция страницы: три встречных бегущих ряда карточек («Конвейер»
-     из wireframes/reviews.html). relative z-10 + непрозрачный bg обязательны:
+     Последняя секция страницы: слайдер видеоотзывов (VideoReviews.astro) +
+     три встречных бегущих ряда текстовых карточек («Конвейер» из
+     wireframes/reviews.html). relative z-10 + непрозрачный bg обязательны:
      без них сквозь секцию проступают fixed-слои hero (Денис и гора).
-     Клик по карточке открывает полный текст в <dialog> (ModalReview.astro,
-     логика — src/scripts/reviews.ts, подключён там же). -->
+     Клик по текстовой карточке открывает полный текст в <dialog>
+     (ModalReview.astro, логика — src/scripts/reviews.ts, подключён там же). -->
 <section id="reviews" class="relative z-10 bg-wire-bg section-py">
   <div class="w-full section-px">
     <div class="text-center max-w-3xl mx-auto">
       <p class="t-eyebrow t-on-muted mb-6">Что говорят люди?</p>
       <h2 class="t-h-section t-on-brand">Отзывы <span class="text-wire-accent">участников</span></h2>
-      <p class="t-hint t-on-muted mt-4">Нажмите на&nbsp;карточку, чтобы прочитать отзыв.</p>
+      <p class="t-hint t-on-muted mt-4">Нажмите на&nbsp;карточку, чтобы посмотреть видео или прочитать отзыв целиком.</p>
     </div>
   </div>
+
+  <VideoReviews />
 
   <!-- Ряды на всю ширину вьюпорта, без section-px. Edge-fade по краям — от фона
        секции (bg-wire-bg) к прозрачному, чтобы карточки «выезжали из-за кулис». -->
@@ -143,7 +148,7 @@ const rowConfig = [
                 data-name={r.name}
                 data-role={r.role}
                 data-city={r.city}
-                class="review-card w-[300px] md:w-[360px] shrink-0 mr-4 rounded-sm p-5 text-left flex flex-col"
+                class="review-card w-[300px] md:w-[360px] shrink-0 mr-4 p-5 text-left flex flex-col"
                 {...(dup ? { 'data-dup': '', 'aria-hidden': 'true', tabindex: '-1' } : {})}
               >
                 {/* Без `block` на тексте: он перебил бы display:-webkit-box у line-clamp */}

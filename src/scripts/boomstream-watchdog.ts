@@ -14,6 +14,12 @@
 //
 // Компонент переиспользуемый: скрипт обслуживает все [data-bs-player] на
 // странице (Astro хойстит <script> с import один раз на страницу).
+//
+// Помимо автоскана статических плееров модуль экспортирует
+// registerDynamicPlayer() — для плеера в модалке видеоотзывов
+// (src/scripts/video-reviews.ts): src у него устанавливается при открытии,
+// таймер взводится arm()/снимается disarm() вручную, без IntersectionObserver.
+// Vite дедуплицирует модуль, поэтому массив watches и message-листенер общие.
 
 const BS_ORIGIN = 'https://play.boomstream.com';
 const WATCHDOG_TIMEOUT_MS = 5_000;
@@ -65,37 +71,14 @@ function hideOverlay(watch: PlayerWatch): void {
   watch.overlay.setAttribute('aria-hidden', 'true');
 }
 
-document.querySelectorAll<HTMLElement>('[data-bs-player]').forEach((root) => {
-  const iframe = root.querySelector<HTMLIFrameElement>('iframe[data-bs-code]');
-  const overlay = root.querySelector<HTMLElement>('[data-bs-overlay]');
-  const retryBtn = root.querySelector<HTMLButtonElement>('[data-bs-retry]');
-  const code = iframe?.dataset.bsCode;
-  if (!iframe || !overlay || !code) return;
+let messageListenerInstalled = false;
 
-  const watch: PlayerWatch = {
-    root,
-    iframe,
-    overlay,
-    code,
-    originalSrc: iframe.src,
-    timerId: null,
-    alive: false,
-  };
-  watches.push(watch);
-
-  retryBtn?.addEventListener('click', () => {
-    hideOverlay(watch);
-    watch.alive = false;
-    // Присвоение src — даже того же значения — заставляет браузер заново
-    // выполнить навигацию iframe. loading=lazy уже не мешает: плеер в кадре.
-    watch.iframe.src = watch.originalSrc;
-    startTimer(watch);
-  });
-});
-
-if (watches.length > 0) {
-  // Один message-листенер на все плееры страницы. Не отписываемся: лендинг —
-  // MPA без клиентского роутинга, листенер живёт ровно столько же, сколько DOM.
+// Один message-листенер на все плееры страницы. Не отписываемся: лендинг —
+// MPA без клиентского роутинга, листенер живёт ровно столько же, сколько DOM.
+// Установка идемпотентная — вызывается из register() при первом плеере.
+function ensureMessageListener(): void {
+  if (messageListenerInstalled) return;
+  messageListenerInstalled = true;
   window.addEventListener('message', (e: MessageEvent) => {
     if (e.origin !== BS_ORIGIN) return;
     const data: unknown = e.data;
@@ -112,9 +95,88 @@ if (watches.length > 0) {
       hideOverlay(watch);
     });
   });
+}
 
-  // Один observer на все плееры; взведение одноразовое (unobserve сразу).
-  // Повторные входы/выходы из вьюпорта таймер не перезапускают — после
+// Общая регистрация плеера: поиск элементов, создание watch, retry-кнопка.
+// Код у динамического (модального) плеера на этот момент пустой — его
+// проставляет arm(); статический автоскан требует code до вызова register().
+function register(root: HTMLElement): PlayerWatch | null {
+  const iframe = root.querySelector<HTMLIFrameElement>('iframe[data-bs-code]');
+  const overlay = root.querySelector<HTMLElement>('[data-bs-overlay]');
+  const retryBtn = root.querySelector<HTMLButtonElement>('[data-bs-retry]');
+  if (!iframe || !overlay) return null;
+
+  const watch: PlayerWatch = {
+    root,
+    iframe,
+    overlay,
+    code: iframe.dataset.bsCode ?? '',
+    originalSrc: iframe.src,
+    timerId: null,
+    alive: false,
+  };
+  watches.push(watch);
+
+  retryBtn?.addEventListener('click', () => {
+    hideOverlay(watch);
+    watch.alive = false;
+    // Присвоение src — даже того же значения — заставляет браузер заново
+    // выполнить навигацию iframe. loading=lazy уже не мешает: плеер в кадре.
+    watch.iframe.src = watch.originalSrc;
+    startTimer(watch);
+  });
+
+  ensureMessageListener();
+  return watch;
+}
+
+/** Ручное управление watchdog'ом плеера, чей src задаётся динамически. */
+export interface DynamicPlayerHandle {
+  /** При открытии модалки: новый код + актуальный src, скрыть оверлей, взвести таймер. */
+  arm(code: string, src: string): void;
+  /** При закрытии: снять таймер, скрыть оверлей, обнулить код (поздние сообщения не матчатся). */
+  disarm(): void;
+}
+
+// Регистрация плеера модалки (обёртка [data-bs-player-modal] — намеренно БЕЗ
+// [data-bs-player], чтобы автоскан и IntersectionObserver её не трогали).
+export function registerDynamicPlayer(root: HTMLElement | null): DynamicPlayerHandle | null {
+  if (!root) return null;
+  const watch = register(root);
+  if (!watch) return null;
+  return {
+    arm(code: string, src: string): void {
+      watch.code = code;
+      // Актуальный src — чтобы существующий обработчик retry перезагружал
+      // именно текущее видео.
+      watch.originalSrc = src;
+      watch.alive = false;
+      hideOverlay(watch);
+      startTimer(watch);
+    },
+    disarm(): void {
+      stopTimer(watch);
+      hideOverlay(watch);
+      watch.code = '';
+      watch.alive = false;
+    },
+  };
+}
+
+// ===== Автоскан статических плееров ([data-bs-player]) =====
+
+const staticWatches: PlayerWatch[] = [];
+document.querySelectorAll<HTMLElement>('[data-bs-player]').forEach((root) => {
+  // Гард как и раньше: плеер без кода не наблюдаем вовсе.
+  const code = root.querySelector<HTMLIFrameElement>('iframe[data-bs-code]')?.dataset.bsCode;
+  if (!code) return;
+  const watch = register(root);
+  if (watch) staticWatches.push(watch);
+});
+
+if (staticWatches.length > 0) {
+  // Один observer на все статические плееры; взведение одноразовое (unobserve
+  // сразу). Повторные входы/выходы из вьюпорта таймер не перезапускают — после
   // первого взведения жизненным циклом управляют message-листенер и retry.
   const io = new IntersectionObserver(
     (entries, observer) => {
@@ -129,5 +191,5 @@ if (watches.length > 0) {
     },
     { rootMargin: IO_ROOT_MARGIN },
   );
-  watches.forEach((w) => io.observe(w.root));
+  staticWatches.forEach((w) => io.observe(w.root));
 }

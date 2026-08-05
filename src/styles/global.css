@@ -435,6 +435,86 @@
     }
   }
 
+  /* Модалка видеоотзыва (#reviews) — та же схема, что у #modal-review.
+     Отличия: backdrop 0.75 как у сертификата («киношное» затемнение под видео)
+     и карточка без собственного паддинга — плеер 16:9 прижат к краям, паддинг
+     получает только текстовая часть (утилитами в разметке). */
+  dialog#modal-video-review {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    background: transparent;
+    border: none;
+    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition:
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-video-review[open] {
+    transition:
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  dialog#modal-video-review::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition:
+      opacity var(--modal-dur-out) var(--modal-ease),
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-video-review[open]::backdrop {
+    opacity: 1;
+    transition:
+      opacity var(--modal-dur-in) var(--modal-ease),
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  @starting-style {
+    dialog#modal-video-review[open]::backdrop { opacity: 0; }
+  }
+  /* Шире текстового эталона: на 960px кадр 16:9 высотой 540px — влезает в
+     1080p-экран вместе с паддингами диалога и подписью. */
+  .modal-video-card {
+    position: relative;
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    max-width: min(960px, 92vw);
+    width: 100%;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity   var(--modal-dur-out) var(--modal-ease),
+      transform var(--modal-dur-out) var(--modal-ease);
+  }
+  dialog#modal-video-review[open] .modal-video-card {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity   var(--modal-dur-in) var(--modal-ease),
+      transform var(--modal-dur-in) var(--modal-ease);
+  }
+  @starting-style {
+    dialog#modal-video-review[open] .modal-video-card {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+  }
+  /* Крестик прижат к вьюпорту (паттерн .modal-certificate-close): внутри
+     карточки он лёг бы на угол iframe и перекрывал контролы плеера. */
+  .modal-video-close {
+    @apply fixed top-4 right-4 md:top-6 md:right-6 z-10
+           w-10 h-10 flex items-center justify-center
+           bg-wire-panel text-wire-dark hover:bg-wire-dark hover:text-white
+           transition-colors;
+  }
+
   /* Уважаем системную настройку: все модалки открываются/закрываются мгновенно.
      Перечисляем и [open]-варианты: @media не добавляет специфичности, а без них
      transition из правил входа перебил бы этот сброс. */
@@ -460,7 +540,13 @@
     dialog#modal-review::backdrop,
     dialog#modal-review[open]::backdrop,
     .modal-review-card,
-    dialog#modal-review[open] .modal-review-card {
+    dialog#modal-review[open] .modal-review-card,
+    dialog#modal-video-review,
+    dialog#modal-video-review[open],
+    dialog#modal-video-review::backdrop,
+    dialog#modal-video-review[open]::backdrop,
+    .modal-video-card,
+    dialog#modal-video-review[open] .modal-video-card {
       transition: none;
       clip-path: none;
       opacity: 1;
@@ -1063,6 +1149,94 @@
   /* Ветка prefers-reduced-motion конвейера — в конце файла, ВНЕ слоёв:
      display: none для [data-dup] отсюда проигрывал бы утилите `flex`
      на карточке (layer utilities сильнее layer components). */
+
+  /* ============================================================
+     ВИДЕООТЗЫВЫ (#reviews) — слайдер Embla перед бегущими рядами.
+     Сам не движется: листает пользователь (drag/свайп/стрелки).
+     ============================================================ */
+  /* Ширина слайда — переменная: используется и как flex-basis слайда, и для
+     вертикального центрирования стрелок по кадру 16:9 (top = w * 9/32 — центр
+     кадра; высота подписи под кадром «плавает», у части видео её нет вовсе). */
+  .video-slider { --vr-slide-w: 300px; }
+  @media (min-width: 768px) {
+    .video-slider { --vr-slide-w: 420px; }
+  }
+  .video-slider__viewport { overflow: hidden; }
+  .video-slide { flex: 0 0 var(--vr-slide-w); min-width: 0; }
+
+  /* Кадр превью: ховер — лёгкий зум кадра + инверсия play-иконки в фирменный
+     синий (паттерн кнопок «красный -> синий»). Только для мыши: на таче
+     :hover залипает после тапа (та же оговорка, что у .review-card). */
+  .video-card__frame img { transition: transform 0.3s ease; }
+  /* Квадрат-бейдж в правом нижнем углу кадра (по центру перекрывал лица). */
+  .video-card__play {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: clamp(2.25rem, 3vw, 2.75rem);
+    height: clamp(2.25rem, 3vw, 2.75rem);
+    color: var(--color-wire-accent);
+    transition: color 0.2s ease;
+  }
+  @media (hover: hover) {
+    .video-card:hover .video-card__frame img { transform: scale(1.04); }
+    .video-card:hover .video-card__play { color: var(--color-wire-accent2); }
+  }
+
+  /* Стрелки: квадраты в палитре крестиков модалок. Видимы только при
+     наведении на блок целиком (десктоп) или при клавиатурном фокусе;
+     на тач-устройствах скрыты вовсе — свайп нативен, стрелки — мусор. */
+  .video-slider__arrow {
+    position: absolute;
+    top: calc(var(--vr-slide-w) * 9 / 32);
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-wire-panel);
+    color: var(--color-wire-dark);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .video-slider__arrow--prev { left: clamp(0.75rem, 2vw, 2rem); }
+  .video-slider__arrow--next { right: clamp(0.75rem, 2vw, 2rem); }
+  @media (hover: hover) {
+    .video-slider:hover .video-slider__arrow {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* На краю ленты стрелка глушится, но остаётся видимой призраком —
+       иначе она «мигает» появлением/исчезновением при доскролле. */
+    .video-slider:hover .video-slider__arrow:disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .video-slider__arrow:hover {
+      background-color: var(--color-wire-dark);
+      color: #fff;
+    }
+  }
+  /* Клавиатурный фокус показывает стрелку независимо от ховера. */
+  .video-slider__arrow:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    outline: 2px solid var(--color-wire-accent2);
+    outline-offset: 2px;
+  }
+  @media (hover: none) {
+    .video-slider__arrow { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .video-card__frame img,
+    .video-card__play,
+    .video-slider__arrow { transition: none; }
+    .video-card:hover .video-card__frame img { transform: none; }
+  }
 }
 
 /* ============================================================
