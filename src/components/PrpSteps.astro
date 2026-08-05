@@ -14,7 +14,11 @@ const steps: Step[] = [
 ---
 
 <!-- ========== БЛОК «ШАГИ ПО ВНЕДРЕНИЮ СИСТЕМЫ ПРП» ========== -->
-<section id="prp-steps" class="relative z-10 bg-wire-bg section-py">
+<!-- xl:pb уменьшен: у stage-«креста» (aspect 13/10) под октагоном 5 есть
+     встроенная пустота ~4% ширины stage, полный section-py к ней добавлял бы
+     ещё clamp(3-8rem) и низ выглядел заметно толще верха. На <xl (колонка)
+     пустоты нет — там паддинг симметричный. -->
+<section id="prp-steps" class="relative z-10 bg-wire-bg section-py xl:pb-[clamp(1.5rem,3vw,4rem)]">
   <div class="w-full px-6 sm:px-10 md:px-12 lg:px-12">
     <div>
 
