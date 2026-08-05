@@ -418,13 +418,11 @@
   .category-row { @apply w-full text-left flex items-center gap-6 py-6; transition: padding-left 0.2s ease; }
   .category-row:hover { padding-left: 12px; }
   .category-row:hover .category-row__title { color: var(--color-wire-accent); }
-  /* Иконка внутри плитки — lucide со stroke="currentColor", поэтому
-     достаточно менять color на контейнере. */
-  .category-row__icon {
-    @apply w-14 h-14 shrink-0 bg-wire-dark/5 text-wire-dark flex items-center justify-center;
-    transition: color 0.2s ease;
-  }
-  .category-row:hover .category-row__icon { color: var(--color-wire-accent2); }
+  /* Иконка внутри плитки — lucide со stroke="currentColor", поэтому цвет
+     задаётся на контейнере. Фирменный синий постоянно, без ховера; заливка
+     плитки остаётся нейтральной. Та же пара цветов — у иконки в шапке
+     модалки категорий (#modal-examples-icon в ModalExamples.astro). */
+  .category-row__icon { @apply w-14 h-14 shrink-0 bg-wire-dark/5 text-wire-accent2 flex items-center justify-center; }
   .category-row__title {
     @apply block leading-tight;
     font-size: clamp(1.125rem, 1.4vw, 1.375rem);
