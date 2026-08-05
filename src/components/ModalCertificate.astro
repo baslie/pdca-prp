@@ -1,11 +1,13 @@
 ---
-// Лайтбокс сертификата. Рендерится в index.astro только вместе с реальным
-// сканом — пока картинки нет, блок #certificate показывает статичный лист
-// без кнопки, и открывать нечего.
+// Лайтбокс сертификата. Скана пока нет, поэтому image необязателен: без него
+// открывается тот же лист-заглушка, что и в превью блока #certificate, только
+// во весь экран. Появится настоящий документ — путь «клик → лайтбокс» уже
+// проверен, меняется одна картинка.
+import { Icon } from 'astro-icon/components';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
-  image: ImageMetadata;
+  image?: ImageMetadata;
 }
 
 const { image } = Astro.props;
@@ -17,12 +19,26 @@ const { image } = Astro.props;
      к кнопке-триггеру в потоке текста, здесь он не нужен. -->
 <dialog id="modal-certificate" class="modal-scroll"
         aria-label="Сертификат тренинга «Профессиональное решение проблем»">
-  <div class="modal-certificate-card">
-    <!-- Габариты картинки считает CSS (.modal-certificate-card img): лист
-         вписывается по высоте вьюпорта, ширину диктует его пропорция. -->
-    <img src={image.src} alt="Сертификат тренинга «Профессиональное решение проблем»"
-         width={image.width} height={image.height} />
-  </div>
+  <!-- Со сканом габариты считает CSS (.modal-certificate-card img): лист
+       вписывается по высоте вьюпорта, ширину диктует его пропорция.
+       Без скана собственных габаритов у карточки нет (width: fit-content
+       схлопнулся бы) — их задаёт модификатор --sheet. -->
+  {image ? (
+    <div class="modal-certificate-card">
+      <img src={image.src} alt="Сертификат тренинга «Профессиональное решение проблем»"
+           width={image.width} height={image.height} />
+    </div>
+  ) : (
+    <div class="modal-certificate-card modal-certificate-card--sheet">
+      <div class="certificate-sheet">
+        <Icon name="lucide:award" class="w-16 h-16 t-on-soft" />
+        <p class="t-eyebrow t-on-muted mt-8">Сертификат</p>
+        <p class="t-body t-on-muted mt-3 max-w-prose-narrow">
+          Тренинг «Профессиональное решение&nbsp;проблем»
+        </p>
+      </div>
+    </div>
+  )}
 
   <button type="button" id="modal-certificate-close" aria-label="Закрыть"
           class="modal-certificate-close">

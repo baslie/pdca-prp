@@ -11,11 +11,11 @@ import AboutTrainer from '../components/AboutTrainer.astro';
 import Certificate from '../components/Certificate.astro';
 import ModalAbout from '../components/ModalAbout.astro';
 import ModalExamples from '../components/ModalExamples.astro';
+import ModalCertificate from '../components/ModalCertificate.astro';
 // Когда придёт скан сертификата: положить файл в src/assets/images/,
-// раскомментировать эти два импорта, передать <Certificate image={certificateScan} />
-// и раскомментировать <ModalCertificate /> ниже. До тех пор блок #certificate
-// показывает лист-заглушку без кнопки — открывать в лайтбоксе нечего.
-// import ModalCertificate from '../components/ModalCertificate.astro';
+// раскомментировать импорт ниже и передать картинку в ОБА компонента —
+// <Certificate image={certificateScan} /> и <ModalCertificate image={certificateScan} />.
+// До тех пор и превью, и лайтбокс показывают лист-заглушку.
 // import certificateScan from '../assets/images/certificate-euclides.jpg';
 ---
 
@@ -46,5 +46,5 @@ import ModalExamples from '../components/ModalExamples.astro';
 
   <ModalAbout />
   <ModalExamples />
-  {/* <ModalCertificate image={certificateScan} /> */}
+  <ModalCertificate />
 </BaseLayout>

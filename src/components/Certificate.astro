@@ -4,17 +4,24 @@ import euclidesCoimbra from '../assets/images/euclides-coimbra.png';
 import kaizenInstitute from '../assets/images/kaizen-institute.png';
 
 interface Props {
-  /** Скан сертификата. Пока не получен — вместо превью рендерится лист-заглушка,
-      без кнопки и подсказки: открывать в лайтбоксе нечего. Как подключить
-      настоящий документ — см. комментарий в src/pages/index.astro. */
+  /** Скан сертификата. Пока не получен — вместо превью рендерится лист-заглушка.
+      Кнопка и лайтбокс работают в обоих случаях: с заглушкой открывается тот же
+      лист крупно. Как подключить настоящий документ — см. комментарий
+      в src/pages/index.astro. */
   image?: ImageMetadata;
 }
 
 const { image } = Astro.props;
 
-// Медальон — квадратный кроп на лицо. Кадрирование задаёт .certificate-medallion
-// в global.css, сюда приходит только URL импортированного ассета.
-const medallionStyle = `background-image: url('${euclidesCoimbra.src}');`;
+// Регалии Эвклида — то, что делает заверение весомым. Ключ работает как цифра-акцент,
+// поэтому набирается плакатным .credential-card__key (см. docs/TYPOGRAPHY.md, §5).
+// Тексты хранят &nbsp; и выводятся через set:html — как caption'ы в OfferStats.
+const credentials = [
+  { key: '40+ лет',  textHtml: 'практического опыта в&nbsp;кайдзен и&nbsp;бережливом производстве' },
+  { key: 'с 1998',   textHtml: 'руководящие должности в&nbsp;Kaizen&nbsp;Institute' },
+  { key: 'Kawasaki', textHtml: 'изучал бережливое производство в&nbsp;Японии, на&nbsp;заводе Kawasaki&nbsp;Heavy&nbsp;Industries' },
+  { key: '2 книги',  textHtml: '«Kaizen in Logistics and Supply Chains» (McGraw-Hill) и&nbsp;«The Kaizen Culture Paradox»' },
+];
 ---
 
 <!-- ========== БЛОК «СЕРТИФИКАТ» ==========
@@ -25,68 +32,85 @@ const medallionStyle = `background-image: url('${euclidesCoimbra.src}');`;
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
 
       <!-- Текст. Первым в DOM — на мобильном заголовок должен идти раньше документа. -->
-      <div class="lg:col-span-7">
+      <div class="lg:col-span-8">
         <p class="t-eyebrow t-on-muted mb-6">Международное признание</p>
         <h2 class="t-h-section t-on-brand">
           Сертификат, <span class="text-wire-accent">заверенный</span> Kaizen&nbsp;Institute
         </h2>
 
-        <p class="t-lead t-on-default mt-8 max-w-prose">
-          Программу «Профессиональное решение проблем» сертифицировал
-          Эвклид&nbsp;Коимбра — всемирно признанный эксперт в&nbsp;области кайдзен
-          и&nbsp;бережливого производства с&nbsp;более чем 40-летним практическим опытом.
-        </p>
+        <!-- Портрет стоит прямо у лида, где Эвклид назван по имени: читатель видит,
+             о ком речь, в момент знакомства. Изображение идёт целиком, в исходной
+             пропорции 749×1004 и без подложки — PNG прозрачный, фигура должна
+             «стоять» прямо на фоне секции. -->
+        <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+          <figure class="shrink-0">
+            <img src={euclidesCoimbra.src} alt="Эвклид Коимбра"
+                 width={euclidesCoimbra.width} height={euclidesCoimbra.height} loading="lazy"
+                 class="w-32 sm:w-40 h-auto" />
+            <figcaption class="t-meta t-on-muted mt-2 text-center">Euclides Coimbra</figcaption>
+          </figure>
 
-        <!-- Подпись под документом: медальон, имя, должность — и лого института
-             как «печать» справа. Должность живёт здесь, а не в лиде: рядом с
-             логотипом она читается как реквизит заверителя, а в лиде дублировала
-             бы уже сказанное. -->
-        <div class="mt-[clamp(2rem,4vw,3.5rem)] pt-8 border-t border-neutral-200
-                    flex flex-wrap sm:flex-nowrap items-center gap-x-6 xl:gap-x-8 gap-y-6">
-          <div class="flex items-center gap-4 sm:gap-5 min-w-0">
-            <div class="certificate-medallion w-20 h-20 sm:w-24 sm:h-24"
-                 style={medallionStyle} role="img" aria-label="Эвклид Коимбра"></div>
-            <div class="min-w-0">
-              <p class="t-h-sub t-on-strong">Эвклид Коимбра</p>
-              <p class="t-meta t-on-muted mt-0.5">Euclides Coimbra</p>
-              <p class="t-body-sm t-on-default mt-1.5">
-                Старший партнёр Kaizen&nbsp;Institute Western&nbsp;Europe
-              </p>
-            </div>
-          </div>
+          <p class="t-lead t-on-default max-w-prose">
+            Программу «Профессиональное решение проблем» сертифицировал{' '}
+            <strong class="font-semibold t-on-strong">Эвклид&nbsp;Коимбра</strong> —
+            всемирно признанный эксперт в&nbsp;области кайдзен
+            и&nbsp;бережливого производства.
+          </p>
+        </div>
 
-          <img src={kaizenInstitute.src} alt="Kaizen Institute"
-               width={kaizenInstitute.width} height={kaizenInstitute.height} loading="lazy"
-               class="w-[150px] xl:w-[175px] h-auto shrink-0 sm:ml-auto" />
+        <!-- Регалии. Линии — border'ы самих ячеек, а НЕ просветы gap-px: зазор
+             между двумя элементами каждый из них округляет независимо, и при
+             дробной ширине колонки линия местами выходит в 2 физических пикселя.
+             border такого не даёт. Приём тот же, что в списке образования
+             «О тренере»: горизонтали + одна вертикаль, боковых рамок нет.
+             Пятая строка — печать института на всю ширину: она замыкает список
+             так же, как реквизит заверителя замыкает документ. -->
+        <div class="mt-[clamp(2rem,4vw,3rem)] grid grid-cols-1 sm:grid-cols-2
+                    border-t border-wire-border">
+          {credentials.map((c) => (
+            <article class="credential-card">
+              <p class="credential-card__key">{c.key}</p>
+              <p class="credential-card__text" set:html={c.textHtml}></p>
+            </article>
+          ))}
+
+          <article class="credential-card credential-card--seal">
+            <p class="credential-card__text credential-card__text--seal">
+              Старший партнёр Kaizen&nbsp;Institute Western&nbsp;Europe
+            </p>
+            <img src={kaizenInstitute.src} alt="Kaizen Institute"
+                 width={kaizenInstitute.width} height={kaizenInstitute.height} loading="lazy"
+                 class="w-[130px] xl:w-[150px] h-auto shrink-0" />
+          </article>
         </div>
       </div>
 
-      <!-- Документ. До lg ограничиваем ширину: A4 во всю колонку одноколоночной
-           раскладки вырастает почти на метр по высоте и превращается в простыню. -->
-      <div class="lg:col-span-5 w-full max-w-[380px] mx-auto lg:max-w-none">
-        {image ? (
-          <>
-            <button type="button" id="btn-certificate-open" class="certificate-doc"
-                    aria-label="Открыть сертификат во весь экран">
-              <img src={image.src} alt="Сертификат тренинга «Профессиональное решение проблем»"
-                   width={image.width} height={image.height} loading="lazy"
-                   class="block w-full h-full object-contain" />
-              <span class="certificate-doc__hint" aria-hidden="true">
-                <span>Открыть во весь экран</span>
+      <!-- Документ. Ширина ограничена на всех брейкпоинтах: A4 во всю колонку
+           вырастает почти на метр по высоте и перетягивает блок на себя. -->
+      <div class="lg:col-span-4 w-full max-w-[360px] mx-auto">
+        <!-- Кнопка рендерится и без скана: лайтбокс тогда открывает тот же лист
+             крупно. Внутри <button> допустим только phrasing content, поэтому
+             заглушка собрана на <span> с display:flex, а не на <div>/<p>. -->
+        <button type="button" id="btn-certificate-open" class="certificate-doc"
+                aria-label="Открыть сертификат во весь экран">
+          {image ? (
+            <img src={image.src} alt="Сертификат тренинга «Профессиональное решение проблем»"
+                 width={image.width} height={image.height} loading="lazy"
+                 class="block w-full h-full object-contain" />
+          ) : (
+            <span class="certificate-sheet">
+              <Icon name="lucide:award" class="w-12 h-12 t-on-soft" />
+              <span class="t-eyebrow t-on-muted mt-6">Сертификат</span>
+              <span class="t-body-sm t-on-muted mt-2 max-w-prose-narrow">
+                Тренинг «Профессиональное решение&nbsp;проблем»
               </span>
-            </button>
-            <p class="t-hint t-on-muted mt-3">Нажмите, чтобы рассмотреть документ.</p>
-          </>
-        ) : (
-          <div class="certificate-sheet" role="img"
-               aria-label="Сертификат тренинга «Профессиональное решение проблем»">
-            <Icon name="lucide:award" class="w-12 h-12 t-on-soft" />
-            <p class="t-eyebrow t-on-muted mt-6">Сертификат</p>
-            <p class="t-body-sm t-on-muted mt-2 max-w-prose-narrow">
-              Тренинг «Профессиональное решение&nbsp;проблем»
-            </p>
-          </div>
-        )}
+            </span>
+          )}
+          <span class="certificate-doc__hint" aria-hidden="true">
+            <span>Открыть во весь экран</span>
+          </span>
+        </button>
+        <p class="t-hint t-on-muted mt-3">Нажмите, чтобы увеличить</p>
       </div>
 
     </div>

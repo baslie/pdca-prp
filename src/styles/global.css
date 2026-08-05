@@ -347,6 +347,14 @@
     max-width: 100%;
     max-height: calc(100vh - 2 * clamp(1rem, 4vh, 3rem));
   }
+  /* Лист-заглушка (скана ещё нет): без <img> внутри width: fit-content схлопнул
+     бы карточку, поэтому габариты задаются здесь. Три минимума разом гарантируют,
+     что лист влезет и по ширине вьюпорта, и по высоте — деление на 1.414
+     переводит доступную высоту в ширину листа A4. */
+  .modal-certificate-card--sheet {
+    width: min(760px, 92vw, calc((100vh - 2 * clamp(1rem, 4vh, 3rem)) / 1.414));
+    aspect-ratio: 1 / 1.414;
+  }
   /* Крестик прижат к вьюпорту, а не к карточке: документ занимает почти всю
      высоту экрана, и кнопка внутри карточки перекрывала бы сам сертификат. */
   .modal-certificate-close {
@@ -586,16 +594,17 @@
      БЛОК «СЕРТИФИКАТ» (#certificate).
      ============================================================ */
 
-  /* Лист A4 — и превью документа, и заглушка до появления скана.
-     Пропорция 1:1.414 резервирует место заранее: подставим настоящую
-     картинку — вёрстка не дрогнет, CLS нулевой. */
+  /* Содержимое листа-заглушки: иконка и подписи по центру. Габариты НЕ задаёт —
+     их даёт родитель: .certificate-doc в превью (там же и пропорция A4) или
+     .modal-certificate-card--sheet в лайтбоксе. Поэтому класс работает и на
+     <div>, и на <span> внутри <button>. */
   .certificate-sheet {
-    @apply relative w-full flex flex-col items-center justify-center text-center
-           bg-wire-panel border border-neutral-200 px-6;
-    aspect-ratio: 1 / 1.414;
+    @apply relative w-full h-full flex flex-col items-center justify-center
+           text-center bg-wire-panel px-6;
   }
 
-  /* Кликабельное превью: тот же лист, но кнопка с оверлеем-подсказкой. */
+  /* Кликабельное превью документа. Пропорция 1:1.414 резервирует место заранее:
+     подставим настоящий скан вместо заглушки — вёрстка не дрогнет, CLS нулевой. */
   .certificate-doc {
     @apply relative block w-full overflow-hidden bg-wire-panel border border-neutral-200;
     aspect-ratio: 1 / 1.414;
@@ -616,18 +625,59 @@
   }
   .certificate-doc:focus-visible .certificate-doc__hint { opacity: 1; }
 
-  /* Медальон-«подпись» рядом с именем Эвклида: квадратный кроп на голову
-     и плечи. Реализован фоном, а не <img>: исходник — портрет 3:4 по пояс,
-     голова занимает лишь верхнюю треть кадра, поэтому object-position одним
-     сдвигом нужного кропа не даёт — в квадрате 96–112px лицо становится
-     нечитаемым. background-size задаёт масштаб, position — окно кадра.
-     Сам URL приходит инлайн-стилем из Certificate.astro (ES-импорт ассета). */
-  .certificate-medallion {
-    @apply relative shrink-0 bg-wire-panel;
-    background-size: 165%;
-    background-position: 50% 4%;
-    background-repeat: no-repeat;
+  /* Регалии Эвклида — сетка 2×2 в текстовой колонке. Каждая линия рисуется
+     ровно одним border'ом: gap-px здесь давал бы зазор между двумя ячейками,
+     а его границы округляются независимо — при дробной ширине колонки линия
+     местами выходила в 2 физических пикселя и выглядела жирнее остальных.
+     Горизонтального padding по внешним краям нет: левый столбец должен
+     стоять на одной вертикали с лидом и заголовком. */
+  .credential-card {
+    @apply flex flex-col;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--color-wire-border);
   }
+  @media (min-width: 40rem) {
+    .credential-card:nth-child(odd)  { padding-right: 2rem; }
+    .credential-card:nth-child(even) {
+      padding-left: 2rem;
+      border-left: 1px solid var(--color-wire-border);
+    }
+    /* Печать института — финальная строка во всю ширину таблицы. Идёт после
+       nth-child, чтобы снять правый отступ нечётной позиции. */
+    .credential-card--seal {
+      grid-column: 1 / -1;
+      padding-right: 0;
+    }
+  }
+  /* Плакатный размер вне 8-ролевой шкалы — как .stat-card__number.
+     Обоснование и запись исключения — docs/TYPOGRAPHY.md, §5.
+     Container query здесь не нужен: самый длинный ключ «Kawasaki» (8 знаков)
+     при максимуме 30px укладывается в ячейку ~260px. */
+  .credential-card__key {
+    @apply font-black tracking-display;
+    color: var(--color-wire-accent2);
+    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+    line-height: 1.05;
+  }
+  /* Формула .t-body-sm + цвет .t-on-muted инлайном: @apply на классы того же
+     @layer components в v4 ненадёжен (см. .t-modal-list-item__num). */
+  .credential-card__text {
+    margin-top: 0.75rem;
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.55;
+    font-weight: 400;
+    color: rgb(43 43 43 / 0.70);
+  }
+  /* Печать института: лого и должность в одну строку — как «ключ + описание»
+     выше, только вместо ключа изображение. Оба модификатора объявлены ПОСЛЕ
+     базовых классов: специфичность одинаковая, побеждает то, что ниже. */
+  .credential-card--seal {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+  .credential-card__text--seal { margin-top: 0; }
 
   /* ============================================================
      ДИАГРАММА «Шаги по внедрению системы ПРП».
