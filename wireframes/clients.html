@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Блок «Клиенты» — 3 вайрфрейма</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wire: {
+              bg:      '#FFFFFF',
+              panel:   '#F7F7F7',
+              surface: '#EBEBEB',
+              border:  '#D4D4D4',
+              muted:   '#8B8B8B',
+              text:    '#2B2B2B',
+              dark:    '#0C0C0C',
+              accent:  '#e84249',
+              accent2: '#003154',
+            }
+          },
+          maxWidth: {
+            'prose':        '65ch',
+            'prose-narrow': '52ch',
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer base {
+      body {
+        @apply bg-wire-bg text-wire-text;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      button { cursor: pointer; }
+
+      /* ===== Роли текста — 1:1 с src/styles/global.css, чтобы вариант переносился без пересчёта ===== */
+      .t-h-section  { font-size: clamp(2rem, 3.6vw, 3.75rem); line-height: 1.10; letter-spacing: -0.025em; font-weight: 900; }
+      .t-h-sub      { font-size: clamp(1.125rem, 1.4vw, 1.375rem); line-height: 1.30; letter-spacing: -0.01em; font-weight: 600; }
+      .t-lead       { font-size: clamp(1.0625rem, 1.25vw, 1.375rem); line-height: 1.55; letter-spacing: -0.005em; font-weight: 400; }
+      .t-body       { font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem); line-height: 1.65; font-weight: 400; }
+      .t-body-sm    { font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem); line-height: 1.55; font-weight: 400; }
+    }
+
+    @layer components {
+      .t-eyebrow { @apply uppercase font-semibold; font-size: 0.6875rem; letter-spacing: 0.32em; line-height: 1.4; }
+      .t-meta    { font-size: 0.875rem; line-height: 1.45; }
+      .t-hint    { font-size: 0.75rem;  line-height: 1.4; }
+
+      .t-on-strong  { color: #0C0C0C; }
+      .t-on-brand   { color: #003154; }
+      .t-on-default { color: #2B2B2B; }
+      .t-on-muted   { color: rgb(43 43 43 / 0.70); }
+      .t-on-soft    { color: rgb(43 43 43 / 0.45); }
+
+      /* Сам логотип. Все файлы — единый канвас 480×240 с уже вшитым защитным полем,
+         поэтому позиционирование одинаковое для всех: contain по высоте ячейки. */
+      .logo {
+        @apply w-full h-full object-contain;
+        transition: filter .25s ease, opacity .25s ease;
+      }
+      /* Ч/б режим включается на секции — переключатель вверху страницы */
+      .mono .logo { filter: grayscale(1) contrast(0.95); opacity: .62; }
+      @media (hover: hover) {
+        .mono .logo-cell:hover .logo { filter: none; opacity: 1; }
+      }
+
+      /* ===== В1 «Реестр»: сетка с hairline-разделителями ===== */
+      .reg-grid { @apply grid border-t border-l border-wire-border; }
+      .reg-cell { @apply border-r border-b border-wire-border flex items-center justify-center; }
+      @media (hover: hover) {
+        .reg-cell:hover { @apply bg-wire-panel; }
+      }
+
+      /* ===== В2 «Конвейер»: бегущие ряды на чистом CSS ===== */
+      .marquee { @apply overflow-hidden; }
+      .marquee__track {
+        display: flex;
+        width: max-content;
+        animation: marquee-l var(--dur, 90s) linear infinite;
+      }
+      .marquee__track--r { animation-name: marquee-r; }
+      @media (hover: hover) {
+        .marquee:hover .marquee__track { animation-play-state: paused; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .marquee__track { animation: none; }
+      }
+
+      /* ===== В3 «Ковёр»: свободная россыпь без рамок ===== */
+      .carpet { @apply flex flex-wrap justify-center items-center; }
+
+      .switch {
+        @apply inline-flex items-center border border-wire-border uppercase transition-colors duration-200 text-wire-text bg-white;
+        padding: 0.375rem 0.75rem; font-size: 0.75rem; letter-spacing: 0.08em; line-height: 1.4;
+      }
+      @media (hover: hover) {
+        .switch:hover { @apply bg-wire-accent2 border-wire-accent2 text-white; }
+      }
+      .switch--on { @apply bg-wire-accent2 border-wire-accent2 text-white; }
+    }
+
+    /* Зазор конвейера — margin-right на ячейке, НЕ gap на треке:
+       gap не входит в ширину половины трека, и translateX(-50%) даёт рывок на стыке цикла. */
+    @keyframes marquee-l { to { transform: translateX(-50%); } }
+    @keyframes marquee-r { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- ================= ПАНЕЛЬ УПРАВЛЕНИЯ ================= -->
+  <div class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-wire-border">
+    <div class="max-w-[1400px] mx-auto px-6 py-3 flex flex-wrap items-center gap-3">
+      <span class="t-eyebrow t-on-soft mr-2">Клиенты · 34 логотипа</span>
+      <button class="switch switch--on" data-toggle="mono">Ч/б, цвет на ховере</button>
+      <button class="switch" data-toggle="panel">Фон: панель</button>
+      <button class="switch" data-toggle="grid">Показать сетку полей</button>
+      <a href="#v1" class="t-hint t-on-muted ml-auto underline underline-offset-4">В1</a>
+      <a href="#v2" class="t-hint t-on-muted underline underline-offset-4">В2</a>
+      <a href="#v3" class="t-hint t-on-muted underline underline-offset-4">В3</a>
+    </div>
+  </div>
+
+  <!-- ================= ВАРИАНТ 1 · РЕЕСТР ================= -->
+  <section id="v1" class="mono relative py-20 md:py-28 bg-wire-bg">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <header class="max-w-prose mb-12">
+        <p class="t-eyebrow t-on-soft mb-4">Вариант 1</p>
+        <h2 class="t-h-section t-on-strong mb-5">Реестр</h2>
+        <p class="t-lead t-on-muted">
+          Строгая сетка с разделителями. Каждый логотип — в своей ячейке одинакового
+          размера, поля внутри ячеек равны. Читается как документ: перечень, а не реклама.
+          Хорошо стыкуется с уже имеющейся сухой подачей сайта.
+        </p>
+      </header>
+
+      <div class="reg-grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6" data-logos="grid"></div>
+
+      <p class="t-meta t-on-soft mt-6">
+        34 компании · сетка 6 колонок на десктопе, 2 на мобильном
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= ВАРИАНТ 2 · КОНВЕЙЕР ================= -->
+  <section id="v2" class="mono relative py-20 md:py-28 bg-wire-panel border-y border-wire-border">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <header class="max-w-prose mb-12">
+        <p class="t-eyebrow t-on-soft mb-4">Вариант 2</p>
+        <h2 class="t-h-section t-on-strong mb-5">Конвейер</h2>
+        <p class="t-lead t-on-muted">
+          Две встречные ленты. Занимает вдвое меньше высоты, чем сетка, и держит
+          внимание движением. Наведение курсора останавливает ленту — можно рассмотреть.
+        </p>
+      </header>
+    </div>
+
+    <div class="marquee mb-4" style="--dur: 95s">
+      <div class="marquee__track" data-logos="row-a"></div>
+    </div>
+    <div class="marquee" style="--dur: 110s">
+      <div class="marquee__track marquee__track--r" data-logos="row-b"></div>
+    </div>
+
+    <div class="max-w-[1400px] mx-auto px-6">
+      <p class="t-meta t-on-soft mt-6">
+        два ряда по 17 логотипов · встречное движение · пауза на ховере · выключается при prefers-reduced-motion
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= ВАРИАНТ 3 · КОВЁР ================= -->
+  <section id="v3" class="mono relative py-20 md:py-28 bg-wire-bg">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <header class="max-w-prose-narrow mx-auto text-center mb-14">
+        <p class="t-eyebrow t-on-soft mb-4">Вариант 3</p>
+        <h2 class="t-h-section t-on-strong mb-5">Ковёр</h2>
+        <p class="t-lead t-on-muted">
+          Свободная россыпь без рамок: логотипы выровнены по оптической массе и дышат
+          за счёт крупных интервалов. Самый «дорогой» на вид вариант, но требует, чтобы
+          логотипы были одинаково подготовлены — что мы и сделали.
+        </p>
+      </header>
+
+      <div class="carpet gap-x-10 gap-y-8 md:gap-x-16 md:gap-y-12" data-logos="carpet"></div>
+
+      <p class="t-meta t-on-soft mt-12 text-center">
+        без сетки · выравнивание по центру · перенос по ширине контейнера
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= ЗАМЕТКИ ================= -->
+  <section class="py-16 bg-wire-panel border-t border-wire-border">
+    <div class="max-w-prose mx-auto px-6">
+      <h3 class="t-h-sub t-on-strong mb-4">Что учесть при выборе</h3>
+      <ul class="t-body-sm t-on-muted space-y-3 list-disc pl-5">
+        <li>Все файлы приведены к одному канвасу 480×240 px (240×120 CSS, 2× для retina),
+            обрезаны по контенту и заново отбиты равным полем. Лимит 600 px соблюдён.</li>
+        <li>Фон вырезан в прозрачность заливкой от краёв — внутренняя выворотка в знаках
+            не пострадала. Логотипы лягут на любой фон.</li>
+        <li>Шесть логотипов существуют только с фирменной плашкой (Экспобанк, BASF, Аэро Мебель,
+            Hubert Burda, ВШБ МГУ, Schindler) — на светлом фоне они читаются как цветные плитки.
+            Ч/б-режим это сглаживает; в цветном режиме они будут выбиваться.</li>
+        <li>Из семи пар дублей оставлен один вариант. ВТБ и ВТБ Страхование оставлены оба —
+            это разные компании, но рядом смотрятся как повтор.</li>
+      </ul>
+    </div>
+  </section>
+
+  <script>
+    // Порядок задан вручную: крупные узнаваемые бренды распределены по ленте,
+    // кириллица и латиница чередуются, тяжёлые плашки разнесены друг от друга.
+    const LOGOS = [
+      ['sber', 'Сбербанк'],
+      ['roche', 'Roche'],
+      ['lukoil', 'Лукойл'],
+      ['whirlpool', 'Whirlpool'],
+      ['vtb', 'ВТБ'],
+      ['takeda', 'Takeda'],
+      ['komus', 'Комус'],
+      ['basf', 'BASF'],
+      ['tekhnonikol', 'ТехноНИКОЛЬ'],
+      ['abbvie', 'AbbVie'],
+      ['mgimo', 'МГИМО'],
+      ['veeam', 'Veeam'],
+      ['russian-helicopters', 'Вертолёты России'],
+      ['ipsen', 'Ipsen'],
+      ['aurus', 'Aurus'],
+      ['dentsply-sirona', 'Dentsply Sirona'],
+      ['promet', 'Промет'],
+      ['mettler-toledo', 'Mettler Toledo'],
+      ['nami', 'НАМИ'],
+      ['schindler', 'Schindler'],
+      ['eldorado', 'Эльдорадо'],
+      ['jgl', 'JGL'],
+      ['dzm-moscow', 'Департамент здравоохранения Москвы'],
+      ['rittal', 'Rittal'],
+      ['soteks', 'Сотекс'],
+      ['boots-healthcare', 'Boots Healthcare International'],
+      ['ekspeditsiya', 'Экспедиция'],
+      ['hubert-burda-media', 'Hubert Burda Media'],
+      ['feliks', 'Компания Феликс'],
+      ['msu-business-school', 'Высшая школа бизнеса МГУ'],
+      ['express-office', 'Экспресс Офис'],
+      ['expobank', 'Экспобанк'],
+      ['vtb-strahovanie', 'ВТБ Страхование'],
+      ['aero-mebel', 'Аэро Мебель'],
+    ];
+
+    const img = ([slug, name]) =>
+      `<img class="logo" src="assets/logos/${slug}.png" alt="${name}" title="${name}" loading="lazy" width="480" height="240">`;
+
+    // В1 — ячейки сетки
+    document.querySelector('[data-logos="grid"]').innerHTML =
+      LOGOS.map((l) => `<div class="reg-cell logo-cell aspect-[2/1] p-5">${img(l)}</div>`).join('');
+
+    // В2 — два ряда; трек дублируется, зазор задаётся margin-right на ячейке
+    const half = Math.ceil(LOGOS.length / 2);
+    const rowCell = (l) => `<div class="logo-cell shrink-0 w-[200px] h-[100px] mr-12">${img(l)}</div>`;
+    const rowA = LOGOS.slice(0, half), rowB = LOGOS.slice(half);
+    document.querySelector('[data-logos="row-a"]').innerHTML = [...rowA, ...rowA].map(rowCell).join('');
+    document.querySelector('[data-logos="row-b"]').innerHTML = [...rowB, ...rowB].map(rowCell).join('');
+
+    // В3 — россыпь
+    document.querySelector('[data-logos="carpet"]').innerHTML =
+      LOGOS.map((l) => `<div class="logo-cell w-[150px] h-[75px] md:w-[190px] md:h-[95px]">${img(l)}</div>`).join('');
+
+    // Переключатели: сравнить режимы, не перезагружая страницу
+    const sections = document.querySelectorAll('section[id]');
+    document.querySelectorAll('[data-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.toggle;
+        const on = btn.classList.toggle('switch--on');
+        if (mode === 'mono') sections.forEach((s) => s.classList.toggle('mono', on));
+        if (mode === 'panel') sections.forEach((s) => {
+          s.classList.toggle('bg-wire-panel', on);
+          s.classList.toggle('bg-wire-bg', !on);
+        });
+        if (mode === 'grid') document.querySelectorAll('.logo-cell').forEach((c) => {
+          c.style.outline = on ? '1px dashed rgba(232,66,73,.45)' : '';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
