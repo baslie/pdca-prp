@@ -48,10 +48,9 @@ const clients: string[] = [
   'ЛокоТех', 'Лукойл', 'МГИМО', 'МГУ', 'Министерство культуры', 'Министерство соц. защиты',
   'Министерство финансов', 'Министерство экологии', 'Мособлгаз', 'MPA-ИГСУ', 'НАМИ',
   'Пиканта', 'Промет', 'РАНХиГС', 'РЖД', 'Ростелеком', 'Сапсан-недвижимость', 'Сбербанк',
-  'ТехноНИКОЛЬ', 'Экспедиция', 'Экспобанк', 'Эльдорадо', 'и др.',
+  'ТехноНИКОЛЬ', 'Экспедиция', 'Экспобанк', 'Эльдорадо',
 ];
 
-const clientsLine = clients.join(' / ');
 ---
 
 <!-- ========== БЛОК «О ТРЕНЕРЕ» ========== -->
@@ -110,7 +109,12 @@ const clientsLine = clients.join(' / ');
   <div class="bg-wire-panel">
     <div class="section-px py-[clamp(2.5rem,5vw,4.5rem)]">
       <p class="t-eyebrow t-on-muted mb-5">Опыт обучения сотрудников организаций</p>
-      <p class="trainer-clients">{clientsLine}</p>
+      <ul class="flex flex-wrap items-center gap-2">
+        {clients.map((c) => (
+          <li class="trainer-pill">{c}</li>
+        ))}
+        <li class="t-meta t-on-muted">и&nbsp;др.</li>
+      </ul>
     </div>
   </div>
 </section>
