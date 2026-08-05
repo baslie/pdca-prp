@@ -1216,7 +1216,7 @@
       pointer-events: none;
     }
     .video-slider__arrow:hover {
-      background-color: var(--color-wire-dark);
+      background-color: var(--color-wire-accent2);
       color: #fff;
     }
   }
