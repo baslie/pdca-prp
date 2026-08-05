@@ -37,6 +37,18 @@ const courseSchema = {
     '@type': 'Person',
     name: 'Денис Булгин',
     jobTitle: 'Бизнес-тренер',
+    // Внешнее подтверждение методики — блок #certificate. recognizedBy даёт
+    // поисковикам и AI-краулерам связь «тренинг → признавшая его организация».
+    hasCredential: {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Сертификат тренинга «Профессиональное решение проблем»',
+      credentialCategory: 'certificate',
+      recognizedBy: {
+        '@type': 'Organization',
+        name: 'Kaizen Institute',
+        url: 'https://kaizen.com/',
+      },
+    },
   },
   hasCourseInstance: {
     '@type': 'CourseInstance',

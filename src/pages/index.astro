@@ -8,8 +8,15 @@ import Examples from '../components/Examples.astro';
 import OfferStats from '../components/OfferStats.astro';
 import PrpSteps from '../components/PrpSteps.astro';
 import AboutTrainer from '../components/AboutTrainer.astro';
+import Certificate from '../components/Certificate.astro';
 import ModalAbout from '../components/ModalAbout.astro';
 import ModalExamples from '../components/ModalExamples.astro';
+// Когда придёт скан сертификата: положить файл в src/assets/images/,
+// раскомментировать эти два импорта, передать <Certificate image={certificateScan} />
+// и раскомментировать <ModalCertificate /> ниже. До тех пор блок #certificate
+// показывает лист-заглушку без кнопки — открывать в лайтбоксе нечего.
+// import ModalCertificate from '../components/ModalCertificate.astro';
+// import certificateScan from '../assets/images/certificate-euclides.jpg';
 ---
 
 <BaseLayout>
@@ -31,10 +38,13 @@ import ModalExamples from '../components/ModalExamples.astro';
 
   <AboutTrainer />
 
+  <Certificate />
+
   <!-- Воздух в конце страницы: визуальный «выдох». relative + z-10 + bg обязательны,
        иначе сквозь div просвечивают fixed-слои hero. -->
   <div class="relative z-10 bg-wire-bg h-[clamp(2rem,5vw,5rem)]" aria-hidden="true"></div>
 
   <ModalAbout />
   <ModalExamples />
+  {/* <ModalCertificate image={certificateScan} /> */}
 </BaseLayout>

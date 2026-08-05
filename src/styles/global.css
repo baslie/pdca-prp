@@ -269,7 +269,94 @@
     }
   }
 
-  /* Уважаем системную настройку: обе модалки открываются/закрываются мгновенно.
+  /* Лайтбокс сертификата — та же схема, что у #modal-examples: overlay со
+     скроллом всей карточки. Отличие одно — карточка держит пропорции листа
+     по высоте вьюпорта, а не по фиксированной max-width. */
+  dialog#modal-certificate {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    background: transparent;
+    border: none;
+    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition:
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-certificate[open] {
+    transition:
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  dialog#modal-certificate::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition:
+      opacity var(--modal-dur-out) var(--modal-ease),
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-certificate[open]::backdrop {
+    opacity: 1;
+    transition:
+      opacity var(--modal-dur-in) var(--modal-ease),
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  @starting-style {
+    dialog#modal-certificate[open]::backdrop { opacity: 0; }
+  }
+  /* Документ вертикальный (A4 — 1:1.414), поэтому ограничение идёт по ВЫСОТЕ
+     вьюпадра, а ширину считает пропорция самой картинки: при обычном width:100%
+     лист упирается в max-width и уходит вниз за экран — сертификат приходилось бы
+     скроллить, чтобы увидеть целиком. calc повторяет вертикальный padding
+     самого <dialog>. */
+  .modal-certificate-card {
+    width: fit-content;
+    max-width: min(760px, 92vw);
+    margin-inline: auto;
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity   var(--modal-dur-out) var(--modal-ease),
+      transform var(--modal-dur-out) var(--modal-ease);
+  }
+  dialog#modal-certificate[open] .modal-certificate-card {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity   var(--modal-dur-in) var(--modal-ease),
+      transform var(--modal-dur-in) var(--modal-ease);
+  }
+  @starting-style {
+    dialog#modal-certificate[open] .modal-certificate-card {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+  }
+  .modal-certificate-card img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 2 * clamp(1rem, 4vh, 3rem));
+  }
+  /* Крестик прижат к вьюпорту, а не к карточке: документ занимает почти всю
+     высоту экрана, и кнопка внутри карточки перекрывала бы сам сертификат. */
+  .modal-certificate-close {
+    @apply fixed top-4 right-4 md:top-6 md:right-6 z-10
+           w-10 h-10 flex items-center justify-center
+           bg-wire-panel text-wire-dark hover:bg-wire-dark hover:text-white
+           transition-colors;
+  }
+
+  /* Уважаем системную настройку: все модалки открываются/закрываются мгновенно.
      Перечисляем и [open]-варианты: @media не добавляет специфичности, а без них
      transition из правил входа перебил бы этот сброс. */
   @media (prefers-reduced-motion: reduce) {
@@ -282,7 +369,13 @@
     dialog#modal-examples::backdrop,
     dialog#modal-examples[open]::backdrop,
     .modal-examples-card,
-    dialog#modal-examples[open] .modal-examples-card {
+    dialog#modal-examples[open] .modal-examples-card,
+    dialog#modal-certificate,
+    dialog#modal-certificate[open],
+    dialog#modal-certificate::backdrop,
+    dialog#modal-certificate[open]::backdrop,
+    .modal-certificate-card,
+    dialog#modal-certificate[open] .modal-certificate-card {
       transition: none;
       clip-path: none;
       opacity: 1;
@@ -487,6 +580,53 @@
   .trainer-pill:hover {
     @apply bg-white border-white;
     color: var(--color-wire-accent2);
+  }
+
+  /* ============================================================
+     БЛОК «СЕРТИФИКАТ» (#certificate).
+     ============================================================ */
+
+  /* Лист A4 — и превью документа, и заглушка до появления скана.
+     Пропорция 1:1.414 резервирует место заранее: подставим настоящую
+     картинку — вёрстка не дрогнет, CLS нулевой. */
+  .certificate-sheet {
+    @apply relative w-full flex flex-col items-center justify-center text-center
+           bg-wire-panel border border-neutral-200 px-6;
+    aspect-ratio: 1 / 1.414;
+  }
+
+  /* Кликабельное превью: тот же лист, но кнопка с оверлеем-подсказкой. */
+  .certificate-doc {
+    @apply relative block w-full overflow-hidden bg-wire-panel border border-neutral-200;
+    aspect-ratio: 1 / 1.414;
+  }
+  .certificate-doc__hint {
+    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200;
+    background: rgb(0 49 84 / 0.75);   /* --color-wire-accent2 @ 75% */
+  }
+  .certificate-doc__hint > span {
+    @apply inline-flex items-center px-4 py-2 bg-wire-bg font-semibold;
+    color: var(--color-wire-accent2);
+    font-size: 0.875rem;
+  }
+  /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
+     и синяя подсказка остаётся висеть поверх документа. */
+  @media (hover: hover) {
+    .certificate-doc:hover .certificate-doc__hint { opacity: 1; }
+  }
+  .certificate-doc:focus-visible .certificate-doc__hint { opacity: 1; }
+
+  /* Медальон-«подпись» рядом с именем Эвклида: квадратный кроп на голову
+     и плечи. Реализован фоном, а не <img>: исходник — портрет 3:4 по пояс,
+     голова занимает лишь верхнюю треть кадра, поэтому object-position одним
+     сдвигом нужного кропа не даёт — в квадрате 96–112px лицо становится
+     нечитаемым. background-size задаёт масштаб, position — окно кадра.
+     Сам URL приходит инлайн-стилем из Certificate.astro (ES-импорт ассета). */
+  .certificate-medallion {
+    @apply relative shrink-0 bg-wire-panel;
+    background-size: 165%;
+    background-position: 50% 4%;
+    background-repeat: no-repeat;
   }
 
   /* ============================================================
