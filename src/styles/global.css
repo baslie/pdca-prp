@@ -324,6 +324,17 @@
   .t-on-dark-muted  { color: rgb(255 255 255 / 0.75); }
   .t-on-dark-soft   { color: rgb(255 255 255 / 0.55); }
 
+  /* Blend-вариант фирменного синего для текста поверх fixed-фотослоёв hero.
+     mix-blend-difference считает |фон − цвет|: чтобы на белом фоне получился
+     ровно wire-accent2, цвет текста — его поканальное дополнение до белого
+     (#FFCEAB — статический fallback). Поверх тёмных дуотон-фото (Денис, гора)
+     текст остаётся светлым — инверсия читаемости сохраняется. */
+  .t-blend-brand {
+    color: #FFCEAB;
+    color: rgb(from var(--color-wire-accent2) calc(255 - r) calc(255 - g) calc(255 - b));
+    mix-blend-mode: difference;
+  }
+
   /* DOM-компонент списка проектов в #modal-examples. */
   .t-modal-list-item {
     @apply flex items-start gap-2 -mx-3 px-4
