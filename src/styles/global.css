@@ -1198,7 +1198,6 @@
     justify-content: center;
     background-color: var(--color-wire-panel);
     color: var(--color-wire-dark);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
