@@ -1210,10 +1210,9 @@
       opacity: 1;
       pointer-events: auto;
     }
-    /* На краю ленты стрелка глушится, но остаётся видимой призраком —
-       иначе она «мигает» появлением/исчезновением при доскролле. */
+    /* На краю ленты стрелка спрятана полностью: листать дальше некуда. */
     .video-slider:hover .video-slider__arrow:disabled {
-      opacity: 0.35;
+      opacity: 0;
       pointer-events: none;
     }
     .video-slider__arrow:hover {
