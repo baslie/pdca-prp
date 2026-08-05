@@ -183,8 +183,12 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 
 - **Иероглиф 改善** (kanji): `text-[clamp(110px,11vw,200px)]` (desktop) /
   `text-[56px] sm:text-[72px]` (mobile). Шрифт `Yuji Mai`.
-- **Цифры stat-card** (`12 / 7 / 400 / 5000`): `text-5xl md:text-6xl lg:text-7xl
-  font-black tracking-display`.
+- **Цифры stat-card** (`22 / 17 / 850 / 13 000`): `font-black tracking-display`,
+  размер — `clamp(1.5rem, 29cqi, 4.5rem)` (container query, `container-type:
+  inline-size` на `.stat-card`, так что `cqi` считается от контент-бокса карточки).
+  Множитель `29cqi` продиктован самым длинным числом — «13 000», 6 знаков: при
+  прежних `36cqi` оно занимало 118% контент-бокса и вылезало за карточку. При
+  добавлении числа длиннее 6 знаков множитель придётся пересчитать.
 - **`.feature-card__label`** в glass-карточках: tracking `wider` (0.05em) узкий,
   чем у `.t-eyebrow` (0.32em) — иначе длинные подписи «Многолетний опыт» не
   умещаются в 6-колоночную сетку.

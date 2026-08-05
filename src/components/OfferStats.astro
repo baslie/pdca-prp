@@ -21,11 +21,13 @@ interface Stat {
   caption: string;
 }
 
+// number рендерится через set:html — «13 000» держим неразрывным пробелом,
+// иначе в узкой карточке число ломается на две строки.
 const stats: Stat[] = [
-  { number: '12',   caption: 'лет в бизнес-обучении' },
-  { number: '7',    caption: 'лет в сфере бережливого производства' },
-  { number: '400',  caption: 'проведённых тренингов в России, странах СНГ и Евросоюза' },
-  { number: '5000', caption: 'довольных участников' },
+  { number: '22',          caption: 'года в области бизнес-обучения' },
+  { number: '17',          caption: 'лет в сфере бережливого производства' },
+  { number: '850',         caption: 'проведённых тренингов в России, странах СНГ и Евросоюза' },
+  { number: '13&nbsp;000', caption: 'довольных участников' },
 ];
 ---
 
@@ -62,14 +64,14 @@ const stats: Stat[] = [
     <div class="mt-[clamp(2.5rem,4vw,4rem)] grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
       {stats.map((s) => (
         <article class="stat-card">
-          <div class="stat-card__number">{s.number}</div>
+          <div class="stat-card__number" set:html={s.number}></div>
           <p class="stat-card__caption" set:html={s.caption}></p>
         </article>
       ))}
     </div>
 
     <p class="mt-[clamp(2.5rem,4vw,4rem)] text-center t-meta t-on-dark-muted max-w-2xl mx-auto">
-      12&nbsp;лет опыта подкреплены сотнями тренингов и&nbsp;тысячами участников
+      22&nbsp;года опыта подкреплены сотнями тренингов и&nbsp;тысячами участников
     </p>
 
   </div>

@@ -31,7 +31,7 @@
   --color-wire-text: #2B2B2B;
   --color-wire-dark: #0C0C0C;
   --color-wire-accent: #e84249;   /* Pantone Red 032 C */
-  --color-wire-accent2: #003154;  /* Pantone 648 C (запас, на текущем макете не используется) */
+  --color-wire-accent2: #003154;  /* Pantone 648 C — цвет дуотона горы в hero (SVG-фильтр #mountain-duotone) */
 
   /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
   --font-sans: Inter, system-ui, -apple-system, sans-serif;
@@ -252,6 +252,10 @@
   .section-py { @apply py-[clamp(3rem,6vw,8rem)]; }
   .link-contact { @apply text-wire-dark hover:text-wire-accent transition-colors duration-200; }
 
+  /* Тонировка декоративной горы в hero. Сам фильтр — инлайн-SVG в Hero.astro:
+     чёрный уходит в --color-wire-accent2 (#003154), белый остаётся белым. */
+  .mountain-duotone { filter: url(#mountain-duotone); }
+
   /* Строка-категория в секции #examples. */
   .category-row { @apply w-full text-left flex items-center gap-6 py-6; transition: padding-left 0.2s ease; }
   .category-row:hover { padding-left: 12px; }
@@ -287,7 +291,13 @@
   .stat-card__number {
     @apply font-black leading-none tracking-display;
     color: #fff;
-    font-size: clamp(1.75rem, 36cqi, 4.5rem);
+    /* 29cqi (а не 36) подобрано под самое длинное число блока — «13 000», 6 знаков:
+       при 36cqi оно занимает 118% контент-бокса карточки и вылезает наружу.
+       Потолок 4.5rem не меняли: он включается при контент-боксе >= 248px, где
+       «13 000» укладывается в 236px, — на экранах от ~1440px кегль прежний.
+       Минимум 1.5rem (а не 1.75) — для вьюпортов <= ~330px, где в clamp упирается
+       именно нижняя граница. */
+    font-size: clamp(1.5rem, 29cqi, 4.5rem);
   }
   .stat-card__caption {
     @apply mt-4;

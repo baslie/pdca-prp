@@ -28,15 +28,34 @@ import mountain from '../assets/images/mountain.jpg';
     <a href="mailto:info@pdca-consulting.ru" class="link-contact">info@pdca-consulting.ru</a>
   </div>
 
+  <!-- Дуотон для горы: чёрный -> #003154 (Pantone 648 C, токен --color-wire-accent2),
+       белый остаётся белым, чтобы белый фон исходного JPG сливался с bg-wire-bg
+       и по краю картинки не проступал прямоугольник.
+       tableValues = каналы #003154, делённые на 255: R 0x00 -> 0, G 0x31 -> 0.192,
+       B 0x54 -> 0.329. color-interpolation-filters="sRGB" обязателен: по умолчанию
+       фильтры считаются в linearRGB и оттенок уезжает в пересвет. -->
+  <svg aria-hidden="true" focusable="false" class="absolute w-0 h-0 overflow-hidden">
+    <filter id="mountain-duotone" color-interpolation-filters="sRGB">
+      <feColorMatrix type="saturate" values="0" />
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0 1" />
+        <feFuncG type="table" tableValues="0.192 1" />
+        <feFuncB type="table" tableValues="0.329 1" />
+      </feComponentTransfer>
+    </filter>
+  </svg>
+
   <!-- Декоративная гора в левом нижнем углу.
-       На mobile — absolute внутри hero, на md+ — fixed к viewport (вместе с Денисом). -->
+       На mobile — absolute внутри hero, на md+ — fixed к viewport (вместе с Денисом).
+       filter создаёт stacking context на самой картинке, но она по-прежнему рисуется
+       в общий контекст body — mix-blend-difference героики продолжает работать. -->
   <img
     id="mountain-fixed"
     src={mountain.src}
     alt=""
     width={mountain.width}
     height={mountain.height}
-    class="absolute md:fixed bottom-0 left-0 w-[clamp(425px,33vw,760px)] h-auto pointer-events-none select-none"
+    class="mountain-duotone absolute md:fixed bottom-0 left-0 w-[clamp(425px,33vw,760px)] h-auto pointer-events-none select-none"
   />
 
   <!-- Сетка: 58/42 — даёт типографике чуть больше воздуха, фото остаётся весомым. -->
