@@ -181,6 +181,23 @@ Astro поднимает встроенный dev-сервер с HMR на `http
 
 На сайте используется видеохостинг **BoomStream** (`play.boomstream.com`). Текущее видео — `nm7YeR0q` (Учебный курс «Профессиональное Решение Проблем», ~30 мин).
 
+### Как добавить новое видео
+
+Механизм унифицирован: `BoomStreamPlayer.astro` — переиспользуемый компонент, весь фолбэк (watchdog, оверлей «Видео не загрузилось», кнопка «Попробовать снова») приезжает с ним автоматически. Новое видео — это только:
+
+```astro
+---
+import BoomStreamPlayer from '../components/BoomStreamPlayer.astro';
+---
+<BoomStreamPlayer code="КОД_ВИДЕО" title="Название видео (accessibility + подпись iframe)" />
+```
+
+- `code` — последний сегмент URL плеера (`play.boomstream.com/XXXX`), берётся из кабинета BoomStream.
+- **Ничего дополнительно подключать не нужно**: `boomstream-watchdog.ts` обслуживает все экземпляры `[data-bs-player]` на странице разом (один message-листенер, один IntersectionObserver; Astro хойстит скрипт один раз). Несколько плееров с разными `code` работают независимо, таймер у каждого свой.
+- Секцию-обёртку делает вызывающий — по правилам стэкинга (`relative z-10` + непрозрачный фон); образец — `src/components/Video.astro`.
+- Опциональный флаг `autoplay` — muted-автостарт (см. «Muted-autoplay» ниже). Нюанс: его inline-скрипт ищет iframe по `src`, поэтому два плеера с **одинаковым** `code` и `autoplay` на одной странице не поддерживаются (случай гипотетический).
+- Aspect ratio фиксирован 16:9 (`aspect-video`); для вертикальных видео компонент потребует доработки.
+
 ### Текущий embed
 
 В `src/components/BoomStreamPlayer.astro` встроен **прямым `<iframe>`** по официальной рекомендации BoomStream: https://boomstream.ru/documentation/developers/adaptive-style. Без SDK biframesdk.js — адаптивность даёт CSS-контейнер. Внешний компонент `<Video />` (`src/components/Video.astro`) использует его как `<BoomStreamPlayer code="nm7YeR0q" />`.
