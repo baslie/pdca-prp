@@ -30,8 +30,8 @@
   --color-wire-muted: #8B8B8B;
   --color-wire-text: #2B2B2B;
   --color-wire-dark: #0C0C0C;
-  --color-wire-accent: #e84249;   /* Pantone Red 032 C */
-  --color-wire-accent2: #003154;  /* Pantone 648 C — кнопки в покое + дуотон горы в hero (#mountain-duotone) */
+  --color-wire-accent: #e84249;   /* Pantone Red 032 C — акцент в заголовках + кнопки в покое */
+  --color-wire-accent2: #003154;  /* Pantone 648 C — ховер кнопок + дуотон горы в hero (#mountain-duotone) */
 
   /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
   --font-sans: Inter, system-ui, -apple-system, sans-serif;
@@ -228,28 +228,24 @@
     line-height: 1.55;
   }
 
-  /* Кнопки: покой — фирменный синий (--color-wire-accent2), hover — красный
-     (--color-wire-accent). Цвета берём только из токенов, хардкода hex быть не должно:
-     тень ховера собирается через color-mix из того же --color-wire-accent. */
+  /* Кнопки: покой — красный (--color-wire-accent), hover — фирменный синий
+     (--color-wire-accent2). Ховер — только смена заливки, без теней. */
   .btn-primary {
-    @apply inline-flex items-center justify-center whitespace-nowrap bg-wire-accent2 text-wire-bg font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center whitespace-nowrap bg-wire-accent text-wire-bg font-semibold transition-all duration-200;
     padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
     font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
     letter-spacing: 0.005em;
     min-width: clamp(13rem, 18vw, 19rem);
   }
-  .btn-primary:hover {
-    @apply bg-wire-accent text-white;
-    box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--color-wire-accent) 45%, transparent);
-  }
+  .btn-primary:hover { @apply bg-wire-accent2 text-white; }
   .btn-secondary {
-    @apply inline-flex items-center justify-center border border-wire-accent2 text-wire-accent2 font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center border border-wire-accent text-wire-accent font-semibold transition-all duration-200;
     padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
     font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
     letter-spacing: 0.005em;
     min-width: clamp(13rem, 18vw, 19rem);
   }
-  .btn-secondary:hover { @apply bg-wire-accent border-wire-accent text-white; }
+  .btn-secondary:hover { @apply bg-wire-accent2 border-wire-accent2 text-white; }
 
   /* ============================================================
      COMPOSITION-классы — повторяющиеся Tailwind-цепочки.
@@ -261,6 +257,15 @@
   /* Тонировка декоративной горы в hero. Сам фильтр — инлайн-SVG в Hero.astro:
      чёрный уходит в --color-wire-accent2 (#003154), белый остаётся белым. */
   .mountain-duotone { filter: url(#mountain-duotone); }
+
+  /* «Стальной» оверлей поверх фоновой панорамы в #offer-stats: фирменный синий,
+     приглушённый тёмным до серо-синего, — чистый --color-wire-accent2 на фото
+     читается слишком голубым. Композит поверх самого светлого участка фото даёт
+     примерно rgb(64,88,105) и контраст белого 7.4:1. */
+  .steel-overlay {
+    background: color-mix(in srgb, var(--color-wire-accent2) 65%, var(--color-wire-dark));
+    opacity: 0.84;
+  }
 
   /* Строка-категория в секции #examples. */
   .category-row { @apply w-full text-left flex items-center gap-6 py-6; transition: padding-left 0.2s ease; }

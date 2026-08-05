@@ -37,9 +37,10 @@ const stats: Stat[] = [
   class="relative z-10 overflow-hidden py-[clamp(4rem,7vw,9rem)] bg-cover bg-center bg-fixed"
   style={`background-image: url('${mountainsClouds.src}');`}
 >
-  <!-- Двухслойный overlay для читаемости белого текста. -->
-  <div class="absolute inset-0 bg-wire-dark/55" aria-hidden="true"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" aria-hidden="true"></div>
+  <!-- Двухслойный overlay: «стальной» синий (.steel-overlay, см. global.css)
+       вместо прежнего нейтрально-тёмного + вертикальная виньетка фирменным синим. -->
+  <div class="absolute inset-0 steel-overlay" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-wire-accent2/45 via-transparent to-wire-accent2/35" aria-hidden="true"></div>
 
   <div class="relative w-full section-px">
 
