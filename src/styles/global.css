@@ -149,9 +149,15 @@
      без JS-таймеров (close() в modal.ts остаётся мгновенным вызовом).
      Браузеры без @starting-style (Firefox < 129) просто открывают
      модалку мгновенно — деградация мягкая.
+
+     Вход и выход разведены по длительности: открытие можно смаковать,
+     закрытие должно быть быстрым — иначе «уйти» ощущается как залипание.
+     Правило [open] описывает ВХОД (переход в это состояние), базовое —
+     ВЫХОД (переход обратно).
      ============================================================ */
   :root {
-    --modal-dur:  350ms;
+    --modal-dur-in:  500ms;
+    --modal-dur-out: 350ms;
     --modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -161,12 +167,16 @@
   dialog#modal-about {
     clip-path: circle(0px at var(--reveal-x, 50vw) var(--reveal-y, 50vh));
     transition:
-      clip-path var(--modal-dur) var(--modal-ease),
-      display   var(--modal-dur) allow-discrete,
-      overlay   var(--modal-dur) allow-discrete;
+      clip-path var(--modal-dur-out) var(--modal-ease),
+      display   var(--modal-dur-out) allow-discrete,
+      overlay   var(--modal-dur-out) allow-discrete;
   }
   dialog#modal-about[open] {
     clip-path: circle(var(--reveal-r, 150vmax) at var(--reveal-x, 50vw) var(--reveal-y, 50vh));
+    transition:
+      clip-path var(--modal-dur-in) var(--modal-ease),
+      display   var(--modal-dur-in) allow-discrete,
+      overlay   var(--modal-dur-in) allow-discrete;
   }
   @starting-style {
     dialog#modal-about[open] {
@@ -175,14 +185,17 @@
   }
 
   /* Контент проявляется следом за кругом. opacity самого <dialog> не трогаем —
-     иначе fade задваивается с clip-path и раскрытие выглядит мутным. */
-  .modal-about-content { opacity: 0; transition: opacity 220ms ease 80ms; }
-  dialog#modal-about[open] .modal-about-content { opacity: 1; }
+     иначе fade задваивается с clip-path и раскрытие выглядит мутным.
+     На входе — с задержкой 120 мс (круг успевает разойтись), на выходе
+     гаснет сразу, чтобы не «догонять» схлопывание. */
+  .modal-about-content { opacity: 0; transition: opacity 220ms ease; }
+  dialog#modal-about[open] .modal-about-content {
+    opacity: 1;
+    transition: opacity 300ms ease 120ms;
+  }
   @starting-style {
     dialog#modal-about[open] .modal-about-content { opacity: 0; }
   }
-  /* На закрытии гасим без задержки, чтобы контент не «догонял» схлопывание круга. */
-  dialog#modal-about:not([open]) .modal-about-content { transition-delay: 0ms; }
 
   /* Стильный скролл внутри модалки */
   .modal-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent; scrollbar-gutter: stable; }
@@ -204,19 +217,30 @@
     overflow-y: auto;
     overflow-x: hidden;
     transition:
-      display var(--modal-dur) allow-discrete,
-      overlay var(--modal-dur) allow-discrete;
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-examples[open] {
+    transition:
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
   }
   dialog#modal-examples::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(3px);
     opacity: 0;
     transition:
-      opacity var(--modal-dur) var(--modal-ease),
-      display var(--modal-dur) allow-discrete,
-      overlay var(--modal-dur) allow-discrete;
+      opacity var(--modal-dur-out) var(--modal-ease),
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
   }
-  dialog#modal-examples[open]::backdrop { opacity: 1; }
+  dialog#modal-examples[open]::backdrop {
+    opacity: 1;
+    transition:
+      opacity var(--modal-dur-in) var(--modal-ease),
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
   @starting-style {
     dialog#modal-examples[open]::backdrop { opacity: 0; }
   }
@@ -229,10 +253,16 @@
     opacity: 0;
     transform: translateY(12px) scale(0.98);
     transition:
-      opacity   var(--modal-dur) var(--modal-ease),
-      transform var(--modal-dur) var(--modal-ease);
+      opacity   var(--modal-dur-out) var(--modal-ease),
+      transform var(--modal-dur-out) var(--modal-ease);
   }
-  dialog#modal-examples[open] .modal-examples-card { opacity: 1; transform: none; }
+  dialog#modal-examples[open] .modal-examples-card {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity   var(--modal-dur-in) var(--modal-ease),
+      transform var(--modal-dur-in) var(--modal-ease);
+  }
   @starting-style {
     dialog#modal-examples[open] .modal-examples-card {
       opacity: 0;
@@ -240,14 +270,20 @@
     }
   }
 
-  /* Уважаем системную настройку: обе модалки открываются/закрываются мгновенно. */
+  /* Уважаем системную настройку: обе модалки открываются/закрываются мгновенно.
+     Перечисляем и [open]-варианты: @media не добавляет специфичности, а без них
+     transition из правил входа перебил бы этот сброс. */
   @media (prefers-reduced-motion: reduce) {
     dialog#modal-about,
     dialog#modal-about[open],
     .modal-about-content,
+    dialog#modal-about[open] .modal-about-content,
     dialog#modal-examples,
+    dialog#modal-examples[open],
     dialog#modal-examples::backdrop,
-    .modal-examples-card {
+    dialog#modal-examples[open]::backdrop,
+    .modal-examples-card,
+    dialog#modal-examples[open] .modal-examples-card {
       transition: none;
       clip-path: none;
       opacity: 1;
