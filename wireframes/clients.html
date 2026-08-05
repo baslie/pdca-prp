@@ -98,10 +98,38 @@
       /* ===== В3 «Ковёр»: свободная россыпь без рамок ===== */
       .carpet { @apply flex flex-wrap justify-center items-center; }
 
+      /* ===== В5 «Ковёр на синем»: три способа положить логотипы на тёмный фон ===== */
+
+      /* a) как есть — прозрачные PNG прямо на фирменном синем */
+      .on-brand.mode-as-is .logo { filter: none; opacity: 1; }
+
+      /* b) выворотка — всё непрозрачное гасится в белое.
+         Плашечные логотипы так превращаются в белые прямоугольники,
+         поэтому им вместо фильтра выдаётся белая подложка. */
+      .on-brand.mode-knockout .logo { filter: brightness(0) invert(1); opacity: .82; }
+      @media (hover: hover) {
+        .on-brand.mode-knockout .logo-cell:hover .logo { opacity: 1; }
+      }
+      .on-brand.mode-knockout .logo-cell.is-plate { @apply bg-white; padding: 10px 14px; }
+      .on-brand.mode-knockout .logo-cell.is-plate .logo { filter: none; opacity: 1; }
+
+      /* c) белые карточки — единый приём для всех, плашки перестают выделяться */
+      .on-brand.mode-cards .logo-cell { @apply bg-white; padding: 12px 16px; }
+      .on-brand.mode-cards .logo { filter: none; opacity: 1; }
+
       .switch {
         @apply inline-flex items-center border border-wire-border uppercase transition-colors duration-200 text-wire-text bg-white;
         padding: 0.375rem 0.75rem; font-size: 0.75rem; letter-spacing: 0.08em; line-height: 1.4;
       }
+      /* Переключатель режимов внутри тёмной секции — светлый на светлом не читается */
+      .switch--dark {
+        @apply bg-transparent text-white/70;
+        border-color: rgb(255 255 255 / 0.28);
+      }
+      @media (hover: hover) {
+        .switch--dark:hover { @apply bg-white text-wire-accent2; border-color: #fff; }
+      }
+      .switch--dark.switch--on { @apply bg-white text-wire-accent2; border-color: #fff; }
       @media (hover: hover) {
         .switch:hover { @apply bg-wire-accent2 border-wire-accent2 text-white; }
       }
@@ -127,6 +155,7 @@
       <a href="#v2" class="t-hint t-on-muted underline underline-offset-4">В2</a>
       <a href="#v3" class="t-hint t-on-muted underline underline-offset-4">В3</a>
       <a href="#v4" class="t-hint t-on-muted underline underline-offset-4">В4</a>
+      <a href="#v5" class="t-hint t-on-muted underline underline-offset-4">В5</a>
     </div>
   </div>
 
@@ -224,6 +253,35 @@
     </div>
   </section>
 
+  <!-- ================= ВАРИАНТ 5 · КОВЁР НА ФИРМЕННОМ СИНЕМ ================= -->
+  <!-- Секция намеренно НЕ имеет класса mono: на тёмном фоне режим задаётся своим переключателем -->
+  <section id="v5" class="on-brand mode-knockout relative py-20 md:py-28" style="background-color: #003154">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <header class="max-w-prose-narrow mx-auto text-center mb-10">
+        <p class="t-eyebrow mb-4" style="color: rgb(255 255 255 / 0.5)">Вариант 5</p>
+        <h2 class="t-h-section mb-5 text-white">Ковёр на синем</h2>
+        <p class="t-lead" style="color: rgb(255 255 255 / 0.75)">
+          Тот же полноширинный ковёр, но на фирменном Pantone 648 C. Тёмная полоса
+          разрезает страницу и работает как пауза перед следующим блоком.
+        </p>
+      </header>
+
+      <div class="flex flex-wrap justify-center gap-2 mb-12">
+        <button class="switch switch--dark" data-mode="as-is">Как есть</button>
+        <button class="switch switch--dark switch--on" data-mode="knockout">Белая выворотка</button>
+        <button class="switch switch--dark" data-mode="cards">Белые карточки</button>
+      </div>
+    </div>
+
+    <div class="carpet gap-x-8 gap-y-7 md:gap-x-14 md:gap-y-10 px-6 md:px-12" data-logos="carpet-brand"></div>
+
+    <div class="max-w-[1400px] mx-auto px-6">
+      <p class="t-meta mt-12 text-center" style="color: rgb(255 255 255 / 0.5)">
+        фон #003154 · семь логотипов с фирменной плашкой обрабатываются отдельно — см. заметки ниже
+      </p>
+    </div>
+  </section>
+
   <!-- ================= ЗАМЕТКИ ================= -->
   <section class="py-16 bg-wire-panel border-t border-wire-border">
     <div class="max-w-prose mx-auto px-6">
@@ -238,6 +296,11 @@
             Ч/б-режим это сглаживает; в цветном режиме они будут выбиваться.</li>
         <li>Из семи пар дублей оставлен один вариант. ВТБ и ВТБ Страхование оставлены оба —
             это разные компании, но рядом смотрятся как повтор.</li>
+        <li><b>Тёмный фон (В5) требует выбора приёма.</b> «Как есть» — тёмно-синие и чёрные знаки
+            (ВТБ, Промет, Aurus, Whirlpool) почти пропадают. «Белая выворотка» — единообразно
+            и строго, но убивает фирменные цвета и не работает для плашечных логотипов,
+            поэтому семи из них выдана белая подложка. «Белые карточки» — честный компромисс:
+            все в равных условиях, цвета сохранены, но блок становится пёстрым.</li>
       </ul>
     </div>
   </section>
@@ -304,8 +367,30 @@
     document.querySelector('[data-logos="carpet-wide"]').innerHTML =
       LOGOS.map((l) => `<div class="logo-cell w-[130px] h-[65px] md:w-[165px] md:h-[82px]">${img(l)}</div>`).join('');
 
-    // Переключатели: сравнить режимы, не перезагружая страницу
-    const sections = document.querySelectorAll('section[id]');
+    // Логотипы, у которых фон — часть фирменного знака (плашка) либо есть внутренняя
+    // белая заливка. Выворотку к ним применять нельзя: получится белый прямоугольник.
+    const PLATES = new Set([
+      'expobank', 'basf', 'aero-mebel', 'hubert-burda-media',
+      'msu-business-school', 'schindler', 'eldorado',
+    ]);
+
+    // В5 — тот же ковёр на фирменном синем
+    document.querySelector('[data-logos="carpet-brand"]').innerHTML =
+      LOGOS.map((l) => `<div class="logo-cell ${PLATES.has(l[0]) ? 'is-plate ' : ''}w-[130px] h-[65px] md:w-[165px] md:h-[82px] flex items-center justify-center">${img(l)}</div>`).join('');
+
+    // Режимы В5 переключаются классом на секции
+    const brandSection = document.getElementById('v5');
+    document.querySelectorAll('[data-mode]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-mode]').forEach((b) => b.classList.toggle('switch--on', b === btn));
+        brandSection.classList.remove('mode-as-is', 'mode-knockout', 'mode-cards');
+        brandSection.classList.add('mode-' + btn.dataset.mode);
+      });
+    });
+
+    // Переключатели: сравнить режимы, не перезагружая страницу.
+    // В5 исключён — у него собственные режимы, глобальные ч/б и фон к нему неприменимы.
+    const sections = document.querySelectorAll('section[id]:not(#v5)');
     document.querySelectorAll('[data-toggle]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const mode = btn.dataset.toggle;
