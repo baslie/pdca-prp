@@ -1,0 +1,149 @@
+---
+import type { ImageMetadata } from 'astro';
+
+/* ========== БЛОК «НАМ ДОВЕРЯЮТ» ==========
+   Логотипы организаций, чьих сотрудников обучал Денис, плюс перечень тех,
+   у кого логотипа нет. Раньше это была полоса пиллов внизу #about-trainer —
+   она перенесена сюда целиком, ни одно название не потеряно.
+
+   Файлы логотипов подготовлены пакетно: обрезаны по фактическим границам знака,
+   выровнены по визуальной массе (а не по высоте — иначе длинный вордмарк
+   «ВТБ Страхование» задавил бы компактный ромб «Феликса») и уложены в единый
+   канвас 480×240 px с равным защитным полем. Белый фон вырезан заливкой
+   от краёв, поэтому выворотка внутри знаков цела. */
+
+const logoFiles = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/images/logos/*.png',
+  { eager: true },
+);
+
+interface Logo {
+  slug: string;
+  name: string;
+}
+
+/* Порядок — по узнаваемости бренда: чем весомее компания, тем раньше она
+   попадает в ковёр (первый ряд читают все, последний — почти никто).
+   Менять порядок здесь, файлы переименовывать не нужно. */
+const LOGOS: Logo[] = [
+  { slug: 'sber',                name: 'Сбербанк' },
+  { slug: 'vtb',                 name: 'Банк ВТБ' },
+  { slug: 'lukoil',              name: 'Лукойл' },
+  { slug: 'roche',               name: 'Roche' },
+  { slug: 'basf',                name: 'BASF' },
+  { slug: 'takeda',              name: 'Takeda' },
+  { slug: 'whirlpool',           name: 'Whirlpool' },
+  { slug: 'tekhnonikol',         name: 'ТехноНИКОЛЬ' },
+  { slug: 'eldorado',            name: 'Эльдорадо' },
+  { slug: 'mgimo',               name: 'МГИМО' },
+  { slug: 'msu-business-school', name: 'Высшая школа бизнеса МГУ' },
+  { slug: 'aurus',               name: 'Aurus' },
+  { slug: 'komus',               name: 'Комус' },
+  { slug: 'russian-helicopters', name: 'Вертолёты России' },
+  { slug: 'abbvie',              name: 'AbbVie' },
+  { slug: 'veeam',               name: 'Veeam Software' },
+  { slug: 'schindler',           name: 'Schindler' },
+  { slug: 'vtb-strahovanie',     name: 'ВТБ Страхование' },
+  { slug: 'dzm-moscow',          name: 'Департамент здравоохранения города Москвы' },
+  { slug: 'expobank',            name: 'Экспобанк' },
+  { slug: 'nami',                name: 'НАМИ' },
+  { slug: 'ekspeditsiya',        name: 'Экспедиция' },
+  { slug: 'promet',              name: 'Промет' },
+  { slug: 'mettler-toledo',      name: 'Mettler Toledo' },
+  { slug: 'ipsen',               name: 'Ipsen' },
+  { slug: 'rittal',              name: 'Rittal' },
+  { slug: 'dentsply-sirona',     name: 'Dentsply Sirona' },
+  { slug: 'hubert-burda-media',  name: 'Hubert Burda Media' },
+  { slug: 'boots-healthcare',    name: 'Boots Healthcare International' },
+  { slug: 'jgl',                 name: 'JGL (Jadran)' },
+  { slug: 'soteks',              name: 'Сотекс' },
+  { slug: 'feliks',              name: 'Компания Феликс' },
+  { slug: 'express-office',      name: 'Экспресс Офис' },
+  { slug: 'aero-mebel',          name: 'Аэро Мебель' },
+];
+
+/* Организации без логотипа — тем же порядком по узнаваемости.
+   Те, чьи логотипы показаны выше, из перечня убраны, чтобы блок не повторял
+   сам себя. Полный список до разделения (54 позиции) — в истории git,
+   коммит с удалением полосы из AboutTrainer.astro. */
+const CLIENTS: string[] = [
+  'РЖД',
+  'Ростелеком',
+  'Авито',
+  'Sanofi',
+  'Janssen (Johnson & Johnson)',
+  'Novo Nordisk',
+  'MSD',
+  'Abbott',
+  'Japan Tobacco International',
+  'Makita',
+  'Billa',
+  'Министерство финансов',
+  'Министерство культуры',
+  'Министерство экологии',
+  'Министерство соц. защиты',
+  'РАНХиГС',
+  'MPA-ИГСУ',
+  'Мособлгаз',
+  'Tikkurila (PPG)',
+  'Recordati',
+  'Cersanit',
+  'ЛокоТех',
+  'Freedom International Group',
+  'Сапсан-недвижимость',
+  'Пиканта',
+];
+
+const logos = LOGOS.map((l) => {
+  const mod = logoFiles[`../assets/images/logos/${l.slug}.png`];
+  if (!mod) throw new Error(`Clients.astro: не найден логотип ${l.slug}.png`);
+  return { ...l, image: mod.default };
+});
+---
+
+<!-- Секция ниже hero: relative z-10 + непрозрачный фон обязательны,
+     иначе сквозь неё проступают fixed-слои героики (см. CLAUDE.md). -->
+<section id="clients" class="relative z-10 bg-wire-bg py-[clamp(3.5rem,7vw,7rem)]">
+
+  <div class="section-px">
+    <header class="max-w-prose">
+      <p class="t-eyebrow t-on-soft mb-4">Опыт обучения сотрудников организаций</p>
+      <h2 class="t-h-section t-on-strong">
+        Нам <span class="text-wire-accent">доверяют</span>
+      </h2>
+    </header>
+  </div>
+
+  <!-- Ковёр во всю ширину: контейнера с max-w нет, только боковые поля. -->
+  <ul class="flex flex-wrap justify-center items-center
+             gap-x-8 gap-y-7 md:gap-x-14 md:gap-y-10
+             px-6 md:px-12 mt-[clamp(2.5rem,5vw,4.5rem)]">
+    {logos.map((l) => (
+      <li class="client-logo-cell w-[130px] h-[65px] md:w-[165px] md:h-[82px]">
+        <img
+          src={l.image.src}
+          alt={l.name}
+          title={l.name}
+          width={l.image.width}
+          height={l.image.height}
+          loading="lazy"
+          decoding="async"
+          class="client-logo"
+        />
+      </li>
+    ))}
+  </ul>
+
+  <!-- Перечень остальных организаций — тот же материал, что был в полосе
+       под блоком о тренере, только на светлом фоне. -->
+  <div class="section-px mt-[clamp(3rem,6vw,5.5rem)]">
+    <p class="t-eyebrow t-on-soft mb-5">А&nbsp;также</p>
+    <ul class="flex flex-wrap items-center gap-2">
+      {CLIENTS.map((c) => (
+        <li class="client-pill">{c}</li>
+      ))}
+      <li class="t-meta t-on-soft">и&nbsp;др.</li>
+    </ul>
+  </div>
+
+</section>

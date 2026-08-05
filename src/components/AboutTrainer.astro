@@ -38,18 +38,10 @@ const trainings: string[] = [
   'Теория и практика медитации',
 ];
 
-const clients: string[] = [
-  'Abbott', 'AbbVie', 'BASF', 'Billa', 'Boots Healthcare', 'Cersanit', 'Dentsply Sirona',
-  'Freedom International Group', 'Hubert Burda Media', 'IPSEN', 'Janssen (Johnson & Johnson)',
-  'Japan Tobacco International', 'JGL (Jadran)', 'Makita', 'Mettler Toledo', 'MSD',
-  'Novo Nordisk', 'Recordati', 'Roche Pharma', 'Rittal', 'Sanofi', 'Schindler',
-  'Sotex «Pharm Firm»', 'Takeda (Nycomed)', 'Tikkurila (PPG)', 'Veeam Software', 'Whirlpool',
-  'Авито', 'Банк ВТБ', 'Вертолёты России', 'ВТБ-страхование', 'Департ. здравоохранения',
-  'ЛокоТех', 'Лукойл', 'МГИМО', 'МГУ', 'Министерство культуры', 'Министерство соц. защиты',
-  'Министерство финансов', 'Министерство экологии', 'Мособлгаз', 'MPA-ИГСУ', 'НАМИ',
-  'Пиканта', 'Промет', 'РАНХиГС', 'РЖД', 'Ростелеком', 'Сапсан-недвижимость', 'Сбербанк',
-  'ТехноНИКОЛЬ', 'Экспедиция', 'Экспобанк', 'Эльдорадо',
-];
+/* Полоса «Опыт обучения сотрудников организаций» уехала отсюда в отдельную
+   секцию — src/components/Clients.astro («Нам доверяют», перед отзывами).
+   Там же лежит полный перечень: у 29 организаций теперь есть логотип,
+   остальные 25 остались списком-пиллами. */
 
 ---
 
@@ -99,20 +91,6 @@ const clients: string[] = [
         ))}
       </ul>
 
-    </div>
-  </div>
-
-  <!-- Полоса клиентов на всю ширину: чуть темнее основного синего — инверсия
-       прежней пары «белая секция + серая панель». -->
-  <div class="bg-black/15">
-    <div class="section-px py-[clamp(2.5rem,5vw,4.5rem)]">
-      <p class="t-eyebrow t-on-dark-muted mb-5">Опыт обучения сотрудников организаций</p>
-      <ul class="flex flex-wrap items-center gap-2">
-        {clients.map((c) => (
-          <li class="trainer-pill">{c}</li>
-        ))}
-        <li class="t-meta t-on-dark-muted">и&nbsp;др.</li>
-      </ul>
     </div>
   </div>
 </section>
