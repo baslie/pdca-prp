@@ -131,7 +131,6 @@
     line-height: 1.4;
     letter-spacing: -0.005em;
     font-weight: 500;
-    font-style: italic;
   }
   /* Tailwind v4 убрал button { cursor: pointer } из preflight — возвращаем.
      Покрывает .btn-primary, .category-row, крестики модалок и кнопки «Назад». */

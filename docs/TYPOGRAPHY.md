@@ -41,7 +41,7 @@ H-SECTION   32 →  60 px  ▓▓▓▓▓▓▓▓▓▓▓▓
 COMPACT     24 →  36 px  ▓▓▓▓▓▓▓
 H-SUB       18 →  22 px  ▓▓▓▓
 LEAD        17 →  22 px  ▓▓▓▓
-QUOTE       18 →  26 px  ▓▓▓▓▓ italic
+QUOTE       18 →  26 px  ▓▓▓▓▓
 BODY        17 →  20 px  ▓▓▓
 BODY-SM     15 →  17 px  ▓▓
 META        14 px static ▓▓
@@ -58,7 +58,7 @@ HINT        12 px static ▓
 | Lead          | `.t-lead`                          | `clamp(1.0625rem, 1.25vw, 1.375rem)`                 | 1.55  | -0.005em  | 400 | Лид-абзац под H1. |
 | Body          | `.t-body`                          | `clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem)`        | 1.65  | 0         | 400 | Основной текст. |
 | Body-sm       | `.t-body-sm`                       | `clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem)`      | 1.55  | 0         | 400 | Уменьшенный body, ссылки в списках, описания. |
-| Quote         | `.t-quote`                         | `clamp(1.125rem, 1.4vw, 1.625rem)`                   | 1.40  | -0.005em  | 500 italic | `<blockquote>`. |
+| Quote         | `.t-quote`                         | `clamp(1.125rem, 1.4vw, 1.625rem)`                   | 1.40  | -0.005em  | 500 | `<blockquote>`. |
 | Eyebrow       | `.t-eyebrow`                       | 0.6875rem (11px) static                              | 1.40  | 0.32em    | 600 | Надзаголовок-капслок: «Тренинг», «О тренинге». |
 | Meta          | `.t-meta`                          | 0.875rem (14px) static                               | 1.45  | 0         | 400 | Атрибьюшн под цитатой, подпись stat-card, мелкий комментарий. |
 | Hint          | `.t-hint`                          | 0.75rem (12px) static                                | 1.40  | 0         | 400 | Самое мелкое: техническая пометка, мобильная подпись иероглифа. |
