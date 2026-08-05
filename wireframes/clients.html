@@ -126,6 +126,7 @@
       <a href="#v1" class="t-hint t-on-muted ml-auto underline underline-offset-4">В1</a>
       <a href="#v2" class="t-hint t-on-muted underline underline-offset-4">В2</a>
       <a href="#v3" class="t-hint t-on-muted underline underline-offset-4">В3</a>
+      <a href="#v4" class="t-hint t-on-muted underline underline-offset-4">В4</a>
     </div>
   </div>
 
@@ -194,6 +195,31 @@
 
       <p class="t-meta t-on-soft mt-12 text-center">
         без сетки · выравнивание по центру · перенос по ширине контейнера
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= ВАРИАНТ 4 · КОВЁР ВО ВСЮ ШИРИНУ ================= -->
+  <section id="v4" class="mono relative py-20 md:py-28 bg-wire-bg border-t border-wire-border">
+    <!-- Заголовок остаётся в общей колонке — иначе он отрывается от ритма остального сайта -->
+    <div class="max-w-[1400px] mx-auto px-6">
+      <header class="max-w-prose-narrow mx-auto text-center mb-14">
+        <p class="t-eyebrow t-on-soft mb-4">Вариант 4</p>
+        <h2 class="t-h-section t-on-strong mb-5">Ковёр во всю ширину</h2>
+        <p class="t-lead t-on-muted">
+          Тот же принцип, что и в В3, но полотно не заперто в колонку 1400 px и растягивается
+          на всю ширину экрана. Логотипов в ряду больше, блок ниже, а сам разворот читается
+          как масштаб: «их правда много».
+        </p>
+      </header>
+    </div>
+
+    <!-- Full-bleed: контейнера с max-w нет вообще, только боковые поля -->
+    <div class="carpet gap-x-8 gap-y-7 md:gap-x-14 md:gap-y-10 px-6 md:px-12" data-logos="carpet-wide"></div>
+
+    <div class="max-w-[1400px] mx-auto px-6">
+      <p class="t-meta t-on-soft mt-12 text-center">
+        во всю ширину вьюпорта · логотипы мельче, чем в В3, чтобы в ряд помещалось 7–9 штук
       </p>
     </div>
   </section>
@@ -273,6 +299,10 @@
     // В3 — россыпь
     document.querySelector('[data-logos="carpet"]').innerHTML =
       LOGOS.map((l) => `<div class="logo-cell w-[150px] h-[75px] md:w-[190px] md:h-[95px]">${img(l)}</div>`).join('');
+
+    // В4 — та же россыпь во всю ширину: ячейка мельче, чтобы ряд не рассыпался на широких экранах
+    document.querySelector('[data-logos="carpet-wide"]').innerHTML =
+      LOGOS.map((l) => `<div class="logo-cell w-[130px] h-[65px] md:w-[165px] md:h-[82px]">${img(l)}</div>`).join('');
 
     // Переключатели: сравнить режимы, не перезагружая страницу
     const sections = document.querySelectorAll('section[id]');
