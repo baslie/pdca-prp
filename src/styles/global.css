@@ -311,11 +311,12 @@
   .t-hint { font-size: 0.75rem;  line-height: 1.4;  }
 
   /* ============================================================
-     СЕТКА КОНТРАСТА ТЕКСТА — 4 уровня на светлом + 3 на тёмном.
+     СЕТКА КОНТРАСТА ТЕКСТА — 5 уровней на светлом + 3 на тёмном.
      В HTML используется ТОЛЬКО эти классы; ad-hoc text-wire-text/N
      и text-white/N — запрещены (см. docs/TYPOGRAPHY.md, антипаттерны).
      ============================================================ */
   .t-on-strong      { @apply text-wire-dark; }
+  .t-on-brand       { color: var(--color-wire-accent2); }  /* заголовки H1/H2 на светлом фоне, 13.4:1 AAA */
   .t-on-default     { @apply text-wire-text; }
   .t-on-muted       { color: rgb(43 43 43 / 0.70); }   /* #2B2B2B @ 70% */
   .t-on-soft        { color: rgb(43 43 43 / 0.45); }
@@ -496,8 +497,9 @@
   .prp-octagon__shape {
     position: absolute; inset: 0; width: 100%; height: 100%;
     overflow: visible; z-index: 0;
-    /* Обводка октагона рисуется fill="currentColor" в <symbol id="prp-octagon-shape">
-       (см. PrpSteps.astro) — цвет задаётся здесь, через токен фирменного синего. */
+    /* Октагон залит сплошным fill="currentColor" в <symbol id="prp-octagon-shape">
+       (см. PrpSteps.astro) — цвет фона задаётся здесь, токеном фирменного синего.
+       Обводки нет; текст внутри — t-on-dark. */
     color: var(--color-wire-accent2); pointer-events: none;
   }
   .prp-octagon__body {

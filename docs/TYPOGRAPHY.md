@@ -23,7 +23,7 @@ fluid-ролей, `@layer components` для микротекстов, цвет�
 3. **Один H2 — одна шкала.** В основном контенте и в модалках H2 принадлежит
    одной семье `.t-h-section`. Для узких колонок модалок есть модификатор
    `.t-h-section--compact`, но это та же визуальная семья.
-4. **Только 4 уровня контраста текста на светлом фоне** и **3 — на тёмном.**
+4. **Только 5 уровней контраста текста на светлом фоне** и **3 — на тёмном.**
    `text-wire-text/85`, `text-white/70` и т. п. в HTML — анти-паттерн.
 5. **Только fluid либо статика.** Промежуточных «text-2xl, на md text-3xl»
    подходов в шкале нет. Fluid через `clamp(min, ax + b, max)`, статика —
@@ -72,12 +72,12 @@ HINT        12 px static ▓
   <span class="text-wire-accent">решение</span>
 </h1>
 
-<!-- Eyebrow → H-section: канонический заголовок секции -->
+<!-- Eyebrow → H-section: канонический заголовок секции (фирменный синий) -->
 <p class="t-eyebrow t-on-muted mb-6">О тренинге</p>
-<h2 class="t-h-section t-on-strong">Философия постоянных <span class="text-wire-accent">улучшений</span></h2>
+<h2 class="t-h-section t-on-brand">Философия постоянных <span class="text-wire-accent">улучшений</span></h2>
 
 <!-- H2 в модалке -->
-<h2 class="t-h-section t-h-section--compact t-on-strong mt-14 mb-6">1-й день тренинга</h2>
+<h2 class="t-h-section t-h-section--compact t-on-brand mt-14 mb-6">1-й день тренинга</h2>
 
 <!-- Lead под H1 (на тёмном фоне) -->
 <p class="t-lead t-on-dark mix-blend-difference max-w-2xl">…</p>
@@ -101,7 +101,8 @@ HINT        12 px static ▓
 
 | Уровень | Класс           | Цвет                       | Контраст | Когда |
 |---------|-----------------|----------------------------|----------|-------|
-| Strong  | `.t-on-strong`  | `#0C0C0C` (`wire-dark`)    | 19.6:1 ✅ AAA | Заголовки всех уровней, `<strong>`, имена/credit. |
+| Strong  | `.t-on-strong`  | `#0C0C0C` (`wire-dark`)    | 19.6:1 ✅ AAA | H3/H-sub, `<strong>`, имена/credit. |
+| Brand   | `.t-on-brand`   | `#003154` (`wire-accent2`) | 13.4:1 ✅ AAA | Заголовки H1/H2 (включая `--compact` в модалках) на светлом фоне. |
 | Default | `.t-on-default` | `#2B2B2B` (`wire-text`)    | 12.6:1 ✅ AAA | Body, lead, list items. |
 | Muted   | `.t-on-muted`   | `#2B2B2B` @ 70%            | 4.6:1  ✅ AA  | Eyebrow, meta, hint, body-sm, captions. |
 | Soft    | `.t-on-soft`    | `#2B2B2B` @ 45%            | —      | Только декор и неважные таймстампы. **Не для основного контента.** |
@@ -116,7 +117,7 @@ HINT        12 px static ▓
 
 ### Правило
 
-В HTML пишется ТОЛЬКО один из этих 7 классов. `text-wire-text/85`, `text-white/70`,
+В HTML пишется ТОЛЬКО один из этих 8 классов. `text-wire-text/85`, `text-white/70`,
 `text-neutral-500` и подобные — **запрещены** (есть автоматический grep в шаге CI/ревью).
 
 ---
@@ -208,6 +209,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
   `__num` — `clamp(1.35rem, 8.5cqi, 2.3rem)`, вес 600 (по просьбе заказчика
   плотнее, чем «обычное начертание» из ТЗ блока); `__text` —
   `clamp(0.8rem, 5cqi, 1.25rem)`.
+  Оба — белые (`t-on-dark`) на сплошной синей заливке октагона (`wire-accent2`).
   Потолок `__text` (`1.25rem`) совпадает с верхом шкалы `.t-body` — цель в том,
   чтобы текст шага читался как обычный основной текст: на крупных октагонах
   (колонка/планшет ~360–380px) он достигает body-размера. Минимумы clamp — для
@@ -272,7 +274,7 @@ Tailwind компилирует `group-hover:bg-white` в селектор
 
 - [ ] У каждого нового текстового элемента проставлен класс роли (`.t-*`),
       а не набор утилит.
-- [ ] Цвет — один из 7 классов `.t-on-*`. Никаких `/NN` opacity на тексте.
+- [ ] Цвет — один из 8 классов `.t-on-*`. Никаких `/NN` opacity на тексте.
 - [ ] Размер — из шкалы. Если `text-[NNpx]` — это либо плакатное исключение
       (тогда задокументируй его в разделе 5), либо ошибка.
 - [ ] Вес — один из четырёх (400/500/600/900). `font-bold`/`font-extrabold` нет.
@@ -289,9 +291,9 @@ Tailwind компилирует `group-hover:bg-white` в селектор
 | Хочу…                                          | Класс |
 |------------------------------------------------|-------|
 | гигантский H1 героя                            | `t-display` |
-| заголовок секции                               | `t-h-section t-on-strong` |
+| заголовок секции                               | `t-h-section t-on-brand` |
 | тот же заголовок на тёмном фоне                | `t-h-section t-on-dark` |
-| H2 внутри модалки                              | `t-h-section t-h-section--compact t-on-strong mt-14 mb-6` |
+| H2 внутри модалки                              | `t-h-section t-h-section--compact t-on-brand mt-14 mb-6` |
 | H3 в длинном тексте                            | `t-h-sub t-on-strong mt-12 mb-5` |
 | надзаголовок-капслок («Тренинг»)               | `t-eyebrow t-on-muted` |
 | надзаголовок на тёмном фоне                    | `t-eyebrow t-on-dark-muted` |

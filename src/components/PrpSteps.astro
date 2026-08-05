@@ -24,21 +24,18 @@ const steps: Step[] = [
 
       <div class="mb-[clamp(1.5rem,3vw,2rem)] xl:mb-0 max-w-prose mx-auto text-center">
         <p class="t-eyebrow t-on-muted mb-6">Процесс внедрения</p>
-        <h2 class="t-h-section t-on-strong">
+        <h2 class="t-h-section t-on-brand">
           Шаги по&nbsp;внедрению системы <span class="text-wire-accent">ПРП</span>
         </h2>
       </div>
 
       <div class="prp-diagram-stage">
 
-        <!-- SVG-спрайт: форма октагона. Один <symbol>, на который ссылаются 5 <use>. -->
+        <!-- SVG-спрайт: форма октагона. Один <symbol>, на который ссылаются 5 <use>.
+             Сплошная заливка fill="currentColor" — фон карточки, без обводки. -->
         <svg width="0" height="0" style="position:absolute" aria-hidden="true">
           <symbol id="prp-octagon-shape" viewBox="0 0 100 100">
-            <path fill="currentColor" fill-rule="evenodd" d="
-              M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z
-              M 12.186 0.450 L 87.814 0.450 L 99.550 12.186 L 99.550 87.814
-                L 87.814 99.550 L 12.186 99.550 L 0.450 87.814 L 0.450 12.186 Z
-            " />
+            <path fill="currentColor" d="M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z" />
           </symbol>
         </svg>
 
@@ -78,8 +75,8 @@ const steps: Step[] = [
               </svg>
               {s.num !== 5 && <span class="prp-octagon__arrowhead" aria-hidden="true"></span>}
               <div class="prp-octagon__body">
-                <span class="prp-octagon__num t-on-strong" aria-hidden="true">{s.num}</span>
-                <p class="prp-octagon__text t-on-default" set:html={s.text}></p>
+                <span class="prp-octagon__num t-on-dark" aria-hidden="true">{s.num}</span>
+                <p class="prp-octagon__text t-on-dark" set:html={s.text}></p>
               </div>
             </li>
           ))}
