@@ -4,6 +4,11 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import icon from 'astro-icon';
 import compress from '@playform/compress';
+import {
+  typografHtmlOnly,
+  TYPOGRAF_OPTIONS,
+  TYPOGRAF_SELECTOR,
+} from './astro-typograf.config.mjs';
 
 export default defineConfig({
   site: 'https://roman-purtow.ru',
@@ -55,6 +60,13 @@ export default defineConfig({
           return Before > after;
         },
       },
+    }),
+    // Микротипографика по готовому HTML — последней в цепочке, поверх всего.
+    // Конфликта с compress нет: у того HTML: false, до разметки он не доходит.
+    // Правила, селектор и обоснования — в astro-typograf.config.mjs.
+    typografHtmlOnly({
+      selector: TYPOGRAF_SELECTOR,
+      typografOptions: TYPOGRAF_OPTIONS,
     }),
   ],
   vite: {

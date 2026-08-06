@@ -28,7 +28,10 @@ if (dlg && listEl && dataRoot && iconEl && titleEl && countEl) {
   }
 
   function getCountLabel(n: number): string {
-    return `${n} ${plural(n, ['реальный проект', 'реальных проекта', 'реальных проектов'])}`;
+    // Неразрывный пробел руками: Типограф работает по готовому HTML на
+    // сборке, а эта строка собирается в рантайме — до неё он не дотягивается.
+    // Число не должно отрываться от слова. См. CLAUDE.md, «Микротипографика».
+    return `${n}\u00A0${plural(n, ['реальный проект', 'реальных проекта', 'реальных проектов'])}`;
   }
 
   function setTitle(source: Element, trigger: HTMLElement | null): void {

@@ -67,6 +67,10 @@
   IntersectionObserver + CSS-transition (`src/scripts/reveal.ts`).
 - **astro-icon + @iconify-json/lucide** — иконки рендерятся как inline SVG
   на build-time (без CDN, без runtime-замены).
+- **astro-typograf + typograf** — русская микротипографика (неразрывные
+  пробелы, тире, «ёлочки») расставляется автоматически по собранному HTML.
+  Работает только на `npm run build`, исходники не трогает. Конфигурация —
+  `astro-typograf.config.mjs`, проверка покрытия — `scripts/audit-typography.mjs`.
 - **Inter** (Google Fonts) + **Yuji Mai** (только один иероглиф 改善).
 - **BoomStream** — видеоплеер, прямой `<iframe>` без SDK.
 - **GitHub Actions** (`withastro/action@v3` + `actions/deploy-pages@v4`) —
@@ -78,11 +82,15 @@
 
 ```
 .
-├── astro.config.mjs           ← site, base, integrations (icon, tailwind vite)
+├── astro.config.mjs           ← site, base, integrations (icon, compress, typograf)
+├── astro-typograf.config.mjs  ← микротипографика: правила, селектор, typografAttr()
 ├── tsconfig.json              ← extends astro/tsconfigs/strict
 ├── package.json               ← scripts: dev / build / preview / check
 ├── .github/workflows/
 │   └── deploy.yml             ← CI: withastro/action + deploy-pages
+├── scripts/
+│   ├── prepare-training-photos.mjs   ← разовое ужатие кадров галереи
+│   └── audit-typography.mjs          ← проверка покрытия Типографом
 ├── src/
 │   ├── layouts/BaseLayout.astro       ← <head>, SEO, JSON-LD, anti-FOUC inline-script
 │   ├── pages/index.astro              ← главная страница (сборка компонентов)
@@ -98,7 +106,8 @@
 ├── public/                    ← статика «как есть»: favicon.ico, icons/, og-image.png,
 │                                site.webmanifest, browserconfig.xml, robots.txt
 ├── docs/
-│   └── TYPOGRAPHY.md          ← источник правды по тексту (см. ниже)
+│   └── TYPOGRAPHY.md          ← источник правды по тексту (см. ниже);
+│                                раздел 9 — микротипографика
 ├── CLAUDE.md                  ← инструкции для AI-агента и людей-разработчиков
 └── README.md
 ```

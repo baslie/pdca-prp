@@ -35,7 +35,9 @@ document.addEventListener('click', (e) => {
   textEl.classList.toggle('t-on-default', long);
 
   nameEl.textContent = name;
-  metaEl.textContent = [role, city].filter(Boolean).join(' · ');
+  // Точка-разделитель привязана к предыдущему слову неразрывным пробелом.
+  // Строка собирается в рантайме, Типограф до неё не дотягивается.
+  metaEl.textContent = [role, city].filter(Boolean).join('\u00A0· ');
 
   // Скролл сбрасывает сам setupModal — после showModal(), иначе не применится.
   modal.open(trigger);

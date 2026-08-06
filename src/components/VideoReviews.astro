@@ -6,6 +6,10 @@
    клик по карточке открывает ModalVideoReview.astro с плеером и расшифровкой. */
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
+/* Имя и «компания, город» уезжают в data-* и всплывают в модалке через
+   video-reviews.ts. Плагин типографирует только содержимое элементов —
+   атрибуты правим тут. См. CLAUDE.md, раздел «Микротипографика». */
+import { typografAttr } from '../../astro-typograf.config.mjs';
 
 import preview01 from '../assets/images/video-reviews/01.jpg';
 import preview02 from '../assets/images/video-reviews/02.jpg';
@@ -171,14 +175,14 @@ const VIDEO_REVIEWS: VideoReview[] = [
   <div class="video-slider__viewport" data-vr-viewport>
     <div class="flex section-px gap-4 md:gap-6">
       {VIDEO_REVIEWS.map((v, i) => {
-        const meta = [v.company, v.city].filter(Boolean).join(', ');
+        const meta = typografAttr([v.company, v.city].filter(Boolean).join(', '));
         return (
           <div class="video-slide">
             <button
               type="button"
               data-video-card
               data-code={v.code}
-              data-name={v.name ?? ''}
+              data-name={typografAttr(v.name)}
               data-meta={meta}
               data-transcript={`vr-transcript-${i}`}
               aria-haspopup="dialog"

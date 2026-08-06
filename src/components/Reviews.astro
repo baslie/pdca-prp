@@ -1,5 +1,9 @@
 ---
 import VideoReviews from './VideoReviews.astro';
+/* Имя, роль и город уезжают в data-* и всплывают в модалке через reviews.ts.
+   Плагин типографирует только содержимое элементов — атрибуты правим тут.
+   См. CLAUDE.md, раздел «Микротипографика». */
+import { typografAttr } from '../../astro-typograf.config.mjs';
 
 /* 41 настоящий отзыв участников тренинга ПРП. Тексты дословные; правка только
    типографская (тире, «ёлочки»). Порядок курированный: сильные отзывы и панчи
@@ -145,9 +149,9 @@ const rowConfig = [
               <button
                 type="button"
                 data-review-card
-                data-name={r.name}
-                data-role={r.role}
-                data-city={r.city}
+                data-name={typografAttr(r.name)}
+                data-role={typografAttr(r.role)}
+                data-city={typografAttr(r.city)}
                 class="review-card w-[300px] md:w-[360px] shrink-0 mr-4 p-5 text-left flex flex-col"
                 {...(dup ? { 'data-dup': '', 'aria-hidden': 'true', tabindex: '-1' } : {})}
               >

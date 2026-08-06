@@ -63,7 +63,9 @@ if (gallery && dlg && img && card && counter && modal && items.length) {
     img!.height = Number(trigger.dataset.h) || 0;
     img!.alt = trigger.dataset.alt ?? '';
     card!.setAttribute('data-loading', '');
-    counter!.textContent = `${i + 1} / ${items.length}`;
+    // Неразрывные пробелы вокруг слэша: счётчик — единое целое, рвать нельзя.
+    // Строка собирается в рантайме, Типограф до неё не дотягивается.
+    counter!.textContent = `${i + 1}\u00A0/\u00A0${items.length}`;
     img!.src = url;
 
     img!
