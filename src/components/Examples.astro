@@ -178,7 +178,7 @@ const categoryData: CategoryData[] = [
 ---
 
 <!-- ========== БЛОК «ПРИМЕРЫ РЕШЕНИЯ ПРОБЛЕМ» ========== -->
-<section id="examples" class="relative z-10 bg-wire-bg pt-[clamp(3rem,6vw,8rem)] pb-0">
+<section id="examples" class="relative z-10 bg-bg pt-[clamp(3rem,6vw,8rem)] pb-0">
   <div class="w-full section-px">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16">
 
@@ -187,26 +187,32 @@ const categoryData: CategoryData[] = [
         <div class="mb-10">
           <p class="t-eyebrow t-on-muted mb-6">6 областей · реальные проекты</p>
           <h2 class="t-h-section t-on-brand">
-            Примеры <span class="text-wire-accent">решения</span> проблем
+            Примеры <span class="text-brand-red">решения</span> проблем
           </h2>
           <p class="t-hint t-on-muted mt-4 lg:hidden">
             Нажмите на категорию, чтобы посмотреть список проектов.
           </p>
         </div>
 
+        <!-- Каждая категория — H3 под H2 секции. Кнопка живёт ВНУТРИ заголовка
+             (паттерн WAI-ARIA для аккордеонов), а не наоборот: <h3> — flow
+             content и внутрь <button> по HTML не помещается, да и содержимое
+             кнопки в a11y-дереве всё равно схлопывается в её имя. -->
         <ul class="divide-y divide-neutral-200 border-y border-neutral-200">
           {categories.map((c) => (
             <li>
-              <button type="button" class="category-row" data-category={c.id}>
-                <span class="category-row__icon">
-                  <Icon name={c.icon} class="w-7 h-7" />
-                </span>
-                <span class="flex-1">
-                  <span class="category-row__title">{c.title}</span>
-                  <span class="category-row__caption">{c.caption}</span>
-                </span>
-                <span class="category-row__arrow">→</span>
-              </button>
+              <h3>
+                <button type="button" class="category-row" data-category={c.id}>
+                  <span class="category-row__icon">
+                    <Icon name={c.icon} class="w-7 h-7" />
+                  </span>
+                  <span class="flex-1">
+                    <span class="category-row__title">{c.title}</span>
+                    <span class="category-row__caption">{c.caption}</span>
+                  </span>
+                  <span class="category-row__arrow">→</span>
+                </button>
+              </h3>
             </li>
           ))}
         </ul>

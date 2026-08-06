@@ -24,7 +24,7 @@ fluid-ролей, `@layer components` для микротекстов, цвет�
    одной семье `.t-h-section`. Для узких колонок модалок есть модификатор
    `.t-h-section--compact`, но это та же визуальная семья.
 4. **Только 5 уровней контраста текста на светлом фоне** и **3 — на тёмном.**
-   `text-wire-text/85`, `text-white/70` и т. п. в HTML — анти-паттерн.
+   `text-ink/85`, `text-white/70` и т. п. в HTML — анти-паттерн.
 5. **Только fluid либо статика.** Промежуточных «text-2xl, на md text-3xl»
    подходов в шкале нет. Fluid через `clamp(min, ax + b, max)`, статика —
    фиксированный rem.
@@ -54,7 +54,7 @@ HINT        12 px static ▓
 | Display       | `.t-display`                       | `clamp(2.25rem, 5.4vw, 9rem)`                        | 0.95  | -0.03em   | 900 | H1 героя. Один на странице. |
 | H-section     | `.t-h-section`                     | `clamp(2rem, 3.6vw, 3.75rem)`                        | 1.10  | -0.025em  | 900 | H2 секций. |
 | H-sect compact| `.t-h-section .t-h-section--compact`| `clamp(1.5rem, 2.4vw, 2.25rem)`                     | 1.15  | -0.02em   | 900 | H2 в модалках, H3 в шапках карточек. |
-| H-sub         | `.t-h-sub`                         | `clamp(1.125rem, 1.4vw, 1.375rem)`                   | 1.30  | -0.01em   | 600 | H3 в длинном тексте, заголовок строки-категории. |
+| H-sub         | `.t-h-sub`                         | `clamp(1.125rem, 1.4vw, 1.375rem)`                   | 1.30  | -0.01em   | 600 | H3 в длинном тексте; та же формула инлайном у `.category-row__title` — названия категорий размечены `<h3>` вокруг кнопки. |
 | Lead          | `.t-lead`                          | `clamp(1.0625rem, 1.25vw, 1.375rem)`                 | 1.55  | -0.005em  | 400 | Лид-абзац под H1. |
 | Body          | `.t-body`                          | `clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem)`        | 1.65  | 0         | 400 | Основной текст. |
 | Body-sm       | `.t-body-sm`                       | `clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem)`      | 1.55  | 0         | 400 | Уменьшенный body, ссылки в списках, описания. |
@@ -70,12 +70,12 @@ HINT        12 px static ▓
      через mix-blend-difference (см. «Плакатные исключения») -->
 <h1 class="t-display">
   <span class="t-blend-brand">Профессиональное</span><br>
-  <span class="text-wire-accent">решение</span>
+  <span class="text-brand-red">решение</span>
 </h1>
 
 <!-- Eyebrow → H-section: канонический заголовок секции (фирменный синий) -->
 <p class="t-eyebrow t-on-muted mb-6">О тренинге</p>
-<h2 class="t-h-section t-on-brand">Философия постоянных <span class="text-wire-accent">улучшений</span></h2>
+<h2 class="t-h-section t-on-brand">Философия постоянных <span class="text-brand-red">улучшений</span></h2>
 
 <!-- H2 в модалке -->
 <h2 class="t-h-section t-h-section--compact t-on-brand mt-14 mb-6">1-й день тренинга</h2>
@@ -98,13 +98,13 @@ HINT        12 px static ▓
 
 ## 3. Цветовая палитра текста
 
-### Светлый фон (#FFFFFF, .bg-wire-bg, .bg-wire-panel)
+### Светлый фон (#FFFFFF, .bg-bg, .bg-panel)
 
 | Уровень | Класс           | Цвет                       | Контраст | Когда |
 |---------|-----------------|----------------------------|----------|-------|
-| Strong  | `.t-on-strong`  | `#0C0C0C` (`wire-dark`)    | 19.6:1 ✅ AAA | H3/H-sub, `<strong>`, имена/credit. |
-| Brand   | `.t-on-brand`   | `#003154` (`wire-accent2`) | 13.4:1 ✅ AAA | Заголовки H1/H2 (включая `--compact` в модалках) на светлом фоне. |
-| Default | `.t-on-default` | `#2B2B2B` (`wire-text`)    | 12.6:1 ✅ AAA | Body, lead, list items. |
+| Strong  | `.t-on-strong`  | `#0C0C0C` (`ink-dark`)    | 19.6:1 ✅ AAA | H3/H-sub, `<strong>`, имена/credit. |
+| Brand   | `.t-on-brand`   | `#003154` (`brand-blue`) | 13.4:1 ✅ AAA | Заголовки H1/H2 (включая `--compact` в модалках) на светлом фоне; названия категорий в `#examples` — H3, цвет приходит из `.category-row__title`, а на ховере уходит в `brand-red`. |
+| Default | `.t-on-default` | `#2B2B2B` (`ink`)    | 12.6:1 ✅ AAA | Body, lead, list items. |
 | Muted   | `.t-on-muted`   | `#2B2B2B` @ 70%            | 4.6:1  ✅ AA  | Eyebrow, meta, hint, body-sm, captions. |
 | Soft    | `.t-on-soft`    | `#2B2B2B` @ 45%            | —      | Только декор и неважные таймстампы. **Не для основного контента.** |
 
@@ -118,7 +118,7 @@ HINT        12 px static ▓
 
 ### Правило
 
-В HTML пишется ТОЛЬКО один из этих 8 классов. `text-wire-text/85`, `text-white/70`,
+В HTML пишется ТОЛЬКО один из этих 8 классов. `text-ink/85`, `text-white/70`,
 `text-neutral-500` и подобные — **запрещены** (есть автоматический grep в шаге CI/ревью).
 
 ---
@@ -185,7 +185,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 
 - **Иероглиф 改善** (kanji): `text-[clamp(110px,11vw,200px)]` (desktop) /
   `text-[56px] sm:text-[72px]` (mobile). Шрифт `Yuji Mai`,
-  цвет — `text-wire-accent`.
+  цвет — `text-brand-red`.
 - **Цифры stat-card** (`22 / 17 / 850 / 13 000`): `font-black tracking-display`,
   размер — `clamp(1.5rem, 29cqi, 4.5rem)` (container query, `container-type:
   inline-size` на `.stat-card`, так что `cqi` считается от контент-бокса карточки).
@@ -198,9 +198,9 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 - **Контактные ссылки в шапке**: `text-xs sm:text-sm md:text-base` —
   респонсив адресной строки.
 - **`.trainer-pill`** — пиллы клиентов в секции `#about-trainer` (тёмно-синий фон
-  `wire-accent2`): uppercase, статичный кегль 0.875rem (= `.t-meta`),
+  `brand-blue`): uppercase, статичный кегль 0.875rem (= `.t-meta`),
   letter-spacing 0.08em, тонкая обводка `white/30` без скруглений, ховер —
-  белая заливка с текстом `wire-accent2`. Разрядка вне токенов (`tracking-label`
+  белая заливка с текстом `brand-blue`. Разрядка вне токенов (`tracking-label`
   0.32em здесь слишком широк) — это «лента логотипов», плакатный элемент,
   а не текст.
 - **`.prp-octagon__num` / `.prp-octagon__text`** — цифра и текст шага внутри
@@ -210,7 +210,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
   `__num` — `clamp(1.35rem, 8.5cqi, 2.3rem)`, вес 600 (по просьбе заказчика
   плотнее, чем «обычное начертание» из ТЗ блока); `__text` —
   `clamp(0.8rem, 5cqi, 1.25rem)`.
-  Оба — белые (`t-on-dark`) на сплошной синей заливке октагона (`wire-accent2`).
+  Оба — белые (`t-on-dark`) на сплошной синей заливке октагона (`brand-blue`).
   Потолок `__text` (`1.25rem`) совпадает с верхом шкалы `.t-body` — цель в том,
   чтобы текст шага читался как обычный основной текст: на крупных октагонах
   (колонка/планшет ~360–380px) он достигает body-размера. Минимумы clamp — для
@@ -220,7 +220,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 
 - **`.credential-card__key`** — ключ регалии в сетке 2×2 блока `#certificate`
   (`40+ лет`, `с 1998`, `Kawasaki`, `2 книги`): `font-black tracking-display`,
-  цвет `wire-accent2`, размер `clamp(1.375rem, 2.2vw, 1.875rem)`, line-height 1.05.
+  цвет `brand-blue`, размер `clamp(1.375rem, 2.2vw, 1.875rem)`, line-height 1.05.
   Работает как цифра-акцент, а не как подзаголовок: роль `.t-h-sub` (18–22px, 600)
   «сплющивает» ключ до уровня описания рядом, и сетка перестаёт читаться.
   Container query как у `.stat-card__number` не нужен — самый длинный ключ
@@ -228,7 +228,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
   длиннее придётся проверить заново.
 
 - **`.t-blend-brand`** — спаны H1 героя (и любой текст поверх fixed-фотослоёв
-  hero). Цвет — поканальное дополнение `wire-accent2` до белого (#FFCEAB,
+  hero). Цвет — поканальное дополнение `brand-blue` до белого (#FFCEAB,
   в современных браузерах выводится из токена через relative color syntax) +
   `mix-blend-mode: difference`: на белом фоне текст рендерится ровно фирменным
   синим `#003154`, поверх тёмных дуотон-фото (Денис, гора) — светлым. Обычный
@@ -251,7 +251,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 
 ```bash
 # Запуск из корня репозитория
-git grep -n -E 'text-(wire-text|white)/(60|70|75|80|85|90)' -- index.html
+git grep -n -E 'text-(ink|white)/(60|70|75|80|85|90)' -- index.html
 git grep -n -E 'tracking-\[-0\.0(05|1|25|3)em\]'            -- index.html
 git grep -n -E 'font-(bold|extrabold)'                      -- index.html
 git grep -n -E '\.h-section\b|\.modal-h2\b|\.caption-label\b' -- index.html
@@ -263,7 +263,7 @@ git grep -n -E 'text-\[(11|15)px\]'                         -- index.html
 
 | Анти-паттерн                        | Что писать вместо |
 |-------------------------------------|-------------------|
-| `text-wire-text/85`                 | `t-on-muted` |
+| `text-ink/85`                 | `t-on-muted` |
 | `text-white/70`                     | `t-on-dark-muted` |
 | `font-bold` / `font-extrabold`      | `font-semibold` (600) или `font-black` (900) |
 | `text-[15px]`                       | `t-body-sm` |
@@ -286,7 +286,7 @@ Tailwind компилирует `group-hover:bg-white` в селектор
 потомка — селектор прямого потомка):
 
 ```css
-.t-modal-list-item:hover { @apply bg-wire-surface; }
+.t-modal-list-item:hover { @apply bg-surface; }
 ```
 
 `group/group-hover:` остаются валидным паттерном, только если `group` пишется
@@ -326,7 +326,7 @@ Tailwind компилирует `group-hover:bg-white` в селектор
 | подпись/credit/атрибьюшн                       | `t-meta t-on-muted` |
 | мелкая техническая пометка                     | `t-hint t-on-muted` |
 | цитата `<blockquote>`                          | `t-quote t-on-strong` |
-| ссылка-кнопка-«Скачать»                        | `t-body-sm t-on-muted hover:text-wire-dark transition-colors` |
+| ссылка-кнопка-«Скачать»                        | `t-body-sm t-on-muted hover:text-ink-dark transition-colors` |
 | ударение в body                                | `<strong class="font-semibold t-on-strong">…</strong>` |
 | курсив в body                                  | `<em class="italic">…</em>` (стандартное наследование) |
 
@@ -334,6 +334,6 @@ Tailwind компилирует `group-hover:bg-white` в селектор
 
 ## Чек-фразы для Claude / AI-агента
 
-Если AI собирается писать `text-wire-text/90`, `font-bold`, `text-[15px]`
+Если AI собирается писать `text-ink/90`, `font-bold`, `text-[15px]`
 или возрождать удалённые имена `caption-label`/`h-section`/`modal-h2` —
 он работает в обход системы. Останови, попроси открыть этот документ.

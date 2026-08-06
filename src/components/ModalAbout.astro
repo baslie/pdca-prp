@@ -4,7 +4,7 @@ import TermTip from './TermTip.astro';
 ---
 
 <!-- ========== МОДАЛЬНОЕ ОКНО «О МЕТОДЕ» ========== -->
-<dialog id="modal-about" aria-labelledby="modal-about-title" class="modal-scroll fixed inset-0 w-screen h-screen max-w-none max-h-none overflow-y-auto bg-wire-bg text-wire-text">
+<dialog id="modal-about" aria-labelledby="modal-about-title" class="modal-scroll fixed inset-0 w-screen h-screen max-w-none max-h-none overflow-y-auto bg-bg text-ink">
 
   <!-- Sticky-полоса: слева «Назад» (явный выход для тех, кому крестик неочевиден),
        справа привычный крестик. -->
@@ -14,7 +14,7 @@ import TermTip from './TermTip.astro';
       <span>Назад</span>
     </button>
     <button type="button" id="btn-about-close" aria-label="Закрыть"
-      class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-wire-panel/90 text-wire-dark hover:bg-wire-dark hover:text-white transition-colors">
+      class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-panel/90 text-ink-dark hover:bg-ink-dark hover:text-white transition-colors">
       <span class="text-xl leading-none">✕</span>
     </button>
   </div>
@@ -40,7 +40,7 @@ import TermTip from './TermTip.astro';
         кайдзен Масааки&nbsp;Имаи:
       </p>
 
-      <figure class="my-8 rounded-sm bg-wire-panel p-7">
+      <figure class="my-8 rounded-sm bg-panel p-7">
         <blockquote class="t-quote t-on-strong">
           Кайдзен начинается с&nbsp;проблемы, или, точнее, с&nbsp;признания, что&nbsp;она существует!
           Там, где её&nbsp;нет, отсутствует потенциал для&nbsp;совершенствования.
@@ -62,7 +62,7 @@ import TermTip from './TermTip.astro';
       В&nbsp;основу специального учебного курса-тренинга «Профессиональное Решение Проблем» легли
       все основные принципы и&nbsp;подходы кайдзен к&nbsp;решению проблем:
     </h3>
-    <ul class="space-y-2 pl-5 list-disc t-body t-on-default marker:text-wire-accent">
+    <ul class="space-y-2 pl-5 list-disc t-body t-on-default marker:text-brand-red">
       <li>цикл PDCA</li>
       <li>А3-планирование</li>
       <li>7&nbsp;необходимых шагов и&nbsp;7&nbsp;эффективных инструментов для&nbsp;решения любой проблемы</li>
@@ -117,7 +117,7 @@ import TermTip from './TermTip.astro';
     </p>
 
     <div class="mt-14 flex justify-center">
-      <a href="#" class="inline-flex items-center gap-3 px-6 py-3.5 bg-wire-accent text-white hover:bg-wire-accent2 transition-colors text-base font-medium">
+      <a href="#" class="inline-flex items-center gap-3 px-6 py-3.5 bg-brand-red text-white hover:bg-brand-blue transition-colors text-base font-medium">
         <img src={iconPdfLight.src} alt="" loading="lazy" class="h-5 w-auto shrink-0" />
         <span>Скачать описание тренинга</span>
       </a>

@@ -27,7 +27,7 @@ const credentials = [
 <!-- ========== БЛОК «СЕРТИФИКАТ» ==========
      Финальный блок страницы. relative z-10 + непрозрачный bg обязательны:
      без них сквозь секцию проступают fixed-слои hero (Денис и гора). -->
-<section id="certificate" class="relative z-10 bg-wire-bg section-py">
+<section id="certificate" class="relative z-10 bg-bg section-py">
   <div class="w-full section-px">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
 
@@ -35,7 +35,7 @@ const credentials = [
       <div class="lg:col-span-8">
         <p class="t-eyebrow t-on-muted mb-6">Международное признание</p>
         <h2 class="t-h-section t-on-brand">
-          Сертификат, <span class="text-wire-accent">заверенный</span> Kaizen&nbsp;Institute
+          Сертификат, <span class="text-brand-red">заверенный</span> Kaizen&nbsp;Institute
         </h2>
 
         <!-- Портрет стоит прямо у лида, где Эвклид назван по имени: читатель видит,
@@ -67,7 +67,7 @@ const credentials = [
              Пятая строка — печать института на всю ширину: она замыкает список
              так же, как реквизит заверителя замыкает документ. -->
         <div class="mt-[clamp(2rem,4vw,3rem)] grid grid-cols-1 sm:grid-cols-2
-                    border-x border-t border-wire-border">
+                    border-x border-t border-border">
           {credentials.map((c) => (
             <article class="credential-card">
               <p class="credential-card__key">{c.key}</p>

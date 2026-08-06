@@ -21,7 +21,7 @@
 **Запрещено:**
 - ad-hoc размеры в HTML (`text-[15px]`, `text-[11px]` — кроме одного задокументированного
   плакатного исключения для `.feature-card__label`);
-- произвольные opacity на тексте (`text-wire-text/85`, `text-white/70`);
+- произвольные opacity на тексте (`text-ink/85`, `text-white/70`);
 - веса `font-bold` / `font-extrabold`;
 - произвольный tracking (`tracking-[-0.025em]`);
 - старые имена `.caption-label`, `.h-section`, `.modal-h2` (удалены).
@@ -48,13 +48,13 @@
 Шаблон такой:
 
 ```html
-<section class="relative z-10 bg-wire-bg ...">
+<section class="relative z-10 bg-bg ...">
   ...
 </section>
 ```
 
-Так уже сделаны все основные секции: `#about-training` (`bg-wire-panel`),
-`#video` (`bg-black`), `#examples` (`bg-wire-bg`), `#offer-stats`
+Так уже сделаны все основные секции: `#about-training` (`bg-panel`),
+`#video` (`bg-black`), `#examples` (`bg-bg`), `#offer-stats`
 (фон-картинка + overlay), плюс концевой воздушный `<div>` после offer-stats.
 
 ### Чек-лист при добавлении нового блока после hero
@@ -122,9 +122,36 @@ npm run check       # astro check (TypeScript + Astro диагностика)
 
 ### Дизайн-токены — где править
 
-Все цвета `wire-*`, шрифт `font-sans`, кастомные `text-eyebrow/meta/hint`,
+Вся палитра, шрифт `font-sans`, кастомные `text-eyebrow/meta/hint`,
 `tracking-display/heading/label`, `max-w-prose/prose-narrow` живут в
 `src/styles/global.css` внутри блока `@theme { ... }`. Источник правды один.
+
+### Палитра: два фирменных цвета + нейтрали
+
+| Токен | Значение | Роль |
+|---|---|---|
+| `--color-brand-red` | `#e84249` (Pantone Red 032 C) | акценты в заголовках, кнопки в покое, стрелки диаграммы ПРП, плашка логотипа, иероглифы 改善 |
+| `--color-brand-blue` | `#003154` (Pantone 648 C) | фон «О тренере», октагоны ПРП, ховер кнопок и карточек, дуотон горы в hero |
+| `--color-bg` / `panel` / `surface` / `border` / `muted` / `ink` / `ink-dark` | `#FFFFFF` … `#0C0C0C` | нейтрали: фоны, линии, три уровня текста |
+
+**Красный и синий на сайте только эти два — плюс их производные.** Оттенок
+получают из токена, а не новым хексом: `color-mix(in srgb, var(--color-brand-blue) 65%, var(--color-ink-dark))`
+(`.steel-overlay`), `color-mix(… 75%, transparent)` (`.certificate-doc__hint`),
+`rgb(from var(--color-brand-blue) calc(255 - r) …)` (`.t-blend-brand`).
+
+Цветные inline-SVG (орнамент и стрелки ПРП, плашка логотипа) рисуются через
+`fill="currentColor"` / `stroke="currentColor"`, а цвет им даёт CSS-класс
+(`.prp-arrows`, `.prp-ornament`, `.logo-prp`). `var()` в presentation-атрибутах
+SVG не работает — только `currentColor` либо правило в CSS.
+
+Единственное вынужденное исключение — `tableValues` у `feComponentTransfer`
+в `Hero.astro` (дуотон горы): SVG-фильтр принимает только числа, каналы
+`#003154` записаны как `0 / 0.192 / 0.329`. Меняешь `--color-brand-blue` —
+пересчитай и их.
+
+**`wire-*` — это палитра прототипов из `wireframes/*.html`** (Tailwind-CDN
+конфиг внутри каждого файла). С боевым сайтом она не связана: правки токенов
+в `global.css` туда не доезжают и наоборот. Не смешивать.
 
 ### `overrides` в package.json — не удалять
 
@@ -147,7 +174,8 @@ npm run check       # astro check (TypeScript + Astro диагностика)
 
 ### Антипаттерны
 
-- `theme('colors.wire.X')` в CSS — **v3-синтаксис, удалён в v4**. Используй `var(--color-wire-X)`.
+- `theme('colors.X')` в CSS — **v3-синтаксис, удалён в v4**. Используй `var(--color-X)`.
+- Новый хекс красного или синего где угодно, кроме блока `@theme` — оттенок берётся из `--color-brand-red/-blue` через `color-mix()`.
 - Возврат CDN `cdn.tailwindcss.com` — нельзя, прод-warning в DevTools.
 - Правка `dist/_astro/*.css` напрямую — бесполезно, перезатрётся следующим `astro build`. Меняй `src/styles/global.css`.
 - Хардкод путей `/pdca-prp/...` в `<img src=...>` — используй ES-импорт ассета (`import x from '../assets/...'`) или `import.meta.env.BASE_URL`. base может смениться.
@@ -210,7 +238,7 @@ import BoomStreamPlayer from '../components/BoomStreamPlayer.astro';
 В `src/components/BoomStreamPlayer.astro` встроен **прямым `<iframe>`** по официальной рекомендации BoomStream: https://boomstream.ru/documentation/developers/adaptive-style. Без SDK biframesdk.js — адаптивность даёт CSS-контейнер. Внешний компонент `<Video />` (`src/components/Video.astro`) использует его как `<BoomStreamPlayer code="nm7YeR0q" />`.
 
 ```html
-<div class="relative w-full aspect-video bg-wire-panel overflow-hidden rounded-sm ...">
+<div class="relative w-full aspect-video bg-panel overflow-hidden rounded-sm ...">
   <iframe class="absolute inset-0 w-full h-full"
           src="https://play.boomstream.com/nm7YeR0q?color=false&amp;title=0"
           frameborder="0"

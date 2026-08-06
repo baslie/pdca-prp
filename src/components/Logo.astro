@@ -9,6 +9,8 @@ const { class: className = 'h-10 md:h-11 w-auto block' } = Astro.props;
 ---
 
 <Fragment set:html={logoSvg} />
-<svg viewBox="0 0 216 56" class={className} aria-label="PDCA Consulting" preserveAspectRatio="xMinYMid meet">
+<!-- .logo-prp даёт currentColor красной плашки знака (токен --color-brand-red);
+     через <use> цвет наследуется внутрь <symbol>. -->
+<svg viewBox="0 0 216 56" class={`logo-prp ${className}`} aria-label="PDCA Consulting" preserveAspectRatio="xMinYMid meet">
   <use href="#logo-prp" />
 </svg>

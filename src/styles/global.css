@@ -12,8 +12,8 @@
        --text-*, --tracking-*, --container-*).
      - Базовые HTML-сбросы и типографическая шкала — @layer base.
      - Микротексты, кнопки, повторяющиеся композиции, диаграмма ПРП — @layer components.
-     - Доступ к токенам в произвольных правилах — через var(--color-wire-X),
-       НЕ через theme('colors.wire.X') (v3-синтаксис, удалён в v4).
+     - Доступ к токенам в произвольных правилах — через var(--color-X),
+       НЕ через theme('colors.X') (v3-синтаксис, удалён в v4).
    ============================================================ */
 
 @import "tailwindcss";
@@ -22,16 +22,25 @@
    ДИЗАЙН-ТОКЕНЫ
    ============================================================ */
 @theme {
-  /* Палитра wire-* — используется в HTML как bg-wire-bg, text-wire-text и т.д. */
-  --color-wire-bg: #FFFFFF;
-  --color-wire-panel: #F7F7F7;
-  --color-wire-surface: #EBEBEB;
-  --color-wire-border: #D4D4D4;
-  --color-wire-muted: #8B8B8B;
-  --color-wire-text: #2B2B2B;
-  --color-wire-dark: #0C0C0C;
-  --color-wire-accent: #e84249;   /* Pantone Red 032 C — акцент в заголовках + кнопки в покое + иероглифы 改善 */
-  --color-wire-accent2: #003154;  /* Pantone 648 C — ховер кнопок + дуотон горы в hero (#mountain-duotone) */
+  /* ФИРМЕННЫЕ ЦВЕТА — их ровно два, всё остальное ниже это нейтрали.
+     Любой красный/синий на сайте обязан приходить отсюда: либо самим токеном,
+     либо его производной через color-mix()/rgb(from …). Хардкод хексов в
+     разметке, SVG и произвольных CSS-правилах запрещён — цветные inline-SVG
+     рисуются через fill/stroke="currentColor" + color: var(--color-brand-*).
+
+     Палитра прототипов из wireframes/*.html (неймспейс wire-*) к боевому сайту
+     отношения не имеет и сюда не заезжает — это разные наборы. */
+  --color-brand-red:  #e84249;  /* Pantone Red 032 C — акцент в заголовках, кнопки в покое, стрелки диаграммы ПРП, иероглифы 改善 */
+  --color-brand-blue: #003154;  /* Pantone 648 C — фон блока «О тренере», октагоны ПРП, ховер кнопок, дуотон горы в hero (#mountain-duotone) */
+
+  /* Нейтрали — используются в HTML как bg-bg, bg-panel, text-ink и т.д. */
+  --color-bg: #FFFFFF;
+  --color-panel: #F7F7F7;
+  --color-surface: #EBEBEB;
+  --color-border: #D4D4D4;
+  --color-muted: #8B8B8B;
+  --color-ink: #2B2B2B;
+  --color-ink-dark: #0C0C0C;
 
   /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
   --font-sans: Inter, system-ui, -apple-system, sans-serif;
@@ -63,7 +72,7 @@
    @layer base — глобальные сбросы и типографическая шкала.
    ============================================================ */
 @layer base {
-  html, body { @apply bg-wire-bg text-wire-text; }
+  html, body { @apply bg-bg text-ink; }
   html { scroll-behavior: smooth; }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -360,7 +369,7 @@
   .modal-certificate-close {
     @apply fixed top-4 right-4 md:top-6 md:right-6 z-10
            w-10 h-10 flex items-center justify-center
-           bg-wire-panel text-wire-dark hover:bg-wire-dark hover:text-white
+           bg-panel text-ink-dark hover:bg-ink-dark hover:text-white
            transition-colors;
   }
 
@@ -511,7 +520,7 @@
   .modal-video-close {
     @apply fixed top-4 right-4 md:top-6 md:right-6 z-10
            w-10 h-10 flex items-center justify-center
-           bg-wire-panel text-wire-dark hover:bg-wire-dark hover:text-white
+           bg-panel text-ink-dark hover:bg-ink-dark hover:text-white
            transition-colors;
   }
 
@@ -576,12 +585,12 @@
 
   /* ============================================================
      СЕТКА КОНТРАСТА ТЕКСТА — 5 уровней на светлом + 3 на тёмном.
-     В HTML используется ТОЛЬКО эти классы; ad-hoc text-wire-text/N
+     В HTML используется ТОЛЬКО эти классы; ad-hoc text-ink/N
      и text-white/N — запрещены (см. docs/TYPOGRAPHY.md, антипаттерны).
      ============================================================ */
-  .t-on-strong      { @apply text-wire-dark; }
-  .t-on-brand       { color: var(--color-wire-accent2); }  /* заголовки H1/H2 на светлом фоне, 13.4:1 AAA */
-  .t-on-default     { @apply text-wire-text; }
+  .t-on-strong      { @apply text-ink-dark; }
+  .t-on-brand       { color: var(--color-brand-blue); }  /* заголовки H1/H2 на светлом фоне, 13.4:1 AAA */
+  .t-on-default     { @apply text-ink; }
   .t-on-muted       { color: rgb(43 43 43 / 0.70); }   /* #2B2B2B @ 70% */
   .t-on-soft        { color: rgb(43 43 43 / 0.45); }
   .t-on-dark        { @apply text-white; }
@@ -590,12 +599,12 @@
 
   /* Blend-вариант фирменного синего для текста поверх fixed-фотослоёв hero.
      mix-blend-difference считает |фон − цвет|: чтобы на белом фоне получился
-     ровно wire-accent2, цвет текста — его поканальное дополнение до белого
+     ровно brand-blue, цвет текста — его поканальное дополнение до белого
      (#FFCEAB — статический fallback). Поверх тёмных дуотон-фото (Денис, гора)
      текст остаётся светлым — инверсия читаемости сохраняется. */
   .t-blend-brand {
     color: #FFCEAB;
-    color: rgb(from var(--color-wire-accent2) calc(255 - r) calc(255 - g) calc(255 - b));
+    color: rgb(from var(--color-brand-blue) calc(255 - r) calc(255 - g) calc(255 - b));
     mix-blend-mode: difference;
   }
 
@@ -604,7 +613,7 @@
     @apply flex items-start gap-2 -mx-3 px-4
            transition-colors duration-100;
   }
-  .t-modal-list-item:hover { @apply bg-wire-surface; }
+  .t-modal-list-item:hover { @apply bg-surface; }
   /* Порядковый номер вместо буллита. w-8 + text-right + tabular-nums держат
      «1.» и «40.» в одной колонке; line-height совпадает с __text, поэтому
      номер садится на базовую линию первой строки без ручного mt-*. */
@@ -615,39 +624,39 @@
     line-height: 1.55;
   }
   .t-modal-list-item__num::after { content: '.'; }
-  .t-modal-list-item:hover .t-modal-list-item__num { @apply text-wire-dark; }
+  .t-modal-list-item:hover .t-modal-list-item__num { @apply text-ink-dark; }
   /* Инлайн t-body-sm (определён в @layer base; в v4 @apply на base-классы ненадёжен). */
   .t-modal-list-item__text {
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
   }
 
-  /* Кнопки: покой — красный (--color-wire-accent), hover — фирменный синий
-     (--color-wire-accent2). Ховер — только смена заливки, без теней. */
+  /* Кнопки: покой — красный (--color-brand-red), hover — фирменный синий
+     (--color-brand-blue). Ховер — только смена заливки, без теней. */
   .btn-primary {
-    @apply inline-flex items-center justify-center whitespace-nowrap bg-wire-accent text-wire-bg font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center whitespace-nowrap bg-brand-red text-bg font-semibold transition-all duration-200;
     padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
     font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
     letter-spacing: 0.005em;
     min-width: clamp(13rem, 18vw, 19rem);
   }
-  .btn-primary:hover { @apply bg-wire-accent2 text-white; }
+  .btn-primary:hover { @apply bg-brand-blue text-white; }
   .btn-secondary {
-    @apply inline-flex items-center justify-center border border-wire-accent text-wire-accent font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center border border-brand-red text-brand-red font-semibold transition-all duration-200;
     padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
     font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
     letter-spacing: 0.005em;
     min-width: clamp(13rem, 18vw, 19rem);
   }
-  .btn-secondary:hover { @apply bg-wire-accent2 border-wire-accent2 text-white; }
+  .btn-secondary:hover { @apply bg-brand-blue border-brand-blue text-white; }
 
   /* Служебная кнопка «← Назад» в модалках. Намеренно тише .btn-secondary
      (тот плакатный: min-width 13rem и кегль до 1.5rem) — это навигация,
      а не CTA. Габариты и палитра — как у соседнего крестика. */
   .btn-modal-back {
     @apply inline-flex items-center gap-2 h-10 px-4
-           bg-wire-panel/90 text-wire-dark
-           hover:bg-wire-dark hover:text-white transition-colors;
+           bg-panel/90 text-ink-dark
+           hover:bg-ink-dark hover:text-white transition-colors;
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
   }
@@ -658,26 +667,31 @@
      это ремонтная кнопка, не CTA. Кегль — формула t-body-sm инлайном. */
   .btn-video-retry {
     @apply inline-flex items-center justify-center h-10 px-5
-           bg-wire-accent text-wire-bg font-semibold
+           bg-brand-red text-bg font-semibold
            transition-colors duration-200;
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
   }
-  .btn-video-retry:hover { @apply bg-wire-accent2 text-white; }
+  .btn-video-retry:hover { @apply bg-brand-blue text-white; }
 
   /* ============================================================
      COMPOSITION-классы — повторяющиеся Tailwind-цепочки.
      ============================================================ */
+  /* Логотип PDCA Consulting (src/components/Logo.astro): красная плашка знака
+     нарисована через fill="currentColor" в <symbol>, фирменный цвет приходит
+     отсюда. Буквенная часть логотипа — свой чёрный из ассета, он не токен. */
+  .logo-prp { color: var(--color-brand-red); }
+
   .section-px { @apply px-6 sm:px-10 md:px-12 lg:px-20; }
   .section-py { @apply py-[clamp(3rem,6vw,8rem)]; }
-  .link-contact { @apply text-wire-dark hover:text-wire-accent transition-colors duration-200; }
+  .link-contact { @apply text-ink-dark hover:text-brand-red transition-colors duration-200; }
 
   /* Тонировка декоративной горы в hero. Сам фильтр — инлайн-SVG в Hero.astro:
-     чёрный уходит в --color-wire-accent2 (#003154), белый остаётся белым. */
+     чёрный уходит в --color-brand-blue (#003154), белый остаётся белым. */
   .mountain-duotone { filter: url(#mountain-duotone); }
 
   /* «Стальной» оверлей поверх фоновых панорам: фирменный синий, приглушённый
-     тёмным до серо-синего, — чистый --color-wire-accent2 на фото читается
+     тёмным до серо-синего, — чистый --color-brand-blue на фото читается
      слишком голубым.
      Базовая альфа 0.84 рассчитана на светлый снимок #offer-stats (там поверх
      оверлея лежит белый текст): композит в самом светлом участке — rgb(64,88,105),
@@ -686,7 +700,7 @@
      панорама схлопывается в почти чёрное и сюжет пропадает. Текста поверх нет,
      поэтому здесь ограничение чисто визуальное. */
   .steel-overlay {
-    background: color-mix(in srgb, var(--color-wire-accent2) 65%, var(--color-wire-dark));
+    background: color-mix(in srgb, var(--color-brand-blue) 65%, var(--color-ink-dark));
     opacity: 0.84;
   }
   .steel-overlay--soft { opacity: 0.6; }
@@ -694,18 +708,22 @@
   /* Строка-категория в секции #examples. */
   .category-row { @apply w-full text-left flex items-center gap-6 py-6; transition: padding-left 0.2s ease; }
   .category-row:hover { padding-left: 12px; }
-  .category-row:hover .category-row__title { color: var(--color-wire-accent); }
+  .category-row:hover .category-row__title { color: var(--color-brand-red); }
   /* Иконка внутри плитки — lucide со stroke="currentColor", поэтому цвет
      задаётся на контейнере. Фирменный синий постоянно, без ховера; заливка
      плитки остаётся нейтральной. Та же пара цветов — у иконки в шапке
      модалки категорий (#modal-examples-icon в ModalExamples.astro). */
-  .category-row__icon { @apply w-14 h-14 shrink-0 bg-wire-dark/5 text-wire-accent2 flex items-center justify-center; }
+  .category-row__icon { @apply w-14 h-14 shrink-0 bg-ink-dark/5 text-brand-blue flex items-center justify-center; }
+  /* Название категории — H3 в разметке, формула кегля совпадает с .t-h-sub.
+     Цвет фирменный синий (как у H2 секции и у заголовка модалки категорий),
+     на ховере уходит в фирменный красный — тем же движением, что и стрелка. */
   .category-row__title {
     @apply block leading-tight;
     font-size: clamp(1.125rem, 1.4vw, 1.375rem);
     letter-spacing: -0.01em;
     font-weight: 600;
-    color: var(--color-wire-dark);
+    color: var(--color-brand-blue);
+    transition: color 0.2s ease;
   }
   .category-row__caption {
     @apply block mt-1;
@@ -717,7 +735,7 @@
     @apply text-2xl;
     opacity: 0;
     transform: translateX(24px);
-    color: var(--color-wire-accent);
+    color: var(--color-brand-red);
     transition: transform 0.25s ease, opacity 0.25s ease;
   }
   .category-row:hover .category-row__arrow { opacity: 1; transform: translateX(0); }
@@ -746,7 +764,7 @@
   }
 
   /* ============================================================
-     БЛОК «НАМ ДОВЕРЯЮТ» (src/components/Clients.astro), светлый фон wire-bg.
+     БЛОК «НАМ ДОВЕРЯЮТ» (src/components/Clients.astro), светлый фон bg.
      ============================================================ */
 
   /* Пилла-клиент: без скруглений (blueprint-эстетика), тонкая обводка,
@@ -756,7 +774,7 @@
      (tracking 0) его не даёт, а tracking-label (0.32em) слишком широк.
      Кегль статичный, как у .t-meta. */
   .client-pill {
-    @apply inline-flex items-center border border-wire-border uppercase
+    @apply inline-flex items-center border border-border uppercase
            transition-colors duration-200;
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
@@ -766,7 +784,7 @@
   }
   @media (hover: hover) {
     .client-pill:hover {
-      @apply bg-wire-accent2 border-wire-accent2;
+      @apply bg-brand-blue border-brand-blue;
       color: #fff;
     }
   }
@@ -807,12 +825,12 @@
     font-size: 0.6875rem;    /* кегль .t-eyebrow — самый мелкий в проекте */
     font-weight: 600;
     line-height: 1;
-    border-color: var(--color-wire-border);
+    border-color: var(--color-border);
     color: rgb(43 43 43 / 0.70);   /* инлайн t-on-muted: @apply на классы того же слоя ненадёжен */
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
   }
   .termtip__btn:focus-visible {
-    outline: 2px solid var(--color-wire-accent2);
+    outline: 2px solid var(--color-brand-blue);
     outline-offset: 2px;
   }
   .termtip__bubble {
@@ -823,7 +841,7 @@
     width: max-content;
     max-width: min(17rem, 68vw);
     padding: 0.5rem 0.75rem;
-    background: var(--color-wire-dark);
+    background: var(--color-ink-dark);
     color: #fff;
     font-size: 0.875rem;     /* кегль .t-meta */
     line-height: 1.45;
@@ -849,13 +867,13 @@
     height: 0;
     border-style: solid;
     border-width: 5px 5px 0 5px;
-    border-color: var(--color-wire-dark) transparent transparent transparent;
+    border-color: var(--color-ink-dark) transparent transparent transparent;
     transform: translateX(-50%);
   }
   @media (hover: hover) {
     .termtip:hover .termtip__btn {
-      background-color: var(--color-wire-accent2);
-      border-color: var(--color-wire-accent2);
+      background-color: var(--color-brand-blue);
+      border-color: var(--color-brand-blue);
       color: #fff;
     }
     .termtip:hover .termtip__bubble {
@@ -865,8 +883,8 @@
     }
   }
   .termtip__btn:focus {
-    background-color: var(--color-wire-accent2);
-    border-color: var(--color-wire-accent2);
+    background-color: var(--color-brand-blue);
+    border-color: var(--color-brand-blue);
     color: #fff;
   }
   .termtip__btn:focus + .termtip__bubble {
@@ -889,22 +907,24 @@
      <div>, и на <span> внутри <button>. */
   .certificate-sheet {
     @apply relative w-full h-full flex flex-col items-center justify-center
-           text-center bg-wire-panel px-6;
+           text-center bg-panel px-6;
   }
 
   /* Кликабельное превью документа. Пропорция 1:1.414 резервирует место заранее:
      подставим настоящий скан вместо заглушки — вёрстка не дрогнет, CLS нулевой. */
   .certificate-doc {
-    @apply relative block w-full overflow-hidden bg-wire-panel border border-neutral-200;
+    @apply relative block w-full overflow-hidden bg-panel border border-neutral-200;
     aspect-ratio: 1 / 1.414;
   }
   .certificate-doc__hint {
     @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200;
-    background: rgb(0 49 84 / 0.75);   /* --color-wire-accent2 @ 75% */
+    /* Фирменный синий @ 75% — через color-mix из токена, а не числами:
+       правка --color-brand-blue должна доезжать и сюда. */
+    background: color-mix(in srgb, var(--color-brand-blue) 75%, transparent);
   }
   .certificate-doc__hint > span {
-    @apply inline-flex items-center px-4 py-2 bg-wire-bg font-semibold;
-    color: var(--color-wire-accent2);
+    @apply inline-flex items-center px-4 py-2 bg-bg font-semibold;
+    color: var(--color-brand-blue);
     font-size: 0.875rem;
   }
   /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
@@ -923,14 +943,14 @@
   .credential-card {
     @apply flex flex-col;
     padding: 1.5rem;
-    border-bottom: 1px solid var(--color-wire-border);
+    border-bottom: 1px solid var(--color-border);
     transition: background-color 0.2s ease;
   }
   /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
      и подсвеченная ячейка остаётся висеть (та же оговорка, что у
-     .certificate-doc__hint). Заливка — фирменный wire-panel. */
+     .certificate-doc__hint). Заливка — фирменный panel. */
   @media (hover: hover) {
-    .credential-card:hover { background-color: var(--color-wire-panel); }
+    .credential-card:hover { background-color: var(--color-panel); }
   }
   @media (min-width: 40rem) {
     /* У центральной вертикали отступ шире контурного: 1.5rem с двух сторон
@@ -938,7 +958,7 @@
     .credential-card:nth-child(odd)  { padding-right: 2rem; }
     .credential-card:nth-child(even) {
       padding-left: 2rem;
-      border-left: 1px solid var(--color-wire-border);
+      border-left: 1px solid var(--color-border);
     }
     /* Печать института — финальная строка во всю ширину таблицы. Идёт после
        nth-child, чтобы вернуть контурный отступ вместо приле́гающего к вертикали. */
@@ -953,7 +973,7 @@
      при максимуме 30px укладывается в ячейку ~260px. */
   .credential-card__key {
     @apply font-black tracking-display;
-    color: var(--color-wire-accent2);
+    color: var(--color-brand-blue);
     font-size: clamp(1.375rem, 2.2vw, 1.875rem);
     line-height: 1.05;
   }
@@ -1003,7 +1023,7 @@
     /* Октагон залит сплошным fill="currentColor" в <symbol id="prp-octagon-shape">
        (см. PrpSteps.astro) — цвет фона задаётся здесь, токеном фирменного синего.
        Обводки нет; текст внутри — t-on-dark. */
-    color: var(--color-wire-accent2); pointer-events: none;
+    color: var(--color-brand-blue); pointer-events: none;
   }
   .prp-octagon__body {
     position: absolute; inset: 12%; z-index: 1;
@@ -1019,7 +1039,7 @@
     content: ""; position: absolute; left: 50%;
     bottom: calc(-1 * var(--prp-gap-m) + 12px);
     width: 2px; height: calc(var(--prp-gap-m) - 20px);
-    background: var(--color-wire-accent);
+    background: var(--color-brand-red);
     transform: translateX(-50%);
   }
   .prp-octagon:not(.prp-octagon--5) > .prp-octagon__arrowhead {
@@ -1028,7 +1048,7 @@
     width: 0; height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 9px solid var(--color-wire-accent);
+    border-top: 9px solid var(--color-brand-red);
     transform: translateX(-50%); z-index: 2;
   }
 
@@ -1039,7 +1059,12 @@
     text-align: center;
   }
 
-  .prp-arrows { position: absolute; pointer-events: none; overflow: visible; }
+  /* Стрелки и кайдзен-орнамент нарисованы через fill/stroke="currentColor"
+     (см. PrpSteps.astro) — фирменный красный приходит отсюда, токеном.
+     Для стрелок цвет объявлен на <svg>: <marker> внутри <defs> наследует его
+     оттуда, поэтому наконечник совпадает с линией. */
+  .prp-arrows { position: absolute; pointer-events: none; overflow: visible; color: var(--color-brand-red); }
+  .prp-ornament { color: var(--color-brand-red); }
   .prp-arrows--desktop, .prp-ornament { display: none; }
 
   /* PRE-STATE для GSAP-анимации блока (см. src/scripts/prp-diagram-scroll.ts).
@@ -1070,7 +1095,7 @@
     top: calc(1.5 * var(--prp-oct) + var(--prp-gap-m));
     bottom: calc(0.5 * var(--prp-oct));
     width: var(--prp-ret-w);
-    border: 2px solid var(--color-wire-accent);
+    border: 2px solid var(--color-brand-red);
     border-right: none;
     border-radius: 18px 0 0 18px;
     pointer-events: none;
@@ -1080,7 +1105,7 @@
     width: 0; height: 0;
     border-style: solid;
     border-width: 7px 0 7px 11px;
-    border-color: transparent transparent transparent var(--color-wire-accent);
+    border-color: transparent transparent transparent var(--color-brand-red);
   }
 
   /* ≥1280px — композиция «КРЕСТ». */
@@ -1137,7 +1162,7 @@
      фирменный синий. Кегли текста — штатные роли (t-body-sm/t-meta/t-hint)
      в разметке, здесь только фон и цветовая инверсия (см. TYPOGRAPHY.md §5). */
   .review-card {
-    background-color: var(--color-wire-panel);
+    background-color: var(--color-panel);
     transition: background-color 0.2s ease;
   }
   /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
@@ -1145,7 +1170,7 @@
      .credential-card). Цвета инверсии — t-on-dark / t-on-dark-muted инлайном:
      @apply на классы того же @layer components в v4 ненадёжен. */
   @media (hover: hover) {
-    .review-card:hover { background-color: var(--color-wire-accent2); }
+    .review-card:hover { background-color: var(--color-brand-blue); }
     .review-card:hover .review-card__text,
     .review-card:hover .review-card__name { color: #fff; }
     .review-card:hover .review-card__meta { color: rgb(255 255 255 / 0.75); }
@@ -1196,12 +1221,12 @@
     bottom: 0;
     width: clamp(2.25rem, 3vw, 2.75rem);
     height: clamp(2.25rem, 3vw, 2.75rem);
-    color: var(--color-wire-accent);
+    color: var(--color-brand-red);
     transition: color 0.2s ease;
   }
   @media (hover: hover) {
     .video-card:hover .video-card__frame img { transform: scale(1.04); }
-    .video-card:hover .video-card__play { color: var(--color-wire-accent2); }
+    .video-card:hover .video-card__play { color: var(--color-brand-blue); }
   }
 
   /* Стрелки: квадраты в палитре крестиков модалок. Видимы только при
@@ -1217,8 +1242,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-wire-panel);
-    color: var(--color-wire-dark);
+    background-color: var(--color-panel);
+    color: var(--color-ink-dark);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
@@ -1236,7 +1261,7 @@
       pointer-events: none;
     }
     .video-slider__arrow:hover {
-      background-color: var(--color-wire-accent2);
+      background-color: var(--color-brand-blue);
       color: #fff;
     }
   }
@@ -1244,7 +1269,7 @@
   .video-slider__arrow:focus-visible {
     opacity: 1;
     pointer-events: auto;
-    outline: 2px solid var(--color-wire-accent2);
+    outline: 2px solid var(--color-brand-blue);
     outline-offset: 2px;
   }
   @media (hover: none) {

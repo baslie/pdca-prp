@@ -15,7 +15,7 @@ const src = `https://play.boomstream.com/${code}?color=false&title=0`;
 ---
 
 <div
-  class="relative w-full aspect-video bg-wire-panel overflow-hidden rounded-sm shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]"
+  class="relative w-full aspect-video bg-panel overflow-hidden rounded-sm shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]"
   data-bs-player
 >
   <iframe
@@ -35,7 +35,7 @@ const src = `https://play.boomstream.com/${code}?color=false&title=0`;
        postMessage (типичный случай — у посетителя VPN и запрос «висит»).
        Скрыт классом hidden; watchdog переключает hidden <-> flex и aria-hidden. -->
   <div
-    class="absolute inset-0 z-10 hidden flex-col items-center justify-center gap-5 bg-wire-panel px-6 text-center"
+    class="absolute inset-0 z-10 hidden flex-col items-center justify-center gap-5 bg-panel px-6 text-center"
     data-bs-overlay
     role="status"
     aria-live="polite"
