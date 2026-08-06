@@ -1,0 +1,48 @@
+<!-- ========== ЛАЙТБОКС ГАЛЕРЕИ (#training-photos) ==========
+     Схема входа/выхода — как у #modal-certificate (backdrop + карточка),
+     но затемнение плотнее: под фотографией фон должен уйти в ноль.
+
+     <img> намеренно приезжает БЕЗ src — адрес ставится в момент клика по превью
+     (src/scripts/gallery.ts). Иначе 93 полноразмерных WebP улетели бы в загрузку
+     вместе со страницей.
+
+     Стрелки и крестик помечены data-gallery-ctl: закрытие по клику мимо карточки
+     реализовано в скрипте вручную и обязано их пропускать. -->
+<dialog id="modal-gallery" aria-label="Фотографии с тренингов">
+  <div class="modal-gallery-stage">
+    <figure class="modal-gallery-card" data-gallery-card>
+      <img id="modal-gallery-img" alt="" decoding="async" />
+      <span class="modal-gallery-spinner" aria-hidden="true"></span>
+      <figcaption class="modal-gallery-caption">
+        <span class="t-meta t-on-dark-muted" data-gallery-counter aria-live="polite"></span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <button type="button" id="modal-gallery-prev" data-gallery-ctl
+          aria-label="Предыдущее фото"
+          class="modal-gallery-nav modal-gallery-nav--prev">
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <button type="button" id="modal-gallery-next" data-gallery-ctl
+          aria-label="Следующее фото"
+          class="modal-gallery-nav modal-gallery-nav--next">
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <button type="button" id="modal-gallery-close" data-gallery-ctl
+          aria-label="Закрыть" class="modal-gallery-close">
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</dialog>
+
+<script>
+  import '../scripts/gallery';
+</script>

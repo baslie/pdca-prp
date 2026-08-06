@@ -35,6 +35,11 @@ export default defineConfig({
         },
       },
       SVG: true,
+      // Кадры галереи (#training-photos) уже ужаты: full — скриптом
+      // scripts/prepare-training-photos.mjs (webp q80, effort 6), превью —
+      // самим Astro через <Image />. Повторный проход sharp с effort: 6 по
+      // 372 файлам занимал больше минуты и не давал выигрыша в весе.
+      Exclude: [(File) => File.includes('denis-bulgin-trening-')],
       Action: {
         // Заменять файл только если сжатая версия реально меньше исходной.
         // Buffer здесь — union: string | ArrayBufferView | Iterable |

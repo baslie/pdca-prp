@@ -11,11 +11,13 @@ import AboutTrainer from '../components/AboutTrainer.astro';
 import Certificate from '../components/Certificate.astro';
 import Clients from '../components/Clients.astro';
 import Reviews from '../components/Reviews.astro';
+import TrainingPhotos from '../components/TrainingPhotos.astro';
 import ModalAbout from '../components/ModalAbout.astro';
 import ModalExamples from '../components/ModalExamples.astro';
 import ModalCertificate from '../components/ModalCertificate.astro';
 import ModalReview from '../components/ModalReview.astro';
 import ModalVideoReview from '../components/ModalVideoReview.astro';
+import ModalGallery from '../components/ModalGallery.astro';
 // Когда придёт скан сертификата: положить файл в src/assets/images/,
 // раскомментировать импорт ниже и передать картинку в ОБА компонента —
 // <Certificate image={certificateScan} /> и <ModalCertificate image={certificateScan} />.
@@ -48,6 +50,8 @@ import ModalVideoReview from '../components/ModalVideoReview.astro';
 
   <Reviews />
 
+  <TrainingPhotos />
+
   <!-- Воздух в конце страницы: визуальный «выдох». relative + z-10 + bg обязательны,
        иначе сквозь div просвечивают fixed-слои hero. -->
   <div class="relative z-10 bg-bg h-[clamp(2rem,5vw,5rem)]" aria-hidden="true"></div>
@@ -57,4 +61,5 @@ import ModalVideoReview from '../components/ModalVideoReview.astro';
   <ModalCertificate />
   <ModalReview />
   <ModalVideoReview />
+  <ModalGallery />
 </BaseLayout>

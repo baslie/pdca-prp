@@ -524,6 +524,130 @@
            transition-colors;
   }
 
+  /* Лайтбокс галереи (#training-photos) — схема #modal-certificate, но затемнение
+     плотнее (0.9): под фотографией фон обязан уйти в ноль, иначе белая страница
+     сбивает восприятие цвета кадра. Скролла у диалога нет — кадр всегда вписан
+     в viewport, поэтому overflow: hidden, а центровку берёт на себя .stage. */
+  dialog#modal-gallery {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    background: transparent;
+    border: none;
+    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    overflow: hidden;
+    transition:
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-gallery[open] {
+    transition:
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  dialog#modal-gallery::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    transition:
+      opacity var(--modal-dur-out) var(--modal-ease),
+      display var(--modal-dur-out) allow-discrete,
+      overlay var(--modal-dur-out) allow-discrete;
+  }
+  dialog#modal-gallery[open]::backdrop {
+    opacity: 1;
+    transition:
+      opacity var(--modal-dur-in) var(--modal-ease),
+      display var(--modal-dur-in) allow-discrete,
+      overlay var(--modal-dur-in) allow-discrete;
+  }
+  @starting-style {
+    dialog#modal-gallery[open]::backdrop { opacity: 0; }
+  }
+  /* height: 100% берётся от контент-бокса диалога (box-sizing: border-box из
+     preflight), поэтому вертикальная центровка учитывает его паддинги. */
+  .modal-gallery-stage {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-gallery-card {
+    position: relative;
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity   var(--modal-dur-out) var(--modal-ease),
+      transform var(--modal-dur-out) var(--modal-ease);
+  }
+  dialog#modal-gallery[open] .modal-gallery-card {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity   var(--modal-dur-in) var(--modal-ease),
+      transform var(--modal-dur-in) var(--modal-ease);
+  }
+  @starting-style {
+    dialog#modal-gallery[open] .modal-gallery-card {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+  }
+  /* Кадр вписывается по обеим осям. calc повторяет вертикальные паддинги
+     диалога и вычитает строку счётчика — иначе подпись уезжает за экран. */
+  .modal-gallery-card img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 2 * clamp(1rem, 4vh, 3rem) - 2.5rem);
+    background: rgb(255 255 255 / 0.04);
+  }
+  .modal-gallery-caption {
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Спиннер живёт по центру карточки, пока грузится полноразмерный кадр.
+     Показывается атрибутом data-loading, который ставит и снимает gallery.ts. */
+  .modal-gallery-spinner {
+    position: absolute;
+    top: calc(50% - 1.25rem);
+    left: 50%;
+    width: 2rem;
+    height: 2rem;
+    margin: -1rem 0 0 -1rem;
+    border: 2px solid rgb(255 255 255 / 0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: gallery-spin 0.8s linear infinite;
+  }
+  .modal-gallery-card[data-loading] .modal-gallery-spinner { opacity: 1; }
+
+  /* Стрелки и крестик прижаты к вьюпорту (паттерн .modal-certificate-close):
+     внутри карточки они лежали бы поверх самого кадра. В отличие от
+     .video-slider__arrow на таче не прячем — в лайтбоксе свайп неочевиден. */
+  .modal-gallery-nav,
+  .modal-gallery-close {
+    @apply fixed z-10 w-10 h-10 flex items-center justify-center
+           bg-panel text-ink-dark hover:bg-ink-dark hover:text-white
+           transition-colors;
+  }
+  .modal-gallery-close { @apply top-4 right-4 md:top-6 md:right-6; }
+  .modal-gallery-nav {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .modal-gallery-nav--prev { left: clamp(0.5rem, 2vw, 2rem); }
+  .modal-gallery-nav--next { right: clamp(0.5rem, 2vw, 2rem); }
+
   /* Уважаем системную настройку: все модалки открываются/закрываются мгновенно.
      Перечисляем и [open]-варианты: @media не добавляет специфичности, а без них
      transition из правил входа перебил бы этот сброс. */
@@ -555,12 +679,21 @@
     dialog#modal-video-review::backdrop,
     dialog#modal-video-review[open]::backdrop,
     .modal-video-card,
-    dialog#modal-video-review[open] .modal-video-card {
+    dialog#modal-video-review[open] .modal-video-card,
+    dialog#modal-gallery,
+    dialog#modal-gallery[open],
+    dialog#modal-gallery::backdrop,
+    dialog#modal-gallery[open]::backdrop,
+    .modal-gallery-card,
+    dialog#modal-gallery[open] .modal-gallery-card {
       transition: none;
       clip-path: none;
       opacity: 1;
       transform: none;
     }
+    /* Стрелки лайтбокса в список выше не входят: transform: none сбил бы им
+       вертикальную центровку (translateY(-50%)). Гасим только вращение спиннера. */
+    .modal-gallery-spinner { animation: none; }
   }
 }
 
@@ -998,6 +1131,80 @@
   .credential-card__text--seal { margin-top: 0; }
 
   /* ============================================================
+     БЛОК «ФОТОГРАФИИ С ТРЕНИНГОВ» (#training-photos).
+     ============================================================ */
+
+  /* Masonry на CSS-колонках. Grid с расчётом row-span был бы честнее по
+     DOM-порядку, но требует JS на каждый resize; для стены фотографий
+     колоночный порядок чтения не важен, а кода — ноль. */
+  .gallery-masonry {
+    --gallery-gap: clamp(4px, 0.5vw, 8px);
+    list-style: none;
+    margin: clamp(2.5rem, 5vw, 4.5rem) 0 0;
+    /* Боковые поля равны зазору между кадрами: лента идёт во всю ширину
+       экрана, решётка читается как единое поле без «рамки» из воздуха. */
+    padding: 0 var(--gallery-gap);
+    column-count: 2;
+    column-gap: var(--gallery-gap);
+  }
+  /* Плотная сетка: кадр — не карточка-герой, а плитка стены. Ниже 30rem
+     оставляем 2 колонки — на 360px три плитки по ~115px уже не дают разглядеть
+     лица. Держать в синхроне с sizes у <Image> в TrainingPhotos.astro. */
+  @media (min-width: 30rem)  { .gallery-masonry { column-count: 3; } }
+  @media (min-width: 40rem)  { .gallery-masonry { column-count: 4; } }
+  @media (min-width: 64rem)  { .gallery-masonry { column-count: 5; } }
+  @media (min-width: 96rem)  { .gallery-masonry { column-count: 6; } }
+
+  /* Свёрнутое состояние — клип по высоте, а НЕ display: none на «лишних»
+     кадрах: при скрытии элементов раскрытие переливает их между колонками
+     и уже просмотренные фото прыгают на другие места. Клип не перекладывает
+     ничего. Бонусом lazy-загрузка не трогает то, что за срезом. */
+  .gallery-masonry[data-collapsed] {
+    max-height: 150vh;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  }
+
+  /* break-inside живёт на <li>: в колоночной раскладке разрыв ловит именно
+     элемент потока, а не кнопка внутри него. */
+  .gallery-cell {
+    break-inside: avoid;
+    margin-bottom: var(--gallery-gap);
+  }
+
+  /* Скруглений нет намеренно — решение заказчика по блоку. */
+  .gallery-item {
+    @apply relative block w-full overflow-hidden bg-panel;
+  }
+  .gallery-item__img {
+    @apply block w-full h-auto;
+    transition: transform 0.3s ease;
+  }
+  /* Подсказка — та же схема, что у .certificate-doc__hint. */
+  .gallery-item__hint {
+    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200;
+    background: color-mix(in srgb, var(--color-brand-blue) 75%, transparent);
+  }
+  .gallery-item__hint > span {
+    @apply inline-flex items-center px-3 py-1.5 bg-bg font-semibold;
+    color: var(--color-brand-blue);
+    font-size: 0.75rem;
+  }
+  /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
+     и синяя подсказка остаётся висеть поверх кадра. */
+  @media (hover: hover) {
+    .gallery-item:hover .gallery-item__hint { opacity: 1; }
+    .gallery-item:hover .gallery-item__img { transform: scale(1.04); }
+  }
+  .gallery-item:focus-visible .gallery-item__hint { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-item__img,
+    .gallery-item__hint { transition: none; }
+    .gallery-item:hover .gallery-item__img { transform: none; }
+  }
+
+  /* ============================================================
      ДИАГРАММА «Шаги по внедрению системы ПРП».
      ============================================================ */
   .prp-diagram-stage { position: relative; width: 100%; --prp-oct: clamp(300px, 80vw, 380px); }
@@ -1294,6 +1501,13 @@
 @keyframes marquee-r {
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
+}
+
+/* Спиннер лайтбокса галереи (#modal-gallery) — крутится, пока грузится
+   полноразмерный кадр. Здесь же, по той же причине: имена анимаций слоями
+   не скоупятся. */
+@keyframes gallery-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Уважаем системную настройку: ряды конвейера стоят и листаются вручную,
