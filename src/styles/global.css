@@ -45,6 +45,20 @@
   /* Канонический шрифт — Inter (Google Fonts, см. <link> в BaseLayout). */
   --font-sans: Inter, system-ui, -apple-system, sans-serif;
 
+  /* ЕДИНСТВЕННАЯ КРИВАЯ ДВИЖЕНИЯ НА САЙТЕ.
+     Всё, что анимируется — ховеры, появление при скролле, модалки — едет по
+     ней. Раньше кривых было три (ручной `ease`, Tailwind-дефолт у
+     transition-colors, отдельная у модалок), и моушн не читался как система.
+
+     Имя своё, не --ease-out: namespace --ease-* принадлежит Tailwind, и
+     перезапись --ease-out поменяла бы утилиту `ease-out` во всём проекте.
+     Собственное имя даёт и var(--ease-brand) в правилах, и утилиту
+     `ease-brand` в разметке.
+
+     Длительности живут не здесь, а в :root ниже (@layer base): они не
+     порождают утилит и стоят рядом с --modal-dur-*. */
+  --ease-brand: cubic-bezier(0.23, 1, 0.32, 1);
+
   /* Кастомные text-* (микротексты).
      v4 синтаксис: --text-NAME + --text-NAME--line-height / --letter-spacing / --font-weight. */
   --text-eyebrow: 0.6875rem;
@@ -73,7 +87,11 @@
    ============================================================ */
 @layer base {
   html, body { @apply bg-bg text-ink; }
-  html { scroll-behavior: smooth; }
+  /* Плавная прокрутка к якорю — это движение, и его инициирует кнопка первого
+     экрана. Под guard: при reduce прыжок мгновенный. */
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -166,7 +184,22 @@
   :root {
     --modal-dur-in:  500ms;
     --modal-dur-out: 350ms;
-    --modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    /* Своей кривой у модалок больше нет — общая --ease-brand из @theme.
+       Прежняя cubic-bezier(0.22, 1, 0.36, 1) отличалась на глаз неразличимо. */
+    --modal-ease: var(--ease-brand);
+
+    /* ДЛИТЕЛЬНОСТИ ДВИЖЕНИЯ — четыре роли, больше не нужно.
+       До унификации на одну роль «ховер» приходилось пять разных значений
+       (100 / 150 неявных / 200 / 250 / 300 мс) — это и была главная причина,
+       по которой моушн выглядел собранным из кусков. */
+    --dur-micro:  150ms;  /* микро-элементы: подсказка к термину, крестики */
+    --dur-hover:  200ms;  /* базовый ховер-фидбек — самая частая роль */
+    --dur-zoom:   300ms;  /* зум изображений: роль другая, длиннее осознанно */
+    --dur-reveal: 500ms;  /* появление блока при скролле */
+
+    /* Параметры единого scroll-reveal (см. блок .js-reveal ниже). */
+    --reveal-stagger: 60ms;
+    --reveal-shift:   14px;
   }
 
   /* Модалка «О методе» — circular reveal из кнопки-триггера.
@@ -196,10 +229,10 @@
      иначе fade задваивается с clip-path и раскрытие выглядит мутным.
      На входе — с задержкой 120 мс (круг успевает разойтись), на выходе
      гаснет сразу, чтобы не «догонять» схлопывание. */
-  .modal-about-content { opacity: 0; transition: opacity 220ms ease; }
+  .modal-about-content { opacity: 0; transition: opacity 220ms var(--ease-brand); }
   dialog#modal-about[open] .modal-about-content {
     opacity: 1;
-    transition: opacity 300ms ease 120ms;
+    transition: opacity 300ms var(--ease-brand) 120ms;
   }
   @starting-style {
     dialog#modal-about[open] .modal-about-content { opacity: 0; }
@@ -370,7 +403,7 @@
     @apply fixed top-4 right-4 md:top-6 md:right-6 z-10
            w-10 h-10 flex items-center justify-center
            bg-panel text-ink-dark hover:bg-ink-dark hover:text-white
-           transition-colors;
+           transition-colors duration-150 ease-brand;
   }
 
   /* Модалка полного отзыва (#reviews) — та же схема, что у #modal-examples:
@@ -521,7 +554,7 @@
     @apply fixed top-4 right-4 md:top-6 md:right-6 z-10
            w-10 h-10 flex items-center justify-center
            bg-panel text-ink-dark hover:bg-ink-dark hover:text-white
-           transition-colors;
+           transition-colors duration-150 ease-brand;
   }
 
   /* Лайтбокс галереи (#training-photos) — схема #modal-certificate, но затемнение
@@ -638,7 +671,7 @@
   .modal-gallery-close {
     @apply fixed z-10 w-10 h-10 flex items-center justify-center
            bg-panel text-ink-dark hover:bg-ink-dark hover:text-white
-           transition-colors;
+           transition-colors duration-150 ease-brand;
   }
   .modal-gallery-close { @apply top-4 right-4 md:top-6 md:right-6; }
   .modal-gallery-nav {
@@ -744,14 +777,14 @@
   /* DOM-компонент списка проектов в #modal-examples. */
   .t-modal-list-item {
     @apply flex items-start gap-2 -mx-3 px-4
-           transition-colors duration-100;
+           transition-colors duration-150 ease-brand;
   }
   .t-modal-list-item:hover { @apply bg-surface; }
   /* Порядковый номер вместо буллита. w-8 + text-right + tabular-nums держат
      «1.» и «40.» в одной колонке; line-height совпадает с __text, поэтому
      номер садится на базовую линию первой строки без ручного mt-*. */
   .t-modal-list-item__num {
-    @apply shrink-0 w-8 text-right tabular-nums transition-colors duration-100;
+    @apply shrink-0 w-8 text-right tabular-nums transition-colors duration-150 ease-brand;
     color: rgb(43 43 43 / 0.45);   /* инлайн t-on-soft: @apply на components-классы внутри того же слоя ненадёжен */
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
@@ -765,21 +798,32 @@
   }
 
   /* Кнопки: покой — красный (--color-brand-red), hover — фирменный синий
-     (--color-brand-blue). Ховер — только смена заливки, без теней. */
+     (--color-brand-blue). Ховер — только смена заливки, без теней.
+     Свойства перечислены поимённо, а не transition-all: меняются ровно три
+     цвета, а padding/font-size/min-width заданы через clamp() — с `all`
+     браузер пытался бы твинить и их при каждом ресайзе окна. */
   .btn-primary {
-    @apply inline-flex items-center justify-center whitespace-nowrap bg-brand-red text-bg font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center whitespace-nowrap bg-brand-red text-bg font-semibold;
     padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
     font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
     letter-spacing: 0.005em;
     min-width: clamp(13rem, 18vw, 19rem);
+    transition:
+      background-color var(--dur-hover) var(--ease-brand),
+      border-color     var(--dur-hover) var(--ease-brand),
+      color            var(--dur-hover) var(--ease-brand);
   }
   .btn-primary:hover { @apply bg-brand-blue text-white; }
   .btn-secondary {
-    @apply inline-flex items-center justify-center border border-brand-red text-brand-red font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center border border-brand-red text-brand-red font-semibold;
     padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
     font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
     letter-spacing: 0.005em;
     min-width: clamp(13rem, 18vw, 19rem);
+    transition:
+      background-color var(--dur-hover) var(--ease-brand),
+      border-color     var(--dur-hover) var(--ease-brand),
+      color            var(--dur-hover) var(--ease-brand);
   }
   .btn-secondary:hover { @apply bg-brand-blue border-brand-blue text-white; }
 
@@ -789,7 +833,8 @@
   .btn-modal-back {
     @apply inline-flex items-center gap-2 h-10 px-4
            bg-panel/90 text-ink-dark
-           hover:bg-ink-dark hover:text-white transition-colors;
+           hover:bg-ink-dark hover:text-white
+           transition-colors duration-200 ease-brand;
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
   }
@@ -801,7 +846,7 @@
   .btn-video-retry {
     @apply inline-flex items-center justify-center h-10 px-5
            bg-brand-red text-bg font-semibold
-           transition-colors duration-200;
+           transition-colors duration-200 ease-brand;
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
   }
@@ -817,11 +862,68 @@
 
   .section-px { @apply px-6 sm:px-10 md:px-12 lg:px-20; }
   .section-py { @apply py-[clamp(3rem,6vw,8rem)]; }
-  .link-contact { @apply text-ink-dark hover:text-brand-red transition-colors duration-200; }
+  .link-contact { @apply text-ink-dark hover:text-brand-red transition-colors duration-200 ease-brand; }
 
   /* Тонировка декоративной горы в hero. Сам фильтр — инлайн-SVG в Hero.astro:
      чёрный уходит в --color-brand-blue (#003154), белый остаётся белым. */
   .mountain-duotone { filter: url(#mountain-duotone); }
+
+  /* ============================================================
+     SCROLL-REVEAL — единственный приём появления на сайте.
+     Логика и разметочный контракт — src/scripts/reveal.ts.
+
+       [data-reveal]          одиночный блок: появляется целиком
+       [data-reveal="group"]  контейнер: появляются прямые потомки,
+                              стаггер по инлайновому --reveal-i
+
+     ВАЖНО: атрибут нельзя вешать на корень <section>. Секции ниже hero
+     обязаны иметь непрозрачный фон и z-10, иначе сквозь них проступают
+     fixed-слои первого экрана (Денис, гора) — см. CLAUDE.md, «Стэкинг».
+     opacity < 1 на корне секции ломает именно это. Вешаем только на
+     внутренние обёртки.
+
+     Первый экран приёмом не пользуется вовсе: hero грузится статичным.
+     ============================================================ */
+
+  /* Пре-стейт под классом .js-reveal (ставится синхронно в <head>). Без JS
+     класса нет — контент виден всегда, никакой зависимости от скрипта. */
+  .js-reveal [data-reveal]:not([data-reveal='group']),
+  .js-reveal [data-reveal='group'] > * {
+    opacity: 0;
+    transform: translateY(var(--reveal-shift));
+  }
+
+  [data-reveal]:not([data-reveal='group']),
+  [data-reveal='group'] > * {
+    transition:
+      opacity   var(--dur-reveal) var(--ease-brand),
+      transform var(--dur-reveal) var(--ease-brand);
+  }
+
+  [data-reveal][data-revealed]:not([data-reveal='group']),
+  [data-reveal='group'][data-revealed] > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Стаггер: карточки группы приезжают лесенкой, а не стенкой. Индекс задаёт
+     разметка (style="--reveal-i:N") — нумеровать через :nth-child() в CSS
+     пришлось бы отдельным правилом на каждую длину группы. */
+  [data-reveal='group'][data-revealed] > * {
+    transition-delay: calc(var(--reveal-i, 0) * var(--reveal-stagger));
+  }
+
+  /* При reduce reveal.ts вообще снимает .js-reveal, так что до этой ветки
+     дело доходит только в экзотике (класс есть, скрипт не отработал).
+     Держим как страховку: контент виден, движения нет. */
+  @media (prefers-reduced-motion: reduce) {
+    .js-reveal [data-reveal]:not([data-reveal='group']),
+    .js-reveal [data-reveal='group'] > * {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 
   /* «Стальной» оверлей поверх фоновых панорам: фирменный синий, приглушённый
      тёмным до серо-синего, — чистый --color-brand-blue на фото читается
@@ -838,9 +940,19 @@
   }
   .steel-overlay--soft { opacity: 0.6; }
 
-  /* Строка-категория в секции #examples. */
-  .category-row { @apply w-full text-left flex items-center gap-6 py-6; transition: padding-left 0.2s ease; }
-  .category-row:hover { padding-left: 12px; }
+  /* Строка-категория в секции #examples.
+     Ховер сдвигает вправо иконку и текст — стрелка справа остаётся на месте.
+     Сдвиг именно transform'ом: прежний `padding-left: 0 -> 12px` пересчитывал
+     раскладку строки на каждом кадре, тогда как результат на экране тот же.
+     Ховер под media-гейтом: на таче :hover залипает после тапа и строка
+     оставалась бы сдвинутой (та же оговорка, что у .review-card). */
+  .category-row { @apply w-full text-left flex items-center gap-6 py-6; }
+  .category-row__icon,
+  .category-row__text { transition: transform var(--dur-hover) var(--ease-brand); }
+  @media (hover: hover) {
+    .category-row:hover .category-row__icon,
+    .category-row:hover .category-row__text { transform: translateX(12px); }
+  }
   .category-row:hover .category-row__title { color: var(--color-brand-red); }
   /* Иконка внутри плитки — lucide со stroke="currentColor", поэтому цвет
      задаётся на контейнере. Фирменный синий постоянно, без ховера; заливка
@@ -856,7 +968,7 @@
     letter-spacing: -0.01em;
     font-weight: 600;
     color: var(--color-brand-blue);
-    transition: color 0.2s ease;
+    transition: color var(--dur-hover) var(--ease-brand);
   }
   .category-row__caption {
     @apply block mt-1;
@@ -869,9 +981,24 @@
     opacity: 0;
     transform: translateX(24px);
     color: var(--color-brand-red);
-    transition: transform 0.25s ease, opacity 0.25s ease;
+    transition:
+      transform var(--dur-hover) var(--ease-brand),
+      opacity   var(--dur-hover) var(--ease-brand);
   }
-  .category-row:hover .category-row__arrow { opacity: 1; transform: translateX(0); }
+  @media (hover: hover) {
+    .category-row:hover .category-row__arrow { opacity: 1; transform: translateX(0); }
+  }
+  /* Клавиатурный фокус показывает стрелку независимо от ховера — иначе на
+     таче и при табуляции строка вообще не даёт понять, что она кликабельна. */
+  .category-row:focus-visible .category-row__arrow { opacity: 1; transform: translateX(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .category-row__icon,
+    .category-row__text,
+    .category-row__arrow { transition: none; }
+    .category-row:hover .category-row__icon,
+    .category-row:hover .category-row__text { transform: none; }
+  }
 
   /* Glass-карточки поверх горной панорамы в секции #offer-stats. */
   .feature-card { @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-4 py-7 sm:py-8; }
@@ -881,6 +1008,15 @@
   .stat-card__number {
     @apply font-black leading-none tracking-display;
     color: #fff;
+    /* Моноширинные цифры: число набегает от нуля (src/scripts/stats-counter.ts),
+       а с пропорциональными знаками «1» уже́ «0», и строка дёргалась бы по
+       ширине на каждом кадре.
+       На вместимость карточки это влияет, но в пределах запаса: «13 000»
+       занимает 236 из 248px контент-бокса (см. расчёт 29cqi ниже), tabular
+       расширяет только знак «1» — примерно на 0.05em, то есть ~4px при кегле
+       72px. Итого ~240px, потолок не задет. Меняешь 29cqi вверх — проверь
+       именно это число на ширине карточки 248px. */
+    font-variant-numeric: tabular-nums;
     /* 29cqi (а не 36) подобрано под самое длинное число блока — «13 000», 6 знаков:
        при 36cqi оно занимает 118% контент-бокса карточки и вылезает наружу.
        Потолок 4.5rem не меняли: он включается при контент-боксе >= 248px, где
@@ -908,7 +1044,7 @@
      Кегль статичный, как у .t-meta. */
   .client-pill {
     @apply inline-flex items-center border border-border uppercase
-           transition-colors duration-200;
+           transition-colors duration-200 ease-brand;
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
     letter-spacing: 0.08em;
@@ -932,7 +1068,9 @@
     @apply w-full h-full object-contain;
     filter: grayscale(1) contrast(0.95);
     opacity: 0.62;
-    transition: filter 0.25s ease, opacity 0.25s ease;
+    transition:
+      filter  var(--dur-hover) var(--ease-brand),
+      opacity var(--dur-hover) var(--ease-brand);
   }
   @media (hover: hover) {
     .client-logo-cell:hover .client-logo { filter: none; opacity: 1; }
@@ -960,7 +1098,10 @@
     line-height: 1;
     border-color: var(--color-border);
     color: rgb(43 43 43 / 0.70);   /* инлайн t-on-muted: @apply на классы того же слоя ненадёжен */
-    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    transition:
+      color            var(--dur-micro) var(--ease-brand),
+      background-color var(--dur-micro) var(--ease-brand),
+      border-color     var(--dur-micro) var(--ease-brand);
   }
   .termtip__btn:focus-visible {
     outline: 2px solid var(--color-brand-blue);
@@ -987,7 +1128,10 @@
        центрированный пузырь вылезает за край вьюпорта, сдвиг возвращает его
        внутрь. По умолчанию 0 — если JS не отработал, поведение прежнее. */
     transform: translate(calc(-50% + var(--termtip-shift, 0px)), 4px);
-    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    transition:
+      opacity    var(--dur-micro) var(--ease-brand),
+      transform  var(--dur-micro) var(--ease-brand),
+      visibility var(--dur-micro);
   }
   /* Хвостик пузыря — треугольник под значком. Сдвиг пузыря компенсируется
      обратным сдвигом хвостика, иначе он уедет вместе с ним. */
@@ -1050,7 +1194,7 @@
     aspect-ratio: 1 / 1.414;
   }
   .certificate-doc__hint {
-    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200;
+    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 ease-brand;
     /* Фирменный синий @ 75% — через color-mix из токена, а не числами:
        правка --color-brand-blue должна доезжать и сюда. */
     background: color-mix(in srgb, var(--color-brand-blue) 75%, transparent);
@@ -1077,7 +1221,7 @@
     @apply flex flex-col;
     padding: 1.5rem;
     border-bottom: 1px solid var(--color-border);
-    transition: background-color 0.2s ease;
+    transition: background-color var(--dur-hover) var(--ease-brand);
   }
   /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
      и подсвеченная ячейка остаётся висеть (та же оговорка, что у
@@ -1178,11 +1322,11 @@
   }
   .gallery-item__img {
     @apply block w-full h-auto;
-    transition: transform 0.3s ease;
+    transition: transform var(--dur-zoom) var(--ease-brand);
   }
   /* Подсказка — та же схема, что у .certificate-doc__hint. */
   .gallery-item__hint {
-    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200;
+    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 ease-brand;
     background: color-mix(in srgb, var(--color-brand-blue) 75%, transparent);
   }
   .gallery-item__hint > span {
@@ -1278,7 +1422,7 @@
      Класс .js-prp-animate ставится синхронно inline-script'ом в <head> ДО
      парсинга <body>. */
   .js-prp-animate .prp-octagon { opacity: 0.15; }
-  .js-prp-animate .prp-arrows--desktop path { opacity: 0.15; }
+  .js-prp-animate .prp-arrows--desktop > path { opacity: 0.15; }
   .js-prp-animate .prp-ornament__path {
     fill-opacity: 0;
     stroke-dasharray: 1;
@@ -1286,7 +1430,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .js-prp-animate .prp-octagon,
-    .js-prp-animate .prp-arrows--desktop path { opacity: 1; }
+    .js-prp-animate .prp-arrows--desktop > path { opacity: 1; }
     .js-prp-animate .prp-ornament__path {
       fill-opacity: 1;
       stroke-opacity: 0;
@@ -1370,7 +1514,7 @@
      в разметке, здесь только фон и цветовая инверсия (см. TYPOGRAPHY.md §5). */
   .review-card {
     background-color: var(--color-panel);
-    transition: background-color 0.2s ease;
+    transition: background-color var(--dur-hover) var(--ease-brand);
   }
   /* Ховер — только для мыши: на тач-устройствах :hover залипает после тапа
      и синяя карточка оставалась бы «включённой» (та же оговорка, что у
@@ -1420,7 +1564,7 @@
   /* Кадр превью: ховер — лёгкий зум кадра + инверсия play-иконки в фирменный
      синий (паттерн кнопок «красный -> синий»). Только для мыши: на таче
      :hover залипает после тапа (та же оговорка, что у .review-card). */
-  .video-card__frame img { transition: transform 0.3s ease; }
+  .video-card__frame img { transition: transform var(--dur-zoom) var(--ease-brand); }
   /* Квадрат-бейдж в правом нижнем углу кадра (по центру перекрывал лица). */
   .video-card__play {
     position: absolute;
@@ -1429,7 +1573,7 @@
     width: clamp(2.25rem, 3vw, 2.75rem);
     height: clamp(2.25rem, 3vw, 2.75rem);
     color: var(--color-brand-red);
-    transition: color 0.2s ease;
+    transition: color var(--dur-hover) var(--ease-brand);
   }
   @media (hover: hover) {
     .video-card:hover .video-card__frame img { transform: scale(1.04); }
@@ -1453,7 +1597,10 @@
     color: var(--color-ink-dark);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    transition:
+      opacity          var(--dur-hover) var(--ease-brand),
+      background-color var(--dur-hover) var(--ease-brand),
+      color            var(--dur-hover) var(--ease-brand);
   }
   .video-slider__arrow--prev { left: clamp(0.75rem, 2vw, 2rem); }
   .video-slider__arrow--next { right: clamp(0.75rem, 2vw, 2rem); }

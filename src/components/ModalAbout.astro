@@ -14,7 +14,7 @@ import TermTip from './TermTip.astro';
       <span>Назад</span>
     </button>
     <button type="button" id="btn-about-close" aria-label="Закрыть"
-      class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-panel/90 text-ink-dark hover:bg-ink-dark hover:text-white transition-colors">
+      class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-panel/90 text-ink-dark hover:bg-ink-dark hover:text-white transition-colors duration-150 ease-brand">
       <span class="text-xl leading-none">✕</span>
     </button>
   </div>
@@ -117,7 +117,7 @@ import TermTip from './TermTip.astro';
     </p>
 
     <div class="mt-14 flex justify-center">
-      <a href="#" class="inline-flex items-center gap-3 px-6 py-3.5 bg-brand-red text-white hover:bg-brand-blue transition-colors text-base font-medium">
+      <a href="#" class="inline-flex items-center gap-3 px-6 py-3.5 bg-brand-red text-white hover:bg-brand-blue transition-colors duration-200 ease-brand text-base font-medium">
         <img src={iconPdfLight.src} alt="" loading="lazy" class="h-5 w-auto shrink-0" />
         <span>Скачать описание тренинга</span>
       </a>

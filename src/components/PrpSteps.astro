@@ -22,7 +22,10 @@ const steps: Step[] = [
   <div class="w-full px-6 sm:px-10 md:px-12 lg:px-12">
     <div>
 
-      <div class="mb-[clamp(1.5rem,3vw,2rem)] xl:mb-0 max-w-prose mx-auto text-center">
+      <!-- Reveal достаётся только заголовку: сама диаграмма ниже привязана
+           к скроллу через GSAP ScrollTrigger (src/scripts/prp-diagram-scroll.ts),
+           и второй приём появления поверх неё был бы двойной анимацией. -->
+      <div class="mb-[clamp(1.5rem,3vw,2rem)] xl:mb-0 max-w-prose mx-auto text-center" data-reveal>
         <p class="t-eyebrow t-on-muted mb-6">Процесс внедрения</p>
         <h2 class="t-h-section t-on-brand">
           Шаги по&nbsp;внедрению системы <span class="text-brand-red">ПРП</span>

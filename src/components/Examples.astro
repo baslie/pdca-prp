@@ -184,7 +184,7 @@ const categoryData: CategoryData[] = [
 
       <div class="lg:col-span-7 lg:order-2 lg:self-center">
 
-        <div class="mb-10">
+        <div class="mb-10" data-reveal>
           <p class="t-eyebrow t-on-muted mb-6">6 областей · реальные проекты</p>
           <h2 class="t-h-section t-on-brand">
             Примеры <span class="text-brand-red">решения</span> проблем
@@ -198,7 +198,9 @@ const categoryData: CategoryData[] = [
              (паттерн WAI-ARIA для аккордеонов), а не наоборот: <h3> — flow
              content и внутрь <button> по HTML не помещается, да и содержимое
              кнопки в a11y-дереве всё равно схлопывается в её имя. -->
-        <ul class="divide-y divide-neutral-200 border-y border-neutral-200">
+        <!-- Одним блоком, не построчно: разделители рисует divide-y на списке,
+             и стаггер строк расходился бы с неподвижной рамкой border-y. -->
+        <ul class="divide-y divide-neutral-200 border-y border-neutral-200" data-reveal>
           {categories.map((c) => (
             <li>
               <h3>
@@ -206,7 +208,7 @@ const categoryData: CategoryData[] = [
                   <span class="category-row__icon">
                     <Icon name={c.icon} class="w-7 h-7" />
                   </span>
-                  <span class="flex-1">
+                  <span class="category-row__text flex-1">
                     <span class="category-row__title">{c.title}</span>
                     <span class="category-row__caption">{c.caption}</span>
                   </span>

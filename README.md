@@ -62,7 +62,9 @@
   `@theme`-токены, `@layer base/components`).
 - **TypeScript** (strict, через `astro/tsconfigs/strict`) для всей логики
   в `src/scripts/`.
-- **GSAP 3 + ScrollTrigger** (npm) — анимация диаграммы ПРП.
+- **GSAP 3 + ScrollTrigger** (npm) — scrub-анимация диаграммы ПРП и счётчик
+  цифр в блоке «Мы предлагаем». Появление блоков при скролле сделано без GSAP:
+  IntersectionObserver + CSS-transition (`src/scripts/reveal.ts`).
 - **astro-icon + @iconify-json/lucide** — иконки рендерятся как inline SVG
   на build-time (без CDN, без runtime-замены).
 - **Inter** (Google Fonts) + **Yuji Mai** (только один иероглиф 改善).

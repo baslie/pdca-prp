@@ -77,7 +77,12 @@ if (!section) {
 } else {
   const stage = section.querySelector<HTMLElement>('.prp-diagram-stage');
   const octagons = section.querySelectorAll<HTMLElement>('.prp-octagon');
-  const desktopPaths = section.querySelectorAll<SVGPathElement>('.prp-arrows--desktop path');
+  // Только прямые потомки <svg>. Без '>' первым в выборку попадал <path>
+  // наконечника внутри <defs><marker> — он забирал индекс [0], всё смещалось
+  // на единицу, и замыкающая стрелка 5->2 выпадала из timeline: вместо того,
+  // чтобы приехать по очереди, она вспыхивала разом на финальном .set().
+  // Тот же селектор продублирован в CSS-пре-стейте (global.css).
+  const desktopPaths = section.querySelectorAll<SVGPathElement>('.prp-arrows--desktop > path');
   const ornamentPaths = section.querySelectorAll<SVGPathElement>('.prp-ornament__path');
 
   if (!stage || octagons.length !== 5) {
@@ -216,8 +221,11 @@ function buildArrowsTimeline(
   octagons: NodeListOf<HTMLElement>,
   paths: NodeListOf<SVGPathElement>,
 ): void {
-  // paths[i] совпадает с порядком в SVG:
+  // paths[i] совпадает с порядком в SVG (селектор берёт только прямых
+  // потомков <svg>, наконечник из <defs><marker> в выборку не попадает):
   //   [0] 1→2 прямая, [1] 2→3, [2] 3→4, [3] 4→5, [4] 5→2 замыкание цикла.
+  // Наконечники отдельно не гасим: marker рисуется в контексте своей линии,
+  // её opacity распространяется и на него — стрелка приезжает целиком.
   const octTween = { opacity: 1, scale: 1, duration: A.OCT_DURATION, ease: 'power1.out' };
   const arrowTween = { opacity: 1, duration: A.ARROW_DURATION };
   tl.to(octagons[0], octTween)

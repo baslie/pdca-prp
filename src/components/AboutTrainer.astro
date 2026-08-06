@@ -59,19 +59,23 @@ const trainings: string[] = [
     <!-- Контент лентой -->
     <div class="lg:col-span-7 section-px py-[clamp(3rem,6vw,8rem)]">
 
-      <p class="t-eyebrow t-on-dark-muted mb-6">О тренере</p>
-      <h2 class="t-h-section t-on-dark">
-        Денис <span class="text-brand-red">Булгин</span>
-      </h2>
+      <!-- Обёртка нужна ради data-reveal: надзаголовок, H2 и оба абзаца лида
+           должны появляться одним блоком, а не по очереди. -->
+      <div data-reveal>
+        <p class="t-eyebrow t-on-dark-muted mb-6">О тренере</p>
+        <h2 class="t-h-section t-on-dark">
+          Денис <span class="text-brand-red">Булгин</span>
+        </h2>
 
-      <p class="t-lead t-on-dark mt-8 max-w-prose">
-        Бизнес-тренер. Специалист по&nbsp;бережливому производству
-        и&nbsp;персональной эффективности.
-      </p>
-      <p class="t-body-sm t-on-dark-muted mt-4 max-w-prose">
-        Директор и&nbsp;собственник группы компаний СОЮЗЛИФТ
-        и&nbsp;тренинговой компании PDCA-Consulting.
-      </p>
+        <p class="t-lead t-on-dark mt-8 max-w-prose">
+          Бизнес-тренер. Специалист по&nbsp;бережливому производству
+          и&nbsp;персональной эффективности.
+        </p>
+        <p class="t-body-sm t-on-dark-muted mt-4 max-w-prose">
+          Директор и&nbsp;собственник группы компаний СОЮЗЛИФТ
+          и&nbsp;тренинговой компании PDCA-Consulting.
+        </p>
+      </div>
 
       <p class="t-eyebrow t-on-dark-muted mt-[clamp(2.5rem,4vw,4rem)] mb-5">Образование</p>
       <ol class="grid sm:grid-cols-2 gap-x-8">

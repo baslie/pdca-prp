@@ -19,7 +19,7 @@ import TermTip from './TermTip.astro';
 
       <div class="order-1 lg:order-2 flex flex-col gap-[clamp(2rem,3.5vw,4.5rem)]">
 
-        <div>
+        <div data-reveal>
           <p class="t-eyebrow t-on-muted mb-6">О&nbsp;тренинге</p>
           <h2 class="t-h-section t-on-brand">
             Философия постоянных <span class="text-brand-red">улучшений</span>
@@ -66,7 +66,7 @@ import TermTip from './TermTip.astro';
 
           <div class="flex flex-col items-stretch gap-3 min-w-0 lg:contents">
             <button type="button" id="btn-about-open" class="btn-primary !min-w-0 lg:!min-w-[13rem]">Подробнее</button>
-            <a href="#" class="inline-flex items-center gap-2.5 t-body-sm t-on-muted hover:text-ink-dark transition-colors group">
+            <a href="#" class="inline-flex items-center gap-2.5 t-body-sm t-on-muted hover:text-ink-dark transition-colors duration-200 ease-brand group">
               <img src={iconPdf.src} alt="" loading="lazy" class="h-5 w-auto shrink-0" />
               <span class="underline decoration-dashed underline-offset-[6px]">Скачать описание тренинга</span>
             </a>

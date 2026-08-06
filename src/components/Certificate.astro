@@ -33,10 +33,13 @@ const credentials = [
 
       <!-- Текст. Первым в DOM — на мобильном заголовок должен идти раньше документа. -->
       <div class="lg:col-span-8">
-        <p class="t-eyebrow t-on-muted mb-6">Международное признание</p>
-        <h2 class="t-h-section t-on-brand">
-          Сертификат, <span class="text-brand-red">заверенный</span> Kaizen&nbsp;Institute
-        </h2>
+        <!-- Обёртка нужна ради data-reveal: надзаголовок и H2 появляются одним блоком. -->
+        <div data-reveal>
+          <p class="t-eyebrow t-on-muted mb-6">Международное признание</p>
+          <h2 class="t-h-section t-on-brand">
+            Сертификат, <span class="text-brand-red">заверенный</span> Kaizen&nbsp;Institute
+          </h2>
+        </div>
 
         <!-- Портрет стоит прямо у лида, где Эвклид назван по имени: читатель видит,
              о ком речь, в момент знакомства. Изображение идёт целиком, в исходной
@@ -66,8 +69,11 @@ const credentials = [
              (свой border-b у контейнера удвоил бы линию).
              Пятая строка — печать института на всю ширину: она замыкает список
              так же, как реквизит заверителя замыкает документ. -->
+        <!-- Появляется одним блоком, а не ячейка за ячейкой: рамку таблицы
+             рисует контейнер, а стаггер сдвигал бы ячейки внутри неподвижной
+             рамки — на 500 мс линии разъезжались бы с содержимым. -->
         <div class="mt-[clamp(2rem,4vw,3rem)] grid grid-cols-1 sm:grid-cols-2
-                    border-x border-t border-border">
+                    border-x border-t border-border" data-reveal>
           {credentials.map((c) => (
             <article class="credential-card">
               <p class="credential-card__key">{c.key}</p>

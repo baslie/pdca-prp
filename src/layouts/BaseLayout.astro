@@ -116,10 +116,21 @@ const courseSchema = {
   <!-- Structured data: Course + Instructor. https://schema.org/Course -->
   <script is:inline type="application/ld+json" set:html={JSON.stringify(courseSchema)}></script>
 
-  <!-- Класс ставится синхронно ДО парсинга <body> — даёт CSS-каскаду шанс
-       применить пре-стейт (opacity 0.15) к октагонам/стрелкам блока #prp-steps
-       раньше, чем браузер их отрисует. Устраняет FOUC при F5 на середине страницы. -->
-  <script is:inline>document.documentElement.classList.add('js-prp-animate');</script>
+  <!-- Классы ставятся синхронно ДО парсинга <body> — дают CSS-каскаду шанс
+       применить пре-стейт раньше, чем браузер отрисует элементы. Устраняет
+       FOUC при F5 на середине страницы.
+         js-prp-animate — октагоны и стрелки #prp-steps (opacity 0.15)
+         js-reveal      — блоки под [data-reveal] (opacity 0)
+       Страховочный таймер: если модуль reveal не доедет (404 чанка, ошибка
+       парсинга), через 2.5 с пре-стейт снимается сам и контент виден. Модуль,
+       доехав, таймер гасит первым же действием. Без этого сбой загрузки
+       оставил бы половину страницы невидимой. -->
+  <script is:inline>
+    document.documentElement.classList.add('js-prp-animate', 'js-reveal');
+    window.__revealGuard = setTimeout(function () {
+      document.documentElement.classList.remove('js-reveal');
+    }, 2500);
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -128,5 +139,10 @@ const courseSchema = {
 </head>
 <body class="min-h-screen">
   <slot />
+  <!-- Единый scroll-reveal для всей страницы: один наблюдатель обслуживает
+       все [data-reveal] сразу, поэтому подключается здесь, а не в компонентах. -->
+  <script>
+    import '../scripts/reveal';
+  </script>
 </body>
 </html>

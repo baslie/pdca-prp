@@ -17,18 +17,24 @@ const features: Feature[] = [
 ];
 
 interface Stat {
-  number: string;
+  /** Целевое значение — от нуля до него набегает счётчик (stats-counter.ts). */
+  value: number;
   caption: string;
 }
 
-// number рендерится через set:html — «13 000» держим неразрывным пробелом,
-// иначе в узкой карточке число ломается на две строки.
 const stats: Stat[] = [
-  { number: '22',          caption: 'года в области бизнес-обучения' },
-  { number: '17',          caption: 'лет в сфере бережливого производства' },
-  { number: '850',         caption: 'проведённых тренингов в России, странах СНГ и Евросоюза' },
-  { number: '13&nbsp;000', caption: 'довольных участников' },
+  { value: 22,     caption: 'года в области бизнес-обучения' },
+  { value: 17,     caption: 'лет в сфере бережливого производства' },
+  { value: 850,    caption: 'проведённых тренингов в России, странах СНГ и Евросоюза' },
+  { value: 13_000, caption: 'довольных участников' },
 ];
+
+// Разделитель разрядов — неразрывный пробел: с обычным «13 000» ломается
+// на две строки в узкой карточке. Здесь форматируется финальное значение
+// для HTML, в src/scripts/stats-counter.ts — промежуточные кадры счётчика;
+// формула одна и та же, поэтому цифра не «прыгает» в момент финиша.
+const formatStat = (n: number): string =>
+  String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 ---
 
 <!-- ========== БЛОК «МЫ ПРЕДЛАГАЕМ + СТАТИСТИКА» ========== -->
@@ -44,28 +50,33 @@ const stats: Stat[] = [
 
   <div class="relative w-full section-px">
 
-    <div class="text-center max-w-3xl mx-auto mb-[clamp(2.5rem,5vw,5rem)]">
+    <div class="text-center max-w-3xl mx-auto mb-[clamp(2.5rem,5vw,5rem)]" data-reveal>
       <p class="t-eyebrow t-on-dark-muted mb-6">Преимущества и&nbsp;цифры</p>
       <h2 class="t-h-section t-on-dark">
         Мы&nbsp;<span class="text-brand-red">предлагаем</span>
       </h2>
     </div>
 
-    <!-- 6 преимуществ -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
-      {features.map((f) => (
-        <article class="feature-card">
+    <!-- 6 преимуществ. Карточки в сетке ничем не обрамлены, поэтому здесь
+         работает стаггер: --reveal-i задаёт лесенку в 60 мс на шаг. -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-5"
+         data-reveal="group">
+      {features.map((f, i) => (
+        <article class="feature-card" style={`--reveal-i:${i}`}>
           <Icon name={f.icon} class="feature-card__icon" />
           <p class="feature-card__label" set:html={f.labelHtml}></p>
         </article>
       ))}
     </div>
 
-    <!-- 4 цифры -->
-    <div class="mt-[clamp(2.5rem,4vw,4rem)] grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-      {stats.map((s) => (
-        <article class="stat-card">
-          <div class="stat-card__number" set:html={s.number}></div>
+    <!-- 4 цифры. data-count-to читает src/scripts/stats-counter.ts: значение
+         набегает от нуля при появлении группы. В HTML при этом лежит уже
+         финальное число — без JS и для краулеров цифра сразу правильная. -->
+    <div class="mt-[clamp(2.5rem,4vw,4rem)] grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
+         data-reveal="group" data-stats>
+      {stats.map((s, i) => (
+        <article class="stat-card" style={`--reveal-i:${i}`}>
+          <div class="stat-card__number" data-count-to={s.value}>{formatStat(s.value)}</div>
           <p class="stat-card__caption" set:html={s.caption}></p>
         </article>
       ))}
@@ -77,3 +88,7 @@ const stats: Stat[] = [
 
   </div>
 </section>
+
+<script>
+  import '../scripts/stats-counter';
+</script>
