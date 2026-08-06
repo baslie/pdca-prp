@@ -121,6 +121,13 @@ export const TYPOGRAF_SELECTOR = [
   '.certificate-doc__hint',
   '.gallery-item__hint',
   '.trainer-pill',
+  // Лид-форма: подписи полей и согласия живут на <label>, заголовок отладочной
+  // панели — на <summary>. Ни того, ни другого тега в списке выше нет.
+  // .contact-row__link сюда НЕ добавлен намеренно: в нём телефон и e-mail —
+  // та же причина, по которой из списка исключены голые `a`.
+  '.field__label',
+  '.lead-consent__text',
+  '.lead-debug__summary',
   // Кнопки и ссылки-CTA
   '.btn-primary',
   '.btn-secondary',

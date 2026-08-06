@@ -1,0 +1,242 @@
+---
+import { Icon } from 'astro-icon/components';
+import mountainsSummit from '../assets/images/mountains-summit.jpg';
+import { typografAttr } from '../../astro-typograf.config.mjs';
+
+interface Contact {
+  icon: string;
+  label: string;
+  /** Что видит человек. Телефон и e-mail — дословно как в Hero.astro. */
+  value: string;
+  href: string;
+  /** Внешняя ссылка открывается в новой вкладке. */
+  external?: boolean;
+}
+
+const contacts: Contact[] = [
+  { icon: 'lucide:phone', label: 'Телефон', value: '8 495 740-83-40', href: 'tel:+74957408340' },
+  { icon: 'lucide:mail',  label: 'Почта',   value: 'info@pdca-consulting.ru', href: 'mailto:info@pdca-consulting.ru' },
+  { icon: 'lucide:send',  label: 'Telegram', value: '@SnegKres', href: 'https://t.me/SnegKres', external: true },
+];
+
+/*
+ * Тексты, живущие в АТРИБУТАХ, прогоняются через typografAttr() на сборке.
+ * Плагин Типографа обрабатывает содержимое элементов и до атрибутов не
+ * дотягивается, а placeholder'ы и сообщения об ошибках попадают на экран
+ * именно оттуда: первые — силами браузера, вторые — из lead-form.ts.
+ * Тот же приём, что для data-role в Reviews.astro.
+ *
+ * Всё, что лежит в разметке обычным текстом, здесь НЕ дублируется: его
+ * типографирует сам плагин на сборке.
+ */
+const ph = {
+  name: typografAttr('Как к вам обращаться'),
+  phone: typografAttr('+7 900 000-00-00'),
+  email: typografAttr('name@company.ru'),
+  comment: typografAttr('Сколько человек в группе, какие задачи хотите решить'),
+};
+
+const err = {
+  phoneEmpty: typografAttr('Укажите телефон — это единственное обязательное поле'),
+  phoneInvalid: typografAttr('Похоже, в номере не хватает цифр'),
+  emailInvalid: typografAttr('Проверьте адрес — кажется, в нём опечатка'),
+  consent: typografAttr('Без согласия на обработку данных отправить заявку нельзя'),
+};
+
+const btnSending = typografAttr('Отправляем…');
+---
+
+<!-- ========== БЛОК «ОСТАВИТЬ ЗАЯВКУ» ========== -->
+<!-- Фон-панорама + стальной оверлей — тот же приём, что в #offer-stats и #video.
+     Секция обязана быть непрозрачной и z-10, иначе сквозь неё проступают
+     fixed-слои hero (см. CLAUDE.md, раздел про стэкинг).
+     Оверлей в полной альфе, без --soft: нижняя половина снимка — светлые
+     облака, а поверх неё лежит текст формы. -->
+<section
+  id="request"
+  class="relative z-10 overflow-hidden py-[clamp(4rem,7vw,9rem)] bg-cover bg-center bg-fixed"
+  style={`background-image: url('${mountainsSummit.src}');`}
+>
+  <div class="absolute inset-0 steel-overlay" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-brand-blue/45 via-transparent to-brand-blue/35" aria-hidden="true"></div>
+
+  <div class="relative w-full section-px">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-[clamp(2.5rem,4vw,5rem)]">
+
+      <!-- ЛЕВАЯ КОЛОНКА — приглашение и контакты -->
+      <div class="lg:col-span-5" data-reveal>
+        <p class="t-eyebrow t-on-dark-muted mb-6">Заявка на тренинг</p>
+        <h2 class="t-h-section t-on-dark">
+          Обсудим ваш <span class="text-brand-red">проект</span>
+        </h2>
+
+        <p class="t-lead t-on-dark-muted mt-8 max-w-prose">
+          Расскажите о задаче — мы свяжемся с вами, уточним детали
+          и предложим формат работы.
+        </p>
+
+        <div class="mt-[clamp(2rem,3vw,3rem)]">
+          {contacts.map((c) => (
+            <div class="contact-row">
+              <Icon name={c.icon} class="contact-row__icon" />
+              <div class="min-w-0">
+                <p class="contact-row__label">{c.label}</p>
+                <a
+                  href={c.href}
+                  class="contact-row__link"
+                  target={c.external ? '_blank' : undefined}
+                  rel={c.external ? 'noopener noreferrer' : undefined}
+                >{c.value}</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- ПРАВАЯ КОЛОНКА — форма -->
+      <div class="lg:col-span-7" data-reveal>
+
+        <!-- novalidate: сообщения браузера не стилизуются и на части платформ
+             выводятся не по-русски. Всю проверку ведёт lead-form.ts. -->
+        <form id="lead-form" class="flex flex-col gap-5" novalidate>
+
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div class="field" data-field="name">
+              <label class="field__label" for="lead-name">Имя</label>
+              <input
+                class="field__control"
+                id="lead-name"
+                name="name"
+                type="text"
+                autocomplete="name"
+                maxlength="80"
+                placeholder={ph.name}
+              />
+            </div>
+
+            <div class="field" data-field="phone">
+              <label class="field__label" for="lead-phone">
+                Телефон <span class="field__req">обязательно</span>
+              </label>
+              <input
+                class="field__control"
+                id="lead-phone"
+                name="phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                maxlength="25"
+                placeholder={ph.phone}
+                aria-describedby="lead-phone-error"
+                data-error-empty={err.phoneEmpty}
+                data-error-invalid={err.phoneInvalid}
+              />
+              <p class="field__error" id="lead-phone-error"></p>
+            </div>
+          </div>
+
+          <div class="field" data-field="email">
+            <label class="field__label" for="lead-email">E-mail</label>
+            <input
+              class="field__control"
+              id="lead-email"
+              name="email"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              maxlength="120"
+              placeholder={ph.email}
+              aria-describedby="lead-email-error"
+              data-error-invalid={err.emailInvalid}
+            />
+            <p class="field__error" id="lead-email-error"></p>
+          </div>
+
+          <div class="field" data-field="comment">
+            <label class="field__label" for="lead-comment">Комментарий</label>
+            <textarea
+              class="field__control"
+              id="lead-comment"
+              name="comment"
+              rows="4"
+              maxlength="2000"
+              placeholder={ph.comment}></textarea>
+          </div>
+
+          <!-- Honeypot. Уведён за экран классом .field__hp — не display:none:
+               часть ботов пропускает поля, скрытые очевидным способом, а нам
+               нужно ровно обратное. Для человека и скринридера недостижим:
+               aria-hidden + tabindex="-1". Подпись на латинице намеренно —
+               так поле не попадает в аудит русской типографики. -->
+          <div class="field__hp" aria-hidden="true">
+            <label for="lead-company-site">Company website</label>
+            <input id="lead-company-site" name="company_site" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- Реферальный хвост. Заполняется скриптом из sessionStorage:
+               referral — человекочитаемый текст для письма, referral_json —
+               та же информация структурой, для будущего бэкенда. -->
+          <input type="hidden" id="lead-referral" name="referral" />
+          <input type="hidden" id="lead-referral-json" name="referral_json" />
+
+          {/* TODO(legal): href ссылки — заменить на /privacy, когда появится
+              страница политики конфиденциальности (бэклог README, п. 3). */}
+          <div class="field" data-field="consent">
+            <div class="lead-consent">
+              <input
+                class="lead-consent__input"
+                id="lead-consent"
+                name="consent"
+                type="checkbox"
+                aria-describedby="lead-consent-error"
+                data-error-empty={err.consent}
+              />
+              <label class="lead-consent__text" for="lead-consent">
+                Отправляя форму, я соглашаюсь на обработку персональных данных
+                и принимаю{' '}
+                <a class="lead-consent__link" href="#">политику конфиденциальности</a>.
+              </label>
+            </div>
+            <p class="field__error" id="lead-consent-error"></p>
+          </div>
+
+          <div class="lead-status" id="lead-status" role="alert">
+            <p>Не получилось отправить заявку. Проверьте соединение и попробуйте ещё раз или позвоните нам.</p>
+          </div>
+
+          <div class="pt-2">
+            <button
+              type="submit"
+              class="btn-primary w-full sm:w-auto"
+              data-label-sending={btnSending}
+            >Отправить заявку</button>
+          </div>
+        </form>
+
+        <!-- Экран «Спасибо» вместо формы. tabindex="-1" — чтобы после отправки
+             увести на него фокус: иначе он остаётся на исчезнувшей кнопке. -->
+        <div class="lead-success" id="lead-success" role="status" tabindex="-1" hidden>
+          <Icon name="lucide:check" class="lead-success__icon" />
+          <h3 class="t-h-sub t-on-dark">Заявка отправлена</h3>
+          <p class="t-body-sm t-on-dark-muted mt-3 max-w-prose-narrow mx-auto">
+            Денис свяжется с вами в ближайшее время. Если вопрос срочный —
+            позвоните или напишите в Telegram.
+          </p>
+        </div>
+
+        <!-- Отладка парсинга реферального хвоста. Открывается только по
+             ?debug=referral — способ проверить UTM-метки глазами, пока
+             бэкенда нет. Сам параметр в хвост не попадает. -->
+        <details class="lead-debug" id="lead-debug" hidden>
+          <summary class="lead-debug__summary">Реферальный хвост</summary>
+          <pre class="lead-debug__pre" id="lead-debug-out"></pre>
+        </details>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/lead-form';
+</script>

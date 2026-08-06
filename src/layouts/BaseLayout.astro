@@ -132,6 +132,46 @@ const courseSchema = {
     }, 2500);
   </script>
 
+  <!-- Захват реферального хвоста: откуда посетитель пришёл. Снимается один раз
+       за сессию и живёт в sessionStorage, чтобы к моменту отправки формы
+       источник не потерялся при переходах между страницами.
+
+       Синхронно и здесь, а не в бандленном модуле, по той же причине, что и
+       блок выше: если чанк не успеет догрузиться до ухода по ссылке, метки
+       пропадут навсегда. Разбор и форматирование — src/scripts/referral.ts,
+       ключ 'pdca:ref' дублируется там же в REFERRAL_KEY.
+
+       sessionStorage, а не localStorage: хвост привязан к сессии вкладки —
+       переживает переходы по страницам и умирает вместе с вкладкой. -->
+  <script is:inline>
+    (function () {
+      var KEY = 'pdca:ref';
+      var MARKS = /[?&](utm_|gclid|gbraid|wbraid|yclid|ymclid|fbclid|ttclid|vk_click_id|erid|roistat|_openstat)/i;
+      try {
+        var prev = sessionStorage.getItem(KEY);
+        var hasUtm = MARKS.test(location.search);
+        var prevHasUtm = false;
+        if (prev) {
+          try { prevHasUtm = JSON.parse(prev).hasUtm === true; } catch (e) { prev = null; }
+        }
+        // Пишем, если хвоста ещё нет ИЛИ прежний был «пустой», а сейчас пришли
+        // метки: рекламный переход внутри сессии ценнее, чем прямой заход до него.
+        // В остальных случаях первый источник не перетирается.
+        if (!prev || (hasUtm && !prevHasUtm)) {
+          sessionStorage.setItem(KEY, JSON.stringify({
+            url: location.href,
+            referrer: document.referrer,
+            ts: new Date().toISOString(),
+            hasUtm: hasUtm,
+          }));
+        }
+      } catch (e) {
+        // Приватный режим или отключённое хранилище: трекинг не критичен,
+        // форма обязана работать в любом случае.
+      }
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />

@@ -1033,6 +1033,169 @@
   }
 
   /* ============================================================
+     БЛОК «ОСТАВИТЬ ЗАЯВКУ» (src/components/LeadForm.astro) — контакты
+     слева, лид-форма справа, поверх горной панорамы со steel-overlay.
+
+     Стекло полей — то же, что у .feature-card / .stat-card выше:
+     bg-white/10 + backdrop-blur. Блок лежит на такой же фотографии,
+     и своя манера поля ввода читалась бы как чужой элемент.
+
+     Логика формы — src/scripts/lead-form.ts, реферальный хвост —
+     src/scripts/referral.ts.
+     ============================================================ */
+
+  /* --- Контакты (левая колонка) ---------------------------------- */
+  /* .link-contact сюда не годится: он text-ink-dark, на тёмном фоне невидим. */
+  .contact-row { @apply flex items-start gap-4 py-4; }
+  .contact-row__icon { @apply w-5 h-5 shrink-0 mt-1; color: var(--color-brand-red); }
+  .contact-row__label {
+    @apply uppercase font-semibold mb-1;
+    font-size: 0.6875rem;              /* формула .t-eyebrow инлайном: */
+    letter-spacing: 0.32em;            /* @apply на роли из @layer base ненадёжен */
+    line-height: 1.4;
+    color: rgb(255 255 255 / 0.55);
+  }
+  .contact-row__link {
+    @apply font-medium break-words;
+    font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem);  /* формула .t-body */
+    line-height: 1.4;
+    color: #fff;
+    transition: color var(--dur-hover) var(--ease-brand);
+  }
+  .contact-row__link:hover { color: var(--color-brand-red); }
+
+  /* --- Поля формы ------------------------------------------------- */
+  .field { @apply flex flex-col; }
+  .field__label {
+    @apply font-medium mb-2 flex items-baseline gap-2;
+    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);  /* формула .t-body-sm */
+    line-height: 1.55;
+    color: #fff;
+  }
+  /* Пометка «обязательно» словом, а не звёздочкой: звёздочка без легенды
+     ничего не сообщает, а легенду пришлось бы куда-то вешать. */
+  .field__req {
+    @apply font-normal normal-case;
+    font-size: 0.75rem;                /* формула .t-hint инлайном */
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: rgb(255 255 255 / 0.55);
+  }
+  .field__control {
+    /* Рамка есть, но прозрачная: в покое поле — чистое стекло без обводки,
+       а при ошибке та же рамка окрашивается, не сдвигая раскладку на 1px.
+       Убрать border совсем нельзя — красная обводка ошибки дёргала бы поля. */
+    @apply w-full bg-white/10 backdrop-blur-md border px-4 py-3.5;
+    border-color: transparent;
+    color: #fff;
+    /* Минимум ровно 16px, а не 15px формулы .t-body-sm: на меньшем кегле
+       iOS Safari зумит страницу при фокусе в поле и обратно уже не отъезжает.
+       Плакатное исключение из шкалы, см. docs/TYPOGRAPHY.md, раздел 5. */
+    font-size: clamp(1rem, 0.4vw + 0.875rem, 1.0625rem);
+    line-height: 1.5;
+    transition:
+      background-color var(--dur-hover) var(--ease-brand),
+      border-color     var(--dur-hover) var(--ease-brand);
+  }
+  .field__control::placeholder { color: rgb(255 255 255 / 0.45); }
+  .field__control:hover { background-color: rgb(255 255 255 / 0.14); }
+  .field__control:focus-visible {
+    outline: 2px solid var(--color-brand-red);
+    outline-offset: 2px;
+    border-color: transparent;
+    background-color: rgb(255 255 255 / 0.16);
+  }
+  textarea.field__control { @apply resize-y; min-height: 7rem; }
+  .field[data-invalid] .field__control { border-color: var(--color-brand-red); }
+
+  /* Текст ошибки: показывается только при data-invalid на обёртке. Скрытие
+     через display, а не opacity, — иначе пустая строка резервирует высоту
+     и поля разъезжаются по вертикали ещё до всякой валидации. */
+  .field__error {
+    @apply hidden mt-2;
+    font-size: 0.75rem;                /* формула .t-hint инлайном */
+    line-height: 1.4;
+    color: var(--color-brand-red);
+  }
+  .field[data-invalid] .field__error { @apply block; }
+
+  /* Honeypot. Уводим за пределы экрана, а НЕ display:none и не hidden:
+     часть ботов пропускает поля, скрытые очевидным способом, — а нам нужно,
+     чтобы они его заполнили. Для человека и скринридера поле недостижимо:
+     aria-hidden + tabindex="-1" в разметке. */
+  .field__hp {
+    @apply absolute opacity-0 pointer-events-none;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* --- Согласие на обработку ПД ----------------------------------- */
+  .lead-consent { @apply flex items-start gap-3; }
+  .lead-consent__input {
+    /* 19px вместо дефолтных 16: чекбокс обязательный, и на тач-экране в него
+       нужно попадать пальцем. Отступ сверху уменьшен на ту же величину,
+       чтобы квадрат остался на базовой линии первой строки текста. */
+    @apply shrink-0 mt-0.5 cursor-pointer;
+    width: 1.1875rem;
+    height: 1.1875rem;
+    accent-color: var(--color-brand-red);
+  }
+  .lead-consent__input:focus-visible { outline: 2px solid var(--color-brand-red); outline-offset: 2px; }
+  .lead-consent__text {
+    font-size: 0.75rem;                /* формула .t-hint инлайном */
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .lead-consent__link {
+    @apply underline underline-offset-2;
+    color: #fff;
+    transition: color var(--dur-hover) var(--ease-brand);
+  }
+  .lead-consent__link:hover { color: var(--color-brand-red); }
+  /* Флаг ошибки живёт на общей обёртке .field — той же, что у текстовых полей,
+     поэтому и текст согласия краснеет по её атрибуту. */
+  .field[data-invalid] .lead-consent__text { color: var(--color-brand-red); }
+
+  /* --- Состояния отправки ----------------------------------------- */
+  /* Кнопка на время отправки гаснет, но остаётся на месте: смена ширины
+     дёргала бы раскладку. Габариты .btn-primary держит min-width. */
+  .btn-primary:disabled { opacity: 0.55; }
+
+  /* Сообщение о сбое сети — над кнопкой, того же кегля, что ошибки полей. */
+  .lead-status {
+    @apply hidden bg-white/10 backdrop-blur-md border px-4 py-3;
+    border-color: var(--color-brand-red);
+    font-size: 0.875rem;               /* формула .t-meta инлайном */
+    line-height: 1.45;
+    color: #fff;
+  }
+  .lead-status[data-visible] { @apply block; }
+
+  /* Экран «Спасибо» вместо формы. */
+  .lead-success { @apply bg-white/10 backdrop-blur-md px-6 py-10 sm:px-10 sm:py-14 text-center; }
+  .lead-success__icon { @apply w-12 h-12 mx-auto mb-6; color: var(--color-brand-red); }
+
+  /* --- Отладочная панель реферального хвоста ----------------------- */
+  /* Видна только при ?debug=referral — способ проверить парсинг UTM-меток
+     глазами, пока бэкенда нет. */
+  .lead-debug { @apply mt-8 bg-white/10 backdrop-blur-md px-4 py-3; }
+  .lead-debug__summary {
+    @apply cursor-pointer uppercase font-semibold;
+    font-size: 0.6875rem;              /* формула .t-eyebrow инлайном */
+    letter-spacing: 0.32em;
+    line-height: 1.4;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .lead-debug__pre {
+    @apply mt-4 overflow-x-auto whitespace-pre-wrap break-words;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: rgb(255 255 255 / 0.75);
+  }
+
+  /* ============================================================
      БЛОК «НАМ ДОВЕРЯЮТ» (src/components/Clients.astro), светлый фон bg.
      ============================================================ */
 

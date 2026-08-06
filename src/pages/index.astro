@@ -12,6 +12,7 @@ import Certificate from '../components/Certificate.astro';
 import Clients from '../components/Clients.astro';
 import Reviews from '../components/Reviews.astro';
 import TrainingPhotos from '../components/TrainingPhotos.astro';
+import LeadForm from '../components/LeadForm.astro';
 import ModalAbout from '../components/ModalAbout.astro';
 import ModalExamples from '../components/ModalExamples.astro';
 import ModalCertificate from '../components/ModalCertificate.astro';
@@ -51,6 +52,9 @@ import ModalGallery from '../components/ModalGallery.astro';
   <Reviews />
 
   <TrainingPhotos />
+
+  <!-- Целевое действие страницы. Якорь #request — на него будут вести CTA. -->
+  <LeadForm />
 
   <!-- Воздух в конце страницы: визуальный «выдох». relative + z-10 + bg обязательны,
        иначе сквозь div просвечивают fixed-слои hero. -->
