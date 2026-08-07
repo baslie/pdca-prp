@@ -163,15 +163,45 @@ grep -rnE "\b(gap(-[xy])?|[mp][trblxy]?)-\[clamp" src/
 ## Движение и анимация
 
 Моушн на сайте — **одна система с одним словарём**, а не набор эффектов.
-Пять приёмов, и у каждого ровно одна зона ответственности:
+Шесть приёмов, и у каждого ровно одна зона ответственности:
 
 | Приём | Инструмент | Где живёт |
 |---|---|---|
+| Плавный инерционный скролл страницы | Lenis | `src/scripts/smooth-scroll.ts` (синглтон, импорт из `BaseLayout.astro`) |
 | Scrub, привязанный к скроллу покадрово | GSAP + ScrollTrigger | **только** диаграмма ПРП (`src/scripts/prp-diagram-scroll.ts`) |
 | Однократное появление при скролле | IntersectionObserver + CSS-transition | `src/scripts/reveal.ts` + `[data-reveal]` в разметке |
 | Числовая интерполяция | GSAP core | **только** 4 цифры `#offer-stats` (`src/scripts/stats-counter.ts`) |
 | Ховер / фокус / состояние | CSS-transition | `global.css` |
 | Бесконечное движение | CSS `@keyframes` | конвейеры отзывов, спиннер галереи |
+
+### Плавный скролл (Lenis) — контракт
+
+- **Режим только дефолтный** — виртуализация нативного window-скролла.
+  Wrapper/content с transform на обёртке ЗАПРЕЩЁН: сломает fixed-слои hero,
+  `mix-blend-*` и `background-attachment: fixed` (см. раздел «Стэкинг»).
+  GSAP ScrollSmoother не использовать по той же причине.
+- Синглтон `export const lenis: Lenis | null` — `null` при
+  `prefers-reduced-motion` (тогда работает нативный фолбэк: CSS
+  `scroll-behavior: smooth` и `body.modal-open`). Потребители — только через
+  `lenis?.`.
+- **Блокировка фона**: `modal.ts` (lock/unlock) и `header.ts` (бургер) зовут
+  `lenis?.stop()` / `lenis?.start()` **вместе** с классом `modal-open` —
+  класс не убирать, это reduce/no-JS-фолбэк.
+- **Скроллящийся `<dialog>` обязан нести `data-lenis-prevent`** (все 5 модалок
+  с прокруткой несут; у `#modal-gallery` скролла нет — атрибут не нужен).
+  Без атрибута при `stop()` контент модалки не листается колесом.
+- **Якоря** ведёт делегированный click-обработчик на `document`
+  (bubble-фаза, НЕ capture — иначе сломается порядок с закрытием бургера
+  в `header.ts`). Offset вручную не передавать: Lenis 1.3 сам вычитает
+  вычисленный `scroll-padding-top` — ручной offset даст двойной отступ.
+  Хеш обновляется `history.pushState` (не `location.hash` — тот даёт
+  мгновенный нативный прыжок).
+- CSS-правила Lenis живут в `global.css` (`@layer base`, рядом с
+  `scroll-padding-top`), включая наше собственное
+  `html.lenis { scroll-behavior: auto !important; }` — в поставке 1.3.x его
+  нет, без него нативный smooth «резинит» каждую запись scrollTop.
+- Связка с GSAP: `autoRaf: false`, raf крутится в `gsap.ticker`,
+  `lagSmoothing(0)` — второй rAF-цикл не заводить.
 
 **Первый экран статичен.** В `Hero.astro` и `DenisFixed.astro` анимации нет и
 быть не должно — решение заказчика: первый экран грузится быстро и лаконично.

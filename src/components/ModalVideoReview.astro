@@ -8,7 +8,7 @@
      (мгновенная остановка звука). Оверлей-фолбэк тот же, что у статического
      BoomStreamPlayer.astro, но обёртка помечена data-bs-player-modal —
      автоскан watchdog'а её не трогает, таймером управляет arm()/disarm(). -->
-<dialog id="modal-video-review" aria-label="Видеоотзыв" class="modal-scroll">
+<dialog id="modal-video-review" aria-label="Видеоотзыв" data-lenis-prevent class="modal-scroll">
   <button type="button" id="modal-video-close" aria-label="Закрыть" class="modal-video-close">
     <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

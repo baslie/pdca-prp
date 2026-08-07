@@ -196,8 +196,10 @@ const jsonLd = {
 <body class="min-h-screen">
   <slot />
   <!-- Единый scroll-reveal для всей страницы: один наблюдатель обслуживает
-       все [data-reveal] сразу, поэтому подключается здесь, а не в компонентах. -->
+       все [data-reveal] сразу, поэтому подключается здесь, а не в компонентах.
+       Рядом — плавный скролл Lenis: тоже один инстанс на всю страницу. -->
   <script>
+    import '../scripts/smooth-scroll';
     import '../scripts/reveal';
   </script>
 </body>

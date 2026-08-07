@@ -8,6 +8,8 @@
 //   3. Scrollspy — повторяющийся IntersectionObserver (onceInView из
 //      in-view.ts не годится: он одноразовый).
 
+import { lenis } from './smooth-scroll';
+
 const header = document.getElementById('site-header');
 const nav = document.getElementById('site-nav');
 const sentinel = document.getElementById('header-sentinel');
@@ -74,6 +76,7 @@ if (header && nav && burger && panel) {
     burger.setAttribute('aria-expanded', 'true');
     burger.setAttribute('aria-label', 'Закрыть меню');
     document.body.classList.add('modal-open'); // body.modal-open { overflow: hidden }
+    lenis?.stop(); // класс — фолбэк (reduce-ветка); wheel держит сам Lenis
     setInert(true);
     // Фокус — следующим кадром: в этот момент оверлей ещё visibility: hidden
     // (браузер не успел пересчитать стиль), а focus() по невидимому элементу
@@ -87,6 +90,7 @@ if (header && nav && burger && panel) {
     burger.setAttribute('aria-expanded', 'false');
     burger.setAttribute('aria-label', 'Открыть меню');
     document.body.classList.remove('modal-open');
+    lenis?.start();
     setInert(false);
     if (returnFocus) burger.focus();
   };
@@ -103,8 +107,9 @@ if (header && nav && burger && panel) {
   });
 
   // Клик по ЛЮБОЙ ссылке шапки при открытом меню (пункт, телефон, почта,
-  // мини-лого «Наверх») — закрыть ДО дефолтного действия: лок скролла снят,
-  // и нативный smooth-скролл к якорю стартует уже на разблокированной странице.
+  // мини-лого «Наверх») — закрыть ДО перехода: лок снят (lenis.start()),
+  // а обработчик якорей из smooth-scroll.ts висит на document и по всплытию
+  // сработает ПОСЛЕ этого — скролл стартует на разблокированной странице.
   header.addEventListener('click', (e) => {
     const link = e.target instanceof Element ? e.target.closest('a') : null;
     if (link && isOpen()) closeMenu(false);

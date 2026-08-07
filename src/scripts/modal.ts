@@ -3,6 +3,8 @@
 // — закрытие по клику вне «карточки» (если такая определена через getCard),
 // — снятие lock при любом способе закрытия — кнопка, Esc, клик-вне.
 
+import { lenis } from './smooth-scroll';
+
 export interface SetupModalOptions {
   trigger?: HTMLElement | null;
   triggers?: (HTMLElement | null | undefined)[];
@@ -32,8 +34,16 @@ export function setupModal(
   const getCard = opts.getCard;
   const onOpen = opts.onOpen;
 
-  const lock = () => document.body.classList.add(LOCK_CLASS);
-  const unlock = () => document.body.classList.remove(LOCK_CLASS);
+  // Класс — фолбэк для reduce-ветки (lenis === null) и клавиатурного скролла;
+  // при активном Lenis фон держит stop(): wheel он перехватывает сам.
+  const lock = () => {
+    document.body.classList.add(LOCK_CLASS);
+    lenis?.stop();
+  };
+  const unlock = () => {
+    document.body.classList.remove(LOCK_CLASS);
+    lenis?.start();
+  };
 
   function open(trigger?: HTMLElement | null) {
     onOpen?.(trigger);

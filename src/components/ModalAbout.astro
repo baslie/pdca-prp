@@ -4,7 +4,9 @@ import TermTip from './TermTip.astro';
 ---
 
 <!-- ========== МОДАЛЬНОЕ ОКНО «О МЕТОДЕ» ========== -->
-<dialog id="modal-about" aria-labelledby="modal-about-title" class="modal-scroll fixed inset-0 w-screen h-screen max-w-none max-h-none overflow-y-auto bg-bg text-ink">
+<!-- data-lenis-prevent: скроллится сам <dialog>; без атрибута Lenis в stop()
+     съедал бы wheel, и контент модалки не листался бы колесом. -->
+<dialog id="modal-about" aria-labelledby="modal-about-title" data-lenis-prevent class="modal-scroll fixed inset-0 w-screen h-screen max-w-none max-h-none overflow-y-auto bg-bg text-ink">
 
   <!-- Sticky-полоса: слева «Назад» (явный выход для тех, кому крестик неочевиден),
        справа привычный крестик. -->

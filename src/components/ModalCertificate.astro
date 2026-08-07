@@ -17,7 +17,7 @@ const { image } = Astro.props;
      Схема входа/выхода — как у #modal-examples (backdrop + карточка),
      а не circular reveal из #modal-about: тот fullscreen-приём привязан
      к кнопке-триггеру в потоке текста, здесь он не нужен. -->
-<dialog id="modal-certificate" class="modal-scroll"
+<dialog id="modal-certificate" class="modal-scroll" data-lenis-prevent
         aria-label="Сертификат тренинга «Профессиональное решение проблем»">
   <!-- Со сканом габариты считает CSS (.modal-certificate-card img): лист
        вписывается по высоте вьюпорта, ширину диктует его пропорция.

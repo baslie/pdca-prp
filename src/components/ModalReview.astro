@@ -6,7 +6,7 @@
      Контент заполняется JS-ом (src/scripts/reviews.ts): текст берётся из DOM
      самой карточки (line-clamp прячет его только визуально), имя/должность/
      город — из data-атрибутов. -->
-<dialog id="modal-review" aria-label="Отзыв целиком" class="modal-scroll">
+<dialog id="modal-review" aria-label="Отзыв целиком" data-lenis-prevent class="modal-scroll">
   <figure class="modal-review-card">
     <button type="button" id="modal-review-close" aria-label="Закрыть"
             class="absolute top-4 right-4 w-9 h-9 flex items-center justify-center bg-panel text-ink-dark hover:bg-ink-dark hover:text-white transition-colors duration-150 ease-brand">

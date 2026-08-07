@@ -74,6 +74,10 @@
 - **GSAP 3 + ScrollTrigger** (npm) — scrub-анимация диаграммы ПРП и счётчик
   цифр в блоке «Мы предлагаем». Появление блоков при скролле сделано без GSAP:
   IntersectionObserver + CSS-transition (`src/scripts/reveal.ts`).
+- **Lenis** — плавный инерционный скролл страницы (`src/scripts/smooth-scroll.ts`):
+  дефолтный режим поверх нативного window-скролла, синхронизация со
+  ScrollTrigger через `gsap.ticker`, стоп/старт при модалках и бургере,
+  плавные якоря. При `prefers-reduced-motion` не инициализируется.
 - **astro-icon + @iconify-json/lucide** — иконки рендерятся как inline SVG
   на build-time (без CDN, без runtime-замены).
 - **astro-typograf + typograf** — русская микротипографика (неразрывные

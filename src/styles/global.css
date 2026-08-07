@@ -122,8 +122,33 @@
   }
   /* Якоря не ныряют под закреплённую панель шапки. Без media-гейта:
      отступ нужен и при reduce (мгновенный прыжок тоже должен попадать
-     ПОД заголовок секции, а не на него). */
+     ПОД заголовок секции, а не на него). Lenis (smooth-scroll.ts) при
+     scrollTo по элементу вычитает это значение сам — источник один,
+     ручной offset не нужен и дал бы двойной отступ. */
   html { scroll-padding-top: calc(var(--header-h) + 0.75rem); }
+
+  /* ============================================================
+     LENIS (плавный скролл, src/scripts/smooth-scroll.ts).
+     Правила из lenis/dist/lenis.css@1.3 перенесены вручную (конвенция:
+     стили живут здесь). Класс .lenis появляется на <html> только когда
+     инстанс создан — media-правило smooth выше остаётся честным
+     no-JS/reduce фолбэком.
+     ============================================================ */
+  /* Нашего производства, в поставке 1.3.x правила НЕТ: Lenis пишет
+     scrollTop каждый кадр, и без нейтрализации нативного smooth каждая
+     запись превращалась бы в отдельную анимацию — «резина» и разъезд
+     со ScrollTrigger. */
+  html.lenis { scroll-behavior: auto !important; }
+  html.lenis, html.lenis body { height: auto; }
+  /* stop() на время модалок/бургера: страховка от нативного скролла
+     (клавиатура, скроллбар); прячет тот же скроллбар, что body.modal-open. */
+  .lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+  /* Скроллящиеся <dialog> помечены атрибутом — их колесо Lenis игнорирует,
+     а цепочку прокрутки наружу рвёт overscroll-behavior. */
+  .lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+  /* Транзитный класс: висит только пока идёт smooth-анимация — wheel над
+     iframe (BoomStream) не «залипает» внутри плеера. */
+  .lenis.lenis-smooth iframe { pointer-events: none; }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
