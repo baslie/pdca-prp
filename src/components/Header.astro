@@ -1,0 +1,83 @@
+---
+import Logo from './Logo.astro';
+
+// Единственный источник данных навигации. Все три состояния шапки (строка
+// первого экрана, закреплённая панель, бургер-оверлей) рендерят ЭТОТ список
+// одним экземпляром <nav> — переключение состояний делается только стилями
+// (см. секцию «ШАПКА / НАВИГАЦИЯ» в global.css и src/scripts/header.ts).
+// Якоря сверены с фактическими id секций; «Как проходит» ведёт на #prp-steps —
+// отдельной секции о формате тренинга в ленте нет (контент живёт в модалке
+// «О методе»), решение согласовано с заказчиком.
+const NAV_ITEMS = [
+  { href: '#about-training', label: 'О тренинге' },
+  { href: '#examples', label: 'Примеры' },
+  { href: '#prp-steps', label: 'Как проходит' },
+  { href: '#about-trainer', label: 'Тренер' },
+  { href: '#reviews', label: 'Отзывы' },
+  { href: '#request', label: 'Контакты' },
+];
+
+const PHONE_HREF = 'tel:+74957408340';
+const PHONE_TEXT = '8 495 740-83-40';
+const MAIL = 'info@pdca-consulting.ru';
+---
+
+<!-- Сентинел sticky-состояния шапки: невидимая полоса 8..72px от верха
+     документа (body не позиционирован — absolute считается от документа).
+     IntersectionObserver в header.ts: полоса полностью видна → состояние top,
+     полностью ушла → scrolled, частично видна → гистерезис (состояние
+     не меняется, качели скролла у порога не мерцают). -->
+<div id="header-sentinel" aria-hidden="true" class="absolute top-2 left-0 h-16 w-px pointer-events-none"></div>
+
+<header id="site-header" class="site-header fixed inset-x-0 top-0 z-40" data-state="top" data-menu="closed">
+  <!-- Blur-подложка закреплённой панели. Готова заранее, анимируется только
+       opacity: анимация самого backdrop-filter — дорогой пересчёт каждый кадр. -->
+  <div class="site-header__bg" aria-hidden="true"></div>
+
+  <div class="site-header__bar section-px relative flex h-full items-center justify-between">
+    <!-- Мини-лого закреплённой панели. defs={false}: спрайт #logo-prp уже
+         инлайнится экземпляром в Hero. href="#" — нативный скролл к началу
+         страницы без выдумывания новых id. -->
+    <a href="#" class="site-header__logo" aria-label="Наверх">
+      <Logo defs={false} class="h-7 md:h-8 w-auto block" />
+    </a>
+
+    <!-- Единственный экземпляр навигации: на xl+ — центрированная строка
+         в панели, ниже xl — fullscreen-оверлей бургера. Из DOM ничего
+         не выпадает, скрытие только визуальное (opacity/visibility). -->
+    <nav id="site-nav" class="site-nav" aria-label="Навигация по странице">
+      <div class="site-nav__panel">
+        <ul class="site-nav__list">
+          {NAV_ITEMS.map((item) => (
+            <li><a class="site-nav__link" href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+        <!-- Телефон стоит особняком от навигации: отделён увеличенным зазором
+             и весом, без разделительного знака. -->
+        <div class="site-nav__contacts">
+          <a class="site-nav__phone" href={PHONE_HREF}>{PHONE_TEXT}</a>
+          <!-- Почта видна только в бургер-оверлее: с мобильного до контактов
+               в конце ленты далеко скроллить, из меню она доступна сразу. -->
+          <a class="site-nav__mail" href={`mailto:${MAIL}`}>{MAIL}</a>
+        </div>
+      </div>
+    </nav>
+
+    <button
+      type="button"
+      class="site-burger"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label="Открыть меню"
+    >
+      <span class="site-burger__box" aria-hidden="true">
+        <span class="site-burger__line"></span>
+        <span class="site-burger__line"></span>
+      </span>
+    </button>
+  </div>
+</header>
+
+<script>
+  import '../scripts/header';
+</script>

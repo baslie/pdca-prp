@@ -3,12 +3,18 @@ import logoSvg from '../assets/svg/logo-prp.svg?raw';
 
 interface Props {
   class?: string;
+  /** Спрайт <symbol id="logo-prp"> должен попасть на страницу ровно один раз
+      (его инлайнит экземпляр в Hero). Дополнительные экземпляры логотипа
+      (мини-лого панели шапки) передают defs={false} и ссылаются на тот же
+      symbol через <use> — forward-reference на symbol работает во всех
+      современных браузерах. */
+  defs?: boolean;
 }
 
-const { class: className = 'h-10 md:h-11 w-auto block' } = Astro.props;
+const { class: className = 'h-10 md:h-11 w-auto block', defs = true } = Astro.props;
 ---
 
-<Fragment set:html={logoSvg} />
+{defs && <Fragment set:html={logoSvg} />}
 <!-- .logo-prp даёт currentColor красной плашки знака (токен --color-brand-red);
      через <use> цвет наследуется внутрь <symbol>. -->
 <svg viewBox="0 0 216 56" class={`logo-prp ${className}`} aria-label="PDCA Consulting" preserveAspectRatio="xMinYMid meet">

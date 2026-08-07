@@ -18,21 +18,30 @@ const base = baseRaw.endsWith('/') ? baseRaw : `${baseRaw}/`;
 const canonical = new URL(base, Astro.site).toString();
 const ogImage = new URL(`${base}og-image.png`, Astro.site).toString();
 
+// Organization — самостоятельная сущность графа, а не вложенный provider:
+// её контакты продублированы видимой разметкой (телефон в шапке и в лид-форме,
+// почта в бургер-меню и в лид-форме). Course ссылается на неё по @id —
+// данные организации живут в одном месте.
+const orgId = `${canonical}#organization`;
+
+const organizationSchema = {
+  '@type': 'Organization',
+  '@id': orgId,
+  name: 'PDCA Consulting',
+  url: canonical,
+  logo: new URL(`${base}icons/icon-512.png`, Astro.site).toString(),
+  telephone: '+7 495 740-83-40',
+  email: 'info@pdca-consulting.ru',
+};
+
 const courseSchema = {
-  '@context': 'https://schema.org',
   '@type': 'Course',
   name: 'Профессиональное решение проблем',
   description:
     'Корпоративный тренинг по методологии кайдзен: 2 дня обучения + 3 месяца посттренингового сопровождения проектной работы.',
   url: canonical,
   inLanguage: 'ru',
-  provider: {
-    '@type': 'Organization',
-    name: 'PDCA Consulting',
-    url: canonical,
-    telephone: '+7 495 740-83-40',
-    email: 'info@pdca-consulting.ru',
-  },
+  provider: { '@id': orgId },
   instructor: {
     '@type': 'Person',
     name: 'Денис Булгин',
@@ -55,6 +64,12 @@ const courseSchema = {
     courseMode: 'onsite',
     courseWorkload: 'PT16H',
   },
+};
+
+// @context — только на корне графа, у элементов @graph его быть не должно.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [organizationSchema, courseSchema],
 };
 ---
 
@@ -113,8 +128,9 @@ const courseSchema = {
   <meta name="twitter:description" content="Корпоративный тренинг по методологии кайдзен: 2 дня + 3 месяца сопровождения." />
   <meta name="twitter:image" content={ogImage} />
 
-  <!-- Structured data: Course + Instructor. https://schema.org/Course -->
-  <script is:inline type="application/ld+json" set:html={JSON.stringify(courseSchema)}></script>
+  <!-- Structured data: Organization + Course (со ссылкой на неё через @id).
+       https://schema.org/Organization, https://schema.org/Course -->
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
   <!-- Классы ставятся синхронно ДО парсинга <body> — дают CSS-каскаду шанс
        применить пре-стейт раньше, чем браузер отрисует элементы. Устраняет

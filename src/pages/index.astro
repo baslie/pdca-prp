@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
 import SkyFixed from '../components/SkyFixed.astro';
 import DenisFixed from '../components/DenisFixed.astro';
 import Hero from '../components/Hero.astro';
@@ -28,6 +29,12 @@ import ModalGallery from '../components/ModalGallery.astro';
 ---
 
 <BaseLayout>
+  <!-- Шапка идёт первой ради порядка табуляции и семантики. На стэкинг hero
+       она не влияет: fixed z-40 — не предок блендящихся элементов, поэтому
+       mix-blend-difference героики продолжает считаться в контексте body.
+       Небу, Денису и горе z-index по-прежнему не давать (см. ниже). -->
+  <Header />
+
   <!-- DOM-order для hero fixed-слоёв (mix-blend-difference требует одного stacking context).
        Порядок снизу вверх: небо → Денис → гора (она внутри Hero).
        Денис рендерится ДО hero, чтобы плотность blending'а с h1 и цитатой работала корректно. -->
@@ -62,7 +69,7 @@ import ModalGallery from '../components/ModalGallery.astro';
        Концевого «воздушного» div'а здесь нет намеренно: полоса белого под
        тёмной секцией читалась как обрыв вёрстки, а собственный нижний паддинг
        у #request (ступень section-lg) уже даёт финалу воздух. Когда появится
-       футер (бэклог README, п. 3) — он встанет сразу после LeadForm. -->
+       футер (бэклог README, п. 2) — он встанет сразу после LeadForm. -->
   <LeadForm />
 
   <ModalAbout />

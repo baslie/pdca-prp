@@ -6,27 +6,11 @@ import mountain from '../assets/images/mountain.jpg';
 
 <section class="relative min-h-screen overflow-hidden">
 
-  <!-- DESKTOP-overlay контактов (≥lg). По центру шапки на одной линии с лого. -->
-  <div class="hidden lg:flex absolute top-0 left-0 right-0 z-30 pt-14 justify-center pointer-events-none">
-    <div class="pointer-events-auto inline-flex items-center h-11 gap-x-5 font-normal tracking-tight whitespace-nowrap text-lg">
-      <a href="tel:+74957408340" class="link-contact">8 495 740-83-40</a>
-      <!-- Знак умножения U+00D7 — «бренд × бренд» из визуального языка коллабораций. -->
-      <span aria-hidden="true" class="text-muted select-none">×</span>
-      <a href="mailto:info@pdca-consulting.ru" class="link-contact">info@pdca-consulting.ru</a>
-    </div>
-  </div>
-
-  <!-- MOBILE/TABLET-контакты (<lg) в правом верхнем углу. -->
-  <div class="lg:hidden absolute top-0 right-0 z-30
-              pt-10 md:pt-14 pr-6 sm:pr-10 md:pr-12
-              flex flex-col items-end sm:flex-row sm:items-center
-              gap-y-0.5 sm:gap-x-3
-              text-xs sm:text-sm md:text-base
-              font-normal tracking-tight text-right">
-    <a href="tel:+74957408340" class="link-contact">8 495 740-83-40</a>
-    <span aria-hidden="true" class="hidden sm:inline text-muted select-none">×</span>
-    <a href="mailto:info@pdca-consulting.ru" class="link-contact">info@pdca-consulting.ru</a>
-  </div>
+  <!-- Контакты и навигация живут в шапке (Header.astro, fixed z-40) — прежние
+       absolute-оверлеи контактов отсюда удалены. Логотип остаётся в потоке
+       левой колонки: на первом экране виден именно он, мини-лого шапки
+       проявляется только при скролле. Отступ pt-10/md:pt-14 задаёт линию,
+       на которую садится строка меню (--header-shift в global.css). -->
 
   <!-- Дуотон для горы: чёрный -> #003154 (Pantone 648 C, токен --color-brand-blue),
        белый остаётся белым, чтобы белый фон исходного JPG сливался с bg-bg

@@ -120,6 +120,10 @@
   @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
   }
+  /* Якоря не ныряют под закреплённую панель шапки. Без media-гейта:
+     отступ нужен и при reduce (мгновенный прыжок тоже должен попадать
+     ПОД заголовок секции, а не на него). */
+  html { scroll-padding-top: calc(var(--header-h) + 0.75rem); }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -235,6 +239,25 @@
        с padding'ом оно молча обрезало бы содержимое. */
     --dialog-py: clamp(1rem, 4vh, 3rem);
     --dialog-px: clamp(0.75rem, 2vw, 1.5rem);
+
+    /* ГЕОМЕТРИЯ ШАПКИ (Header.astro).
+       --header-h      высота закреплённой панели (состояние scrolled);
+                       участвует и в scroll-padding-top выше;
+       --header-shift  сдвиг контента шапки вниз в состоянии top: центр
+                       строки садится на линию логотипа hero.
+       Расчёт (mobile): pt-10(40px) + h-10/2(20px) = 60px — центр лого;
+                        60 − 56/2 = 32px = 2rem.
+       Расчёт (md+):    pt-14(56px) + h-11/2(22px) = 78px;
+                        78 − 64/2 = 46px = 2.875rem.
+       Меняешь pt/высоту логотипа в Hero — пересчитай и эти два значения. */
+    --header-h: 3.5rem;
+    --header-shift: 2rem;
+  }
+  @media (min-width: 48rem) {
+    :root {
+      --header-h: 4rem;
+      --header-shift: 2.875rem;
+    }
   }
 
   /* Модалка «О методе» — circular reveal из кнопки-триггера.
@@ -906,11 +929,309 @@
   .section-px-wide { @apply px-6 sm:px-10 md:px-12; }
   .section-py { @apply py-section; }
   .section-py-lg { @apply py-section-lg; }
-  .link-contact { @apply text-ink-dark hover:text-brand-red transition-colors duration-200 ease-brand; }
 
   /* Тонировка декоративной горы в hero. Сам фильтр — инлайн-SVG в Hero.astro:
      чёрный уходит в --color-brand-blue (#003154), белый остаётся белым. */
   .mountain-duotone { filter: url(#mountain-duotone); }
+
+  /* ============================================================
+     ШАПКА / НАВИГАЦИЯ (Header.astro + src/scripts/header.ts).
+
+     Состояния на <header>:
+       data-state="top"      строка первого экрана, панель прозрачна;
+       data-state="scrolled" закреплённая компактная панель с мини-лого;
+       data-menu="open|closed"  бургер-оверлей (<xl).
+     .is-armed ставит JS кадром позже применения начального состояния —
+     до него транзишенов нет (F5 в середине страницы = панель без анимации).
+
+     transform НЕ вешается на общий контейнер: transform на предке делает
+     его containing block для fixed-потомков, и оверлей бургера (fixed
+     inset-0 у .site-nav) съехал бы. Сдвиг --header-shift — поимённо:
+     мини-лого, бургер и (только на xl+) .site-nav.
+
+     Геометрия --header-h / --header-shift — в :root @layer base рядом
+     с --dur-*.
+     ============================================================ */
+  .site-header {
+    height: var(--header-h);
+    /* Прозрачная полоса не должна перехватывать клики по hero;
+       интерактив включает pointer-events точечно. */
+    pointer-events: none;
+  }
+
+  /* Blur-подложка панели: blur готов заранее, анимируется только opacity —
+     анимация самого backdrop-filter пересчитывала бы размытие каждый кадр. */
+  .site-header__bg {
+    position: absolute;
+    inset: 0;
+    background: rgb(255 255 255 / 0.86);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    opacity: 0;
+  }
+  .site-header.is-armed .site-header__bg {
+    transition: opacity var(--dur-zoom) var(--ease-brand);
+  }
+  .site-header[data-state='scrolled'] .site-header__bg { opacity: 1; }
+
+  /* Мини-лого панели. В состоянии top скрыт: visibility заодно выключает
+     его из tab-порядка. z-index 1 — выше fixed-оверлея nav, лого остаётся
+     видимым и кликабельным при открытом бургере. */
+  .site-header__logo {
+    position: relative;
+    z-index: 1;
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(var(--header-shift));
+  }
+  .site-header.is-armed .site-header__logo {
+    transition:
+      opacity var(--dur-zoom) var(--ease-brand),
+      transform var(--dur-zoom) var(--ease-brand),
+      visibility var(--dur-zoom);
+  }
+  .site-header[data-state='scrolled'] .site-header__logo {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  /* --- Бургер (<xl) --- */
+  .site-burger {
+    position: relative;
+    z-index: 1;                 /* выше fixed-оверлея nav */
+    width: 2.75rem;             /* 44px — тач-зона */
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    color: var(--color-ink-dark);
+    transform: translateY(var(--header-shift));
+  }
+  .site-header.is-armed .site-burger {
+    transition:
+      transform var(--dur-zoom) var(--ease-brand),
+      color var(--dur-hover) var(--ease-brand);
+  }
+  .site-header[data-state='scrolled'] .site-burger { transform: none; }
+  @media (hover: hover) {
+    .site-burger:hover { color: var(--color-brand-red); }
+  }
+  .site-burger__box {
+    position: relative;
+    display: block;
+    width: 1.5rem;
+    height: 1rem;
+  }
+  .site-burger__line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    transition: transform var(--dur-hover) var(--ease-brand);
+  }
+  .site-burger__line:nth-child(1) { top: 0; }
+  .site-burger__line:nth-child(2) { bottom: 0; }
+  .site-header[data-menu='open'] .site-burger__line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .site-header[data-menu='open'] .site-burger__line:nth-child(2) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+  @media (min-width: 80rem) {
+    .site-burger { display: none; }
+  }
+
+  /* --- NAV, базово (<xl): fullscreen-оверлей бургера ---
+     Не <dialog>: закрытый dialog — display:none, разметка выпала бы из
+     отрисовки, а nav обязан жить одним экземпляром во всех состояниях.
+     Скрытие opacity+visibility: из DOM и исходного HTML ссылки не выпадают
+     (SEO), из tab-порядка закрытый оверлей выпадает корректно. */
+  .site-nav {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;                  /* блок пунктов центрирован по вертикали */
+    background: rgb(255 255 255 / 0.78);  /* белый акцент поверх blur, не заливка */
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .site-header.is-armed .site-nav {
+    transition:
+      opacity var(--modal-dur-out) var(--ease-brand),
+      visibility var(--modal-dur-out);
+  }
+  .site-header[data-menu='open'] .site-nav {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    /* Вход и выход разведены, как у модалок: открытие смакуется, выход быстрый.
+       visibility в переходе ВХОДА не участвует намеренно: иначе на первом
+       кадре элемент ещё hidden, и перевод фокуса на первый пункт молча
+       не срабатывает. На выходе она в переходе нужна — держит оверлей
+       в отрисовке, пока идёт fade-out. */
+    transition: opacity var(--modal-dur-in) var(--ease-brand);
+  }
+
+  /* Поля блока пунктов = лесенка .section-px (инлайном: @apply на
+     composition-класс того же слоя ненадёжен). */
+  .site-nav__panel {
+    display: flex;
+    flex-direction: column;
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 40rem) { .site-nav__panel { padding-inline: 2.5rem; } }
+  @media (min-width: 48rem) { .site-nav__panel { padding-inline: 3rem; } }
+
+  .site-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  /* Ховер-рецепт ссылок шапки: ink-dark → brand-red за --dur-hover. */
+  .site-nav__link,
+  .site-nav__phone,
+  .site-nav__mail {
+    color: var(--color-ink-dark);
+    transition: color var(--dur-hover) var(--ease-brand);
+  }
+  @media (hover: hover) {
+    .site-nav__link:hover,
+    .site-nav__phone:hover,
+    .site-nav__mail:hover { color: var(--color-brand-red); }
+  }
+  /* Активный пункт scrollspy: aria-current ставит header.ts —
+     атрибут доступности и стиль-хук одновременно, второй класс не нужен. */
+  .site-nav__link[aria-current] { color: var(--color-brand-red); }
+
+  /* Крупные пункты оверлея — формула .t-h-section--compact инлайном. */
+  .site-nav__link {
+    display: inline-block;
+    padding: 0.5rem 0;                    /* тач-зона ≥44px по вертикали */
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+
+  .site-nav__contacts {
+    margin-top: var(--spacing-group);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .site-nav__phone {
+    display: inline-block;
+    padding: 0.375rem 0;
+    font-size: clamp(1.0625rem, 1.25vw, 1.375rem);  /* формула .t-lead инлайном */
+    line-height: 1.55;
+    font-weight: 500;                     /* акцент телефона в оверлее */
+  }
+  .site-nav__mail {
+    display: inline-block;
+    padding: 0.375rem 0;
+    font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem);  /* формула .t-body инлайном */
+    line-height: 1.65;
+  }
+
+  /* --- NAV на xl+: центрированная строка в панели ---
+     Наследует прежний контактный блок hero: font-normal, tracking-tight,
+     строка h-11, по центру ширины. Кегль — fluid от 16px на 1280 до 18px
+     (прежний text-lg) на 1536+: на 1280 строка из 6 пунктов и телефона
+     иначе упирается в логотип hero, который кончается на ~250px.
+     Порог xl (1280px) — расчётный: ниже него строка не расходится
+     с логотипом ни при каком кегле, там работает бургер. */
+  @media (min-width: 80rem) {
+    .site-nav {
+      position: absolute;
+      inset: 0;
+      justify-content: center;
+      background: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: none;               /* полоса прозрачна для кликов */
+      transform: translateY(var(--header-shift));
+    }
+    .site-header.is-armed .site-nav {
+      transition: transform var(--dur-zoom) var(--ease-brand);
+    }
+    .site-header[data-state='scrolled'] .site-nav { transform: none; }
+
+    .site-nav__panel {
+      /* Зазор и кегль растут вместе с шириной: на 1280 строка должна
+         разойтись с логотипом hero, дальше пунктам дают воздух —
+         17px зазора на 1280 против 32px на 1920. */
+      --nav-gap: clamp(1.0625rem, 2.34vw - 0.8125rem, 2rem);
+      --nav-size: clamp(1rem, 0.78vw + 0.375rem, 1.125rem);
+      pointer-events: auto;
+      flex-direction: row;
+      align-items: center;
+      height: 2.75rem;                    /* h-11 — строка прежнего контактного блока */
+      column-gap: var(--nav-gap);
+      white-space: nowrap;
+      padding-inline: 0;
+    }
+    .site-nav__list {
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+      column-gap: var(--nav-gap);
+    }
+    .site-nav__link {
+      display: inline-flex;
+      align-items: center;
+      height: 2.75rem;
+      padding: 0;
+      font-size: var(--nav-size);
+      line-height: 1;
+      letter-spacing: -0.025em;           /* tracking-tight */
+      font-weight: 400;
+    }
+    .site-nav__contacts {
+      /* Телефон стоит особняком: зазор до навигации вдвое больше, чем
+         между пунктами, вес на ступень выше. Разделительного знака нет. */
+      margin-top: 0;
+      margin-left: calc(var(--nav-gap) * 2);
+      flex-direction: row;
+      gap: 0;
+    }
+    .site-nav__phone {
+      display: inline-flex;
+      align-items: center;
+      height: 2.75rem;
+      padding: 0;
+      font-size: var(--nav-size);
+      line-height: 1;
+      letter-spacing: -0.025em;
+      font-weight: 500;
+    }
+    .site-nav__mail { display: none; }    /* почта — только в бургер-оверлее */
+  }
+
+  /* Уважаем системную настройку: все переключения шапки мгновенны. */
+  @media (prefers-reduced-motion: reduce) {
+    .site-header.is-armed .site-header__bg,
+    .site-header.is-armed .site-header__logo,
+    .site-header.is-armed .site-burger,
+    .site-header.is-armed .site-nav,
+    .site-header[data-menu='open'] .site-nav,
+    .site-burger__line { transition: none; }
+  }
 
   /* ============================================================
      SCROLL-REVEAL — единственный приём появления на сайте.
@@ -1089,7 +1410,8 @@
      ============================================================ */
 
   /* --- Контакты (левая колонка) ---------------------------------- */
-  /* .link-contact сюда не годится: он text-ink-dark, на тёмном фоне невидим. */
+  /* Рецепт ссылок шапки (.site-nav__*) сюда не годится: он text-ink-dark,
+     на тёмном фоне невидим. */
   .contact-row { @apply flex items-start gap-4 py-4; }
   .contact-row__icon { @apply w-5 h-5 shrink-0 mt-1; color: var(--color-brand-red); }
   .contact-row__label {

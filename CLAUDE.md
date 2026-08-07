@@ -69,7 +69,7 @@
 | `common/punctuation/delDoublePunctuation` | правит авторскую пунктуацию |
 | `ru/typo/switchingKeyboardLayout` | латиница → кириллица: побило бы PDCA, Kawasaki, BoomStream |
 | `ru/number/ordinals` | «25-ый» → «25-й» — меняет буквы в словах |
-| `ru/other/phone-number` | телефон в `Hero.astro` свёрстан вручную |
+| `ru/other/phone-number` | телефон в `Header.astro` свёрстан вручную |
 | `ru/number/comma` | «Astro 7.1» → «7,1» |
 | `ru/date/fromISO`, `ru/date/weekday` | переформатируют даты |
 | `common/space/trimLeft`, `trimRight` | обрезка краёв innerHTML склеила бы инлайн-элементы |
@@ -106,8 +106,9 @@ node scripts/audit-typography.mjs
 ### Анти-паттерны
 
 - Ручная расстановка `&nbsp;` в новом тексте — плагин сделает это сам.
-- Голые `a` и `button` в селекторе: в ссылках `Hero.astro` живут e-mail
-  и телефон, их типографировать нельзя. Кнопки перечислены классами `.btn-*`.
+- Голые `a` и `button` в селекторе: в ссылках `Header.astro` живут e-mail
+  и телефон, их типографировать нельзя. Ссылки и кнопки перечислены классами
+  (`.site-nav__link`, `.btn-*`).
 - Включение `common/html/e-mail` или `common/html/url` — они оборачивают
   текст в `<a>`, а адреса на сайте уже размечены ссылками вручную.
 - Включение `ru/optalign/*` (висячая пунктуация) — требует отдельного CSS,

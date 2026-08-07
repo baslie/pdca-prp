@@ -66,7 +66,7 @@ export const TYPOGRAF_OPTIONS = {
     'ru/typo/switchingKeyboardLayout', // латиница → кириллица: PDCA, Kawasaki, BoomStream
     'ru/number/ordinals', // 25-ый → 25-й
     // --- Переформатируют данные ---
-    'ru/other/phone-number', // телефон в Hero свёрстан вручную
+    'ru/other/phone-number', // телефон в Header и лид-форме свёрстан вручную
     'ru/number/comma', // «Astro 7.1» → «7,1»
     'ru/date/fromISO',
     'ru/date/weekday',
@@ -86,9 +86,9 @@ export const TYPOGRAF_OPTIONS = {
  *
  * Проверить покрытие: `node scripts/audit-typography.mjs` после сборки.
  *
- * Голые `a` и `button` в список НЕ входят намеренно: в Hero.astro в ссылках
- * живут e-mail и телефон, их типографировать нельзя. Кнопки перечислены
- * поимённо через классы .btn-*.
+ * Голые `a` и `button` в список НЕ входят намеренно: в Header.astro и в
+ * лид-форме в ссылках живут e-mail и телефон, их типографировать нельзя.
+ * Ссылки и кнопки перечислены поимённо через классы (.site-nav__link, .btn-*).
  */
 export const TYPOGRAF_SELECTOR = [
   // Блочные контейнеры текста
@@ -128,6 +128,10 @@ export const TYPOGRAF_SELECTOR = [
   '.field__label',
   '.lead-consent__text',
   '.lead-debug__summary',
+  // Навигация шапки: подписи пунктов лежат на <a>, который в список не входит.
+  // .site-nav__phone и .site-nav__mail сюда НЕ добавлены намеренно — в них
+  // телефон и e-mail, та же причина, что и у голых `a`.
+  '.site-nav__link',
   // Кнопки и ссылки-CTA
   '.btn-primary',
   '.btn-secondary',
