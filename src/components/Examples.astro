@@ -178,13 +178,20 @@ const categoryData: CategoryData[] = [
 ---
 
 <!-- ========== БЛОК «ПРИМЕРЫ РЕШЕНИЯ ПРОБЛЕМ» ========== -->
-<section id="examples" class="relative z-10 bg-bg pt-[clamp(3rem,6vw,8rem)] pb-0">
+<!-- pb-0 — осознанное исключение из ритма: фото Дениса стоит на нижней
+     границе секции (lg:self-end), любой нижний паддинг оторвал бы его от неё
+     и оставил белую полосу под фигурой. -->
+<section id="examples" class="relative z-10 bg-bg pt-section pb-0">
   <div class="w-full section-px">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
 
-      <div class="lg:col-span-7 lg:order-2 lg:self-center">
+      <!-- lg:pb-block компенсирует pb-0 секции: снизу колонку ограничивает
+           не паддинг секции, а её собственный край, и подсказка под списком
+           категорий иначе прилипает вплотную к следующей секции.
+           На <lg колонка идёт над фото и отбита от него gap'ом грида. -->
+      <div class="lg:col-span-7 lg:order-2 lg:self-center lg:pb-block">
 
-        <div class="mb-10" data-reveal>
+        <div class="mb-block" data-reveal>
           <p class="t-eyebrow t-on-muted mb-6">6 областей · реальные проекты</p>
           <h2 class="t-h-section t-on-brand">
             Примеры <span class="text-brand-red">решения</span> проблем

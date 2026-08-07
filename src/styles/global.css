@@ -80,6 +80,34 @@
   /* max-w-* (в v4 namespace --container-* отвечает за max-w-*). */
   --container-prose: 65ch;
   --container-prose-narrow: 52ch;
+
+  /* ШКАЛА ВЕРТИКАЛЬНОГО РИТМА — четыре ступени, больше не нужно.
+     Источник правды и правила применения — docs/SPACING.md.
+
+     namespace --spacing-* принадлежит Tailwind: именованный ключ даёт и
+     var(--spacing-block), и утилиты mt-block / mb-block / gap-gutter.
+     Базовая единица --spacing (0.25rem) не тронута — микрошкала p-2/mt-4
+     работает как прежде.
+
+       section     внешний ритм секций (светлый фон)
+       section-lg  то же для секций поверх фотопанорамы — на снимке
+                   контенту нужно больше поля, иначе он «прилипает» к краю
+       block       шапка секции → контент; крупные блоки внутри секции
+       group       подраздел внутри блока
+       gutter      зазор между колонками grid'а
+
+     Ниже ступени gutter — обычная шкала Tailwind (mt-2 … mb-8): она уже
+     кратна 4px и в токенах не нуждается. */
+  --spacing-section:    clamp(3rem, 6vw, 8rem);
+  --spacing-section-lg: clamp(4rem, 7vw, 9rem);
+  --spacing-block:      clamp(2.5rem, 5vw, 4.5rem);
+  --spacing-group:      clamp(2rem, 3.5vw, 3rem);
+  --spacing-gutter:     clamp(2.5rem, 4vw, 5rem);
+
+  /* Внутренние поля крупной панели: врезка с цитатой, карточки модалок
+     отзыва и видеоотзыва. Не ступень ритма страницы, а «толщина стенки»
+     контейнера — поэтому стоит отдельно от пяти ступеней выше. */
+  --spacing-panel:      clamp(1.75rem, 3vw, 3rem);
 }
 
 /* ============================================================
@@ -200,6 +228,13 @@
     /* Параметры единого scroll-reveal (см. блок .js-reveal ниже). */
     --reveal-stagger: 60ms;
     --reveal-shift:   14px;
+
+    /* Поля модального слоя — расстояние от края вьюпорта до карточки.
+       Переменные, а не повторённая формула: то же значение участвует
+       в расчётах max-height карточек (calc(100vh - 2 * …)), и разъехавшись
+       с padding'ом оно молча обрезало бы содержимое. */
+    --dialog-py: clamp(1rem, 4vh, 3rem);
+    --dialog-px: clamp(0.75rem, 2vw, 1.5rem);
   }
 
   /* Модалка «О методе» — circular reveal из кнопки-триггера.
@@ -254,7 +289,7 @@
     margin: 0;
     background: transparent;
     border: none;
-    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    padding: var(--dialog-py) var(--dialog-px);
     overflow-y: auto;
     overflow-x: hidden;
     transition:
@@ -322,7 +357,7 @@
     margin: 0;
     background: transparent;
     border: none;
-    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    padding: var(--dialog-py) var(--dialog-px);
     overflow-y: auto;
     overflow-x: hidden;
     transition:
@@ -387,14 +422,14 @@
     display: block;
     width: auto;
     max-width: 100%;
-    max-height: calc(100vh - 2 * clamp(1rem, 4vh, 3rem));
+    max-height: calc(100vh - 2 * var(--dialog-py));
   }
   /* Лист-заглушка (скана ещё нет): без <img> внутри width: fit-content схлопнул
      бы карточку, поэтому габариты задаются здесь. Три минимума разом гарантируют,
      что лист влезет и по ширине вьюпорта, и по высоте — деление на 1.414
      переводит доступную высоту в ширину листа A4. */
   .modal-certificate-card--sheet {
-    width: min(760px, 92vw, calc((100vh - 2 * clamp(1rem, 4vh, 3rem)) / 1.414));
+    width: min(760px, 92vw, calc((100vh - 2 * var(--dialog-py)) / 1.414));
     aspect-ratio: 1 / 1.414;
   }
   /* Крестик прижат к вьюпорту, а не к карточке: документ занимает почти всю
@@ -417,7 +452,7 @@
     margin: 0;
     background: transparent;
     border: none;
-    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    padding: var(--dialog-py) var(--dialog-px);
     overflow-y: auto;
     overflow-x: hidden;
     transition:
@@ -456,7 +491,7 @@
     max-width: min(720px, 92vw);
     width: 100%;
     margin: 0 auto;
-    padding: clamp(1.75rem, 3vw, 3rem);
+    padding: var(--spacing-panel);
     opacity: 0;
     transform: translateY(12px) scale(0.98);
     transition:
@@ -489,7 +524,7 @@
     margin: 0;
     background: transparent;
     border: none;
-    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    padding: var(--dialog-py) var(--dialog-px);
     overflow-y: auto;
     overflow-x: hidden;
     transition:
@@ -569,7 +604,7 @@
     margin: 0;
     background: transparent;
     border: none;
-    padding: clamp(1rem, 4vh, 3rem) clamp(0.75rem, 2vw, 1.5rem);
+    padding: var(--dialog-py) var(--dialog-px);
     overflow: hidden;
     transition:
       display var(--modal-dur-out) allow-discrete,
@@ -637,7 +672,7 @@
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: calc(100vh - 2 * clamp(1rem, 4vh, 3rem) - 2.5rem);
+    max-height: calc(100vh - 2 * var(--dialog-py) - 2.5rem);
     background: rgb(255 255 255 / 0.04);
   }
   .modal-gallery-caption {
@@ -860,8 +895,17 @@
      отсюда. Буквенная часть логотипа — свой чёрный из ассета, он не токен. */
   .logo-prp { color: var(--color-brand-red); }
 
+  /* Поля секции. Две ступени, обе документированы в docs/SPACING.md:
+       .section-px       базовая — все текстовые секции;
+       .section-px-wide  для контента, который живёт «ковром» во всю ширину
+                         (диаграмма ПРП, лента логотипов): на lg+ поля
+                         остаются md-шными, иначе широкая композиция теряет
+                         в размере ради полей, которые никто не сравнивает.
+     Вертикаль — токены шкалы, см. @theme выше. */
   .section-px { @apply px-6 sm:px-10 md:px-12 lg:px-20; }
-  .section-py { @apply py-[clamp(3rem,6vw,8rem)]; }
+  .section-px-wide { @apply px-6 sm:px-10 md:px-12; }
+  .section-py { @apply py-section; }
+  .section-py-lg { @apply py-section-lg; }
   .link-contact { @apply text-ink-dark hover:text-brand-red transition-colors duration-200 ease-brand; }
 
   /* Тонировка декоративной горы в hero. Сам фильтр — инлайн-SVG в Hero.astro:
@@ -1447,7 +1491,9 @@
   .gallery-masonry {
     --gallery-gap: clamp(4px, 0.5vw, 8px);
     list-style: none;
-    margin: clamp(2.5rem, 5vw, 4.5rem) 0 0;
+    /* Ступень block: «шапка секции → контент», та же, что у ленты логотипов
+       и слайдера видеоотзывов (см. docs/SPACING.md). */
+    margin: var(--spacing-block) 0 0;
     /* Боковые поля равны зазору между кадрами: лента идёт во всю ширину
        экрана, решётка читается как единое поле без «рамки» из воздуха. */
     padding: 0 var(--gallery-gap);
@@ -1569,7 +1615,9 @@
   .prp-intro {
     display: block;
     max-width: 65ch;
-    margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+    /* Ступень block: описание системы — «шапка» диаграммы, дальше идёт сама
+       композиция. На xl блок абсолютный и margin обнуляется (см. ниже). */
+    margin: 0 auto var(--spacing-block);
     text-align: center;
   }
 

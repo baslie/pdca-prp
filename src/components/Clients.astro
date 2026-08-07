@@ -103,11 +103,11 @@ const logos = LOGOS.map((l) => {
 
 <!-- Секция ниже hero: relative z-10 + непрозрачный фон обязательны,
      иначе сквозь неё проступают fixed-слои героики (см. CLAUDE.md). -->
-<section id="clients" class="relative z-10 bg-bg py-[clamp(3.5rem,7vw,7rem)]">
+<section id="clients" class="relative z-10 bg-bg section-py">
 
   <div class="section-px">
     <header class="max-w-prose mx-auto text-center" data-reveal>
-      <p class="t-eyebrow t-on-soft mb-4">Опыт обучения сотрудников организаций</p>
+      <p class="t-eyebrow t-on-muted mb-6">Опыт обучения сотрудников организаций</p>
       <h2 class="t-h-section t-on-brand">
         Нам <span class="text-brand-red">доверяют</span>
       </h2>
@@ -117,7 +117,7 @@ const logos = LOGOS.map((l) => {
   <!-- Ковёр во всю ширину: контейнера с max-w нет, только боковые поля. -->
   <ul class="flex flex-wrap justify-center items-center
              gap-x-8 gap-y-7 md:gap-x-14 md:gap-y-10
-             px-6 md:px-12 mt-[clamp(2.5rem,5vw,4.5rem)]">
+             section-px-wide mt-block">
     {logos.map((l) => (
       <li class="client-logo-cell w-[130px] h-[65px] md:w-[165px] md:h-[82px]">
         <img
@@ -136,8 +136,8 @@ const logos = LOGOS.map((l) => {
 
   <!-- Перечень остальных организаций — тот же материал, что был в полосе
        под блоком о тренере, только на светлом фоне. -->
-  <div class="section-px mt-[clamp(3rem,6vw,5.5rem)]">
-    <p class="t-eyebrow t-on-soft mb-5">А&nbsp;также</p>
+  <div class="section-px mt-block">
+    <p class="t-eyebrow t-on-muted mb-6">А&nbsp;также</p>
     <ul class="flex flex-wrap items-center gap-2">
       {CLIENTS.map((c) => (
         <li class="client-pill">{c}</li>

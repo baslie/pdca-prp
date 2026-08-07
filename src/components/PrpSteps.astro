@@ -14,18 +14,20 @@ const steps: Step[] = [
 ---
 
 <!-- ========== БЛОК «ШАГИ ПО ВНЕДРЕНИЮ СИСТЕМЫ ПРП» ========== -->
-<!-- xl:pb уменьшен: у stage-«креста» (aspect 13/10) под октагоном 5 есть
-     встроенная пустота ~4% ширины stage, полный section-py к ней добавлял бы
-     ещё clamp(3-8rem) и низ выглядел заметно толще верха. На <xl (колонка)
-     пустоты нет — там паддинг симметричный. -->
-<section id="prp-steps" class="relative z-10 bg-bg section-py xl:pb-[clamp(1.5rem,3vw,4rem)]">
-  <div class="w-full px-6 sm:px-10 md:px-12 lg:px-12">
+<!-- xl:pb — ровно половина ступени section: у stage-«креста» (aspect 13/10)
+     под октагоном 5 есть встроенная пустота ~4% ширины stage, полный ритм
+     к ней добавлял бы ещё целую ступень и низ выглядел заметно толще верха.
+     На <xl (колонка) пустоты нет — там паддинг симметричный.
+     Считается от токена, а не своим clamp'ом: сдвинется шкала — сдвинется и он. -->
+<section id="prp-steps" class="relative z-10 bg-bg section-py xl:pb-[calc(var(--spacing-section)/2)]">
+  <!-- section-px-wide: диаграмма — «ковёр», на lg+ ей отдаётся ширина. -->
+  <div class="w-full section-px-wide">
     <div>
 
       <!-- Reveal достаётся только заголовку: сама диаграмма ниже привязана
            к скроллу через GSAP ScrollTrigger (src/scripts/prp-diagram-scroll.ts),
            и второй приём появления поверх неё был бы двойной анимацией. -->
-      <div class="mb-[clamp(1.5rem,3vw,2rem)] xl:mb-0 max-w-prose mx-auto text-center" data-reveal>
+      <div class="mb-group xl:mb-0 max-w-prose mx-auto text-center" data-reveal>
         <p class="t-eyebrow t-on-muted mb-6">Процесс внедрения</p>
         <h2 class="t-h-section t-on-brand">
           Шаги по&nbsp;внедрению системы <span class="text-brand-red">ПРП</span>

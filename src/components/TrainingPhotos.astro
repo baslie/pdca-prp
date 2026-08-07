@@ -89,11 +89,11 @@ const gallerySchema = {
 
 <!-- Секция ниже hero: relative z-10 + непрозрачный фон обязательны,
      иначе сквозь неё проступают fixed-слои героики (см. CLAUDE.md). -->
-<section id="training-photos" class="relative z-10 bg-bg py-[clamp(3.5rem,7vw,7rem)]">
+<section id="training-photos" class="relative z-10 bg-bg section-py">
 
   <div class="section-px">
     <header class="max-w-prose mx-auto text-center" data-reveal>
-      <p class="t-eyebrow t-on-soft mb-4">Очные корпоративные программы</p>
+      <p class="t-eyebrow t-on-muted mb-6">Очные корпоративные программы</p>
       <h2 class="t-h-section t-on-brand">
         Фотографии с <span class="text-brand-red">тренингов</span>
       </h2>
@@ -133,7 +133,7 @@ const gallerySchema = {
     ))}
   </ul>
 
-  <div class="section-px mt-[clamp(1.75rem,3vw,2.75rem)] text-center">
+  <div class="section-px mt-group text-center">
     <button type="button" id="training-gallery-more" class="btn-video-retry" hidden>
       Показать ещё
     </button>

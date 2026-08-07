@@ -29,7 +29,7 @@ const credentials = [
      без них сквозь секцию проступают fixed-слои hero (Денис и гора). -->
 <section id="certificate" class="relative z-10 bg-bg section-py">
   <div class="w-full section-px">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
 
       <!-- Текст. Первым в DOM — на мобильном заголовок должен идти раньше документа. -->
       <div class="lg:col-span-8">
@@ -46,10 +46,14 @@ const credentials = [
              пропорции 749×1004 и без подложки — PNG прозрачный, фигура должна
              «стоять» прямо на фоне секции. -->
         <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
-          <figure class="shrink-0">
+          <!-- Ширину держит сама <figure>, а не <img>: в колоночной раскладке
+               (<sm) flex растягивает figure на всю ширину колонки, и text-center
+               центрировал подпись по колонке, а не по портрету — она уезжала
+               вправо от фотографии. -->
+          <figure class="shrink-0 w-32 sm:w-40">
             <img src={euclidesCoimbra.src} alt="Эвклид Коимбра"
                  width={euclidesCoimbra.width} height={euclidesCoimbra.height} loading="lazy"
-                 class="w-32 sm:w-40 h-auto" />
+                 class="w-full h-auto" />
             <figcaption class="t-meta t-on-muted mt-2 text-center">Euclides Coimbra</figcaption>
           </figure>
 
@@ -72,7 +76,7 @@ const credentials = [
         <!-- Появляется одним блоком, а не ячейка за ячейкой: рамку таблицы
              рисует контейнер, а стаггер сдвигал бы ячейки внутри неподвижной
              рамки — на 500 мс линии разъезжались бы с содержимым. -->
-        <div class="mt-[clamp(2rem,4vw,3rem)] grid grid-cols-1 sm:grid-cols-2
+        <div class="mt-group grid grid-cols-1 sm:grid-cols-2
                     border-x border-t border-border" data-reveal>
           {credentials.map((c) => (
             <article class="credential-card">

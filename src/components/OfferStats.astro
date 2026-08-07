@@ -40,7 +40,7 @@ const formatStat = (n: number): string =>
 <!-- ========== БЛОК «МЫ ПРЕДЛАГАЕМ + СТАТИСТИКА» ========== -->
 <section
   id="offer-stats"
-  class="relative z-10 overflow-hidden py-[clamp(4rem,7vw,9rem)] bg-cover bg-center bg-fixed"
+  class="relative z-10 overflow-hidden section-py-lg bg-cover bg-center bg-fixed"
   style={`background-image: url('${mountainsClouds.src}');`}
 >
   <!-- Двухслойный overlay: «стальной» синий (.steel-overlay, см. global.css)
@@ -50,7 +50,7 @@ const formatStat = (n: number): string =>
 
   <div class="relative w-full section-px">
 
-    <div class="text-center max-w-3xl mx-auto mb-[clamp(2.5rem,5vw,5rem)]" data-reveal>
+    <div class="text-center max-w-3xl mx-auto mb-block" data-reveal>
       <p class="t-eyebrow t-on-dark-muted mb-6">Преимущества и&nbsp;цифры</p>
       <h2 class="t-h-section t-on-dark">
         Мы&nbsp;<span class="text-brand-red">предлагаем</span>
@@ -72,7 +72,7 @@ const formatStat = (n: number): string =>
     <!-- 4 цифры. data-count-to читает src/scripts/stats-counter.ts: значение
          набегает от нуля при появлении группы. В HTML при этом лежит уже
          финальное число — без JS и для краулеров цифра сразу правильная. -->
-    <div class="mt-[clamp(2.5rem,4vw,4rem)] grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
+    <div class="mt-group grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
          data-reveal="group" data-stats>
       {stats.map((s, i) => (
         <article class="stat-card" style={`--reveal-i:${i}`}>
@@ -82,7 +82,7 @@ const formatStat = (n: number): string =>
       ))}
     </div>
 
-    <p class="mt-[clamp(2.5rem,4vw,4rem)] text-center t-meta t-on-dark-muted max-w-2xl mx-auto">
+    <p class="mt-group text-center t-meta t-on-dark-muted max-w-2xl mx-auto">
       22&nbsp;года опыта подкреплены сотнями тренингов и&nbsp;тысячами участников
     </p>
 

@@ -54,14 +54,14 @@ const btnSending = typografAttr('Отправляем…');
      облака, а поверх неё лежит текст формы. -->
 <section
   id="request"
-  class="relative z-10 overflow-hidden py-[clamp(4rem,7vw,9rem)] bg-cover bg-center bg-fixed"
+  class="relative z-10 overflow-hidden section-py-lg bg-cover bg-center bg-fixed"
   style={`background-image: url('${mountainsSummit.src}');`}
 >
   <div class="absolute inset-0 steel-overlay" aria-hidden="true"></div>
   <div class="absolute inset-0 bg-gradient-to-b from-brand-blue/45 via-transparent to-brand-blue/35" aria-hidden="true"></div>
 
   <div class="relative w-full section-px">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-[clamp(2.5rem,4vw,5rem)]">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
 
       <!-- ЛЕВАЯ КОЛОНКА — приглашение и контакты -->
       <div class="lg:col-span-5" data-reveal>
@@ -75,7 +75,7 @@ const btnSending = typografAttr('Отправляем…');
           и предложим формат работы.
         </p>
 
-        <div class="mt-[clamp(2rem,3vw,3rem)]">
+        <div class="mt-group">
           {contacts.map((c) => (
             <div class="contact-row">
               <Icon name={c.icon} class="contact-row__icon" />

@@ -53,12 +53,13 @@ import ModalGallery from '../components/ModalGallery.astro';
 
   <TrainingPhotos />
 
-  <!-- Целевое действие страницы. Якорь #request — на него будут вести CTA. -->
+  <!-- Целевое действие страницы и последний блок ленты. Якорь #request —
+       на него будут вести CTA.
+       Концевого «воздушного» div'а здесь нет намеренно: полоса белого под
+       тёмной секцией читалась как обрыв вёрстки, а собственный нижний паддинг
+       у #request (ступень section-lg) уже даёт финалу воздух. Когда появится
+       футер (бэклог README, п. 3) — он встанет сразу после LeadForm. -->
   <LeadForm />
-
-  <!-- Воздух в конце страницы: визуальный «выдох». relative + z-10 + bg обязательны,
-       иначе сквозь div просвечивают fixed-слои hero. -->
-  <div class="relative z-10 bg-bg h-[clamp(2rem,5vw,5rem)]" aria-hidden="true"></div>
 
   <ModalAbout />
   <ModalExamples />
