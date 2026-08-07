@@ -48,14 +48,19 @@ import mountain from '../assets/images/mountain.jpg';
   <!-- Декоративная гора в левом нижнем углу.
        На mobile — absolute внутри hero, на md+ — fixed к viewport (вместе с Денисом).
        filter создаёт stacking context на самой картинке, но она по-прежнему рисуется
-       в общий контекст body — mix-blend-difference героики продолжает работать. -->
+       в общий контекст body — mix-blend-difference героики продолжает работать.
+
+       mix-blend-multiply обязателен: исходник — JPEG без альфы, гора вырезана
+       на белом. Пока фоном был чистый #FFFFFF, белое поле кадра сливалось с ним
+       само; поверх неба (#F2F4F6, SkyFixed) оно проступило бы светлым
+       прямоугольником. Умножение гасит белое до фона и оставляет дуотон. -->
   <img
     id="mountain-fixed"
     src={mountain.src}
     alt=""
     width={mountain.width}
     height={mountain.height}
-    class="mountain-duotone absolute md:fixed bottom-0 left-0 w-[clamp(425px,33vw,760px)] h-auto pointer-events-none select-none"
+    class="mountain-duotone mix-blend-multiply absolute md:fixed bottom-0 left-0 w-[clamp(425px,33vw,760px)] h-auto pointer-events-none select-none"
   />
 
   <!-- Сетка: 58/42 — даёт типографике чуть больше воздуха, фото остаётся весомым. -->

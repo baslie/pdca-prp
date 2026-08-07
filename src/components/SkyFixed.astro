@@ -1,0 +1,24 @@
+---
+import sky from '../assets/images/sky.jpg';
+---
+
+<!-- Небо-подложка первого экрана: самый нижний из трёх fixed-слоёв hero.
+     Рендерится ДО <DenisFixed /> и до горы внутри <Hero />, поэтому по
+     DOM-order оказывается под ними — z-index не задан намеренно, как и
+     у остальных слоёв (см. CLAUDE.md, «Стэкинг и fixed-слои hero»).
+
+     Закреплена на все брейкпоинты, включая мобильный: гора там absolute
+     и уезжает вместе с hero, а фон обязан держаться — иначе под ним
+     проступит белый body. Ниже hero слой перекрывают секции с
+     `relative z-10` и непрозрачным фоном.
+
+     object-cover без фиксированной позиции: кадр — ровный облачный слой,
+     кропается по любой стороне без потери сюжета. -->
+<img
+  id="sky-fixed"
+  src={sky.src}
+  alt=""
+  width={sky.width}
+  height={sky.height}
+  class="fixed inset-0 w-full h-full object-cover pointer-events-none select-none"
+/>

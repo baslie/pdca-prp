@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SkyFixed from '../components/SkyFixed.astro';
 import DenisFixed from '../components/DenisFixed.astro';
 import Hero from '../components/Hero.astro';
 import AboutTraining from '../components/AboutTraining.astro';
@@ -28,7 +29,10 @@ import ModalGallery from '../components/ModalGallery.astro';
 
 <BaseLayout>
   <!-- DOM-order для hero fixed-слоёв (mix-blend-difference требует одного stacking context).
+       Порядок снизу вверх: небо → Денис → гора (она внутри Hero).
        Денис рендерится ДО hero, чтобы плотность blending'а с h1 и цитатой работала корректно. -->
+  <SkyFixed />
+
   <DenisFixed />
 
   <Hero />

@@ -126,7 +126,8 @@
 │   ├── components/                    ← Hero, AboutTraining, Video, Examples,
 │   │                                    OfferStats, PrpSteps, AboutTrainer, Certificate,
 │   │                                    Clients, Reviews, VideoReviews, Modal*,
-│   │                                    BoomStreamPlayer, DenisFixed, Logo, TermTip
+│   │                                    BoomStreamPlayer, SkyFixed, DenisFixed,
+│   │                                    Logo, TermTip
 │   ├── scripts/                       ← modal.ts, modal-about.ts, examples.ts,
 │   │                                    certificate.ts, reviews.ts, video-reviews.ts,
 │   │                                    boomstream-watchdog.ts, prp-diagram-scroll.ts
