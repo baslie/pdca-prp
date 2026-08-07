@@ -1022,11 +1022,22 @@
   @media (hover: hover) {
     .site-burger:hover { color: var(--color-brand-red); }
   }
+  /* Бокс иконки — в ПИКСЕЛЯХ, не в rem, и с шагом между линиями, кратным 12.
+     Линия толщиной 2px при дробном devicePixelRatio (Windows 125 %, 150 %,
+     Android 2.75x) не ложится на целое число физических пикселей и получает
+     полутон по краю. Само по себе это не беда — беда, когда у двух линий
+     РАЗНЫЕ субпиксельные фазы: одна выходит резкой, вторая размазанной,
+     и они читаются как разные по толщине. Фазы совпадают тогда, когда шаг
+     между линиями даёт целое число физических пикселей при любом реальном
+     dpr, то есть кратен 12 (покрывает и k/4, и k/3).
+     Было 14px (16 − 2) — при 125 % давало ровно этот дефект.
+     Меняешь высоту бокса — держи шаг кратным 12 и пересчитай translateY
+     креста ниже (он равен половине шага). */
   .site-burger__box {
     position: relative;
     display: block;
-    width: 1.5rem;
-    height: 1rem;
+    width: 24px;
+    height: 14px;              /* шаг 12px + толщина нижней линии 2px */
   }
   .site-burger__line {
     position: absolute;
@@ -1039,10 +1050,10 @@
   .site-burger__line:nth-child(1) { top: 0; }
   .site-burger__line:nth-child(2) { bottom: 0; }
   .site-header[data-menu='open'] .site-burger__line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    transform: translateY(6px) rotate(45deg);
   }
   .site-header[data-menu='open'] .site-burger__line:nth-child(2) {
-    transform: translateY(-7px) rotate(-45deg);
+    transform: translateY(-6px) rotate(-45deg);
   }
   @media (min-width: 80rem) {
     .site-burger { display: none; }
@@ -1131,21 +1142,28 @@
     margin-top: var(--spacing-group);
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
   }
-  .site-nav__phone {
-    display: inline-block;
-    padding: 0.375rem 0;
-    font-size: clamp(1.0625rem, 1.25vw, 1.375rem);  /* формула .t-lead инлайном */
-    line-height: 1.55;
-    font-weight: 500;                     /* акцент телефона в оверлее */
-  }
+  /* Телефон и почта — ОДИН типографский уровень: обе ссылки берут формулу
+     .t-body целиком, телефон выделен только весом.
+     Телефон раньше брал формулу .t-lead и выходил МЕЛЬЧЕ почты, хотя задуман
+     акцентом: средний член .t-lead — чистый vw без rem-слагаемого, поэтому
+     роль держит свой минимум 17px аж до 1360px, тогда как .t-body к 857px
+     уже добирает до 20px. На всей рабочей ширине бургера (<1280px) разрыв
+     доходил до 3px не в ту сторону. Берёшь роль инлайном — сверь, где её
+     формула реально начинает расти. */
+  .site-nav__phone,
   .site-nav__mail {
     display: inline-block;
-    padding: 0.375rem 0;
+    /* Вертикаль режет тач-зону до ~41px вместо канонических 44px осознанно:
+       две ссылки идут подряд, и при 44px минимальный зазор между строками —
+       11px, пара перестаёт читаться как один блок контактов. 41px кратно
+       перекрывает минимум WCAG 2.5.8 (24px), соседняя цель — такая же
+       ссылка, цена промаха нулевая. */
+    padding: 0.25rem 0;
     font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem);  /* формула .t-body инлайном */
     line-height: 1.65;
   }
+  .site-nav__phone { font-weight: 500; }  /* акцент телефона в оверлее */
 
   /* --- NAV на xl+: центрированная строка в панели ---
      Наследует прежний контактный блок hero: font-normal, tracking-tight,
@@ -1208,7 +1226,6 @@
       margin-top: 0;
       margin-left: calc(var(--nav-gap) * 2);
       flex-direction: row;
-      gap: 0;
     }
     .site-nav__phone {
       display: inline-flex;
