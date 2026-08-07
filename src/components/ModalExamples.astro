@@ -6,7 +6,9 @@
      Контент заполняется JS-ом (src/scripts/examples.ts). -->
 <dialog id="modal-examples" aria-labelledby="modal-examples-title" class="modal-scroll">
   <div class="modal-examples-card">
-    <div class="flex items-start justify-between gap-4 px-6 md:px-8 py-5 border-b border-neutral-200">
+    <!-- Горизонталь — ступень panel, общая для всех модалок (docs/SPACING.md).
+         Вертикаль полосы-шапки меньше: это не панель контента, а её край. -->
+    <div class="flex items-start justify-between gap-4 px-panel py-5 border-b border-neutral-200">
       <div class="flex items-start gap-4">
         <div id="modal-examples-icon" class="w-14 h-14 bg-panel text-brand-blue flex items-center justify-center shrink-0"></div>
         <div>
@@ -22,7 +24,7 @@
       </button>
     </div>
 
-    <div class="px-6 md:px-8 py-6">
+    <div class="p-panel">
       <ol id="modal-examples-list" class="space-y-2.5 px-3"></ol>
     </div>
   </div>

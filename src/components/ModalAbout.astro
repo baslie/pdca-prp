@@ -8,7 +8,7 @@ import TermTip from './TermTip.astro';
 
   <!-- Sticky-полоса: слева «Назад» (явный выход для тех, кому крестик неочевиден),
        справа привычный крестик. -->
-  <div class="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-3 pointer-events-none">
+  <div class="sticky top-0 z-30 flex items-center justify-between gap-3 px-panel py-3 pointer-events-none">
     <button type="button" id="btn-about-back-top" class="btn-modal-back pointer-events-auto">
       <span aria-hidden="true" class="text-lg leading-none">←</span>
       <span>Назад</span>
@@ -19,12 +19,14 @@ import TermTip from './TermTip.astro';
     </button>
   </div>
 
-  <!-- Узкая центральная колонка с контентом -->
-  <div class="modal-about-content mx-auto w-full max-w-3xl px-6 sm:px-10 md:px-14 pt-4 md:pt-6 pb-10 md:pb-14">
+  <!-- Узкая центральная колонка с контентом. Горизонталь — ступень panel,
+       как у остальных модалок; pt небольшой (сверху уже стоит полоса
+       с кнопками), низ — ступень block: конец длинного текста. -->
+  <div class="modal-about-content mx-auto w-full max-w-3xl px-panel pt-4 md:pt-6 pb-block">
 
     <p class="t-eyebrow t-on-muted mb-6">Полное описание</p>
 
-    <h2 id="modal-about-title" class="t-h-section t-on-brand mb-7">О&nbsp;методе</h2>
+    <h2 id="modal-about-title" class="t-h-section t-on-brand mb-6">О&nbsp;методе</h2>
 
     <div class="space-y-5 t-body t-on-default">
       <p>
@@ -40,12 +42,12 @@ import TermTip from './TermTip.astro';
         кайдзен Масааки&nbsp;Имаи:
       </p>
 
-      <figure class="my-8 rounded-sm bg-panel p-7">
+      <figure class="my-group rounded-sm bg-panel p-panel">
         <blockquote class="t-quote t-on-strong">
           Кайдзен начинается с&nbsp;проблемы, или, точнее, с&nbsp;признания, что&nbsp;она существует!
           Там, где её&nbsp;нет, отсутствует потенциал для&nbsp;совершенствования.
         </blockquote>
-        <figcaption class="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <figcaption class="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <span class="font-semibold t-on-strong">Масааки&nbsp;Имаи</span>
           <span class="t-meta t-on-muted">создатель концепции кайдзен</span>
         </figcaption>
@@ -58,7 +60,7 @@ import TermTip from './TermTip.astro';
       </p>
     </div>
 
-    <h3 class="t-h-sub t-on-strong mt-12 mb-5">
+    <h3 class="t-h-sub t-on-strong mt-group mb-6">
       В&nbsp;основу специального учебного курса-тренинга «Профессиональное Решение Проблем» легли
       все основные принципы и&nbsp;подходы кайдзен к&nbsp;решению проблем:
     </h3>
@@ -68,7 +70,7 @@ import TermTip from './TermTip.astro';
       <li>7&nbsp;необходимых шагов и&nbsp;7&nbsp;эффективных инструментов для&nbsp;решения любой проблемы</li>
     </ul>
 
-    <h2 class="t-h-section t-h-section--compact t-on-brand mt-14 mb-6">1-й&nbsp;день тренинга</h2>
+    <h2 class="t-h-section t-h-section--compact t-on-brand mt-group mb-6">1-й&nbsp;день тренинга</h2>
     <div class="space-y-5 t-body t-on-default">
       <p>
         В&nbsp;течение первого дня участники узнают о&nbsp;том, что процесс решения любой проблемы включает
@@ -88,7 +90,7 @@ import TermTip from './TermTip.astro';
       </p>
     </div>
 
-    <h2 class="t-h-section t-h-section--compact t-on-brand mt-14 mb-6">2-й&nbsp;день тренинга</h2>
+    <h2 class="t-h-section t-h-section--compact t-on-brand mt-group mb-6">2-й&nbsp;день тренинга</h2>
     <p class="t-body t-on-default">
       Во&nbsp;второй день тренинга участники переходят к&nbsp;отработке на&nbsp;практике полученных накануне
       знаний. Формируются две-три проектные группы, каждая из&nbsp;которых выбирает реально существующую
@@ -97,7 +99,7 @@ import TermTip from './TermTip.astro';
       самостоятельно выбранной (или озвученной руководством) проблемы.
     </p>
 
-    <h2 class="t-h-section t-h-section--compact t-on-brand mt-14 mb-6">Защита проекта</h2>
+    <h2 class="t-h-section t-h-section--compact t-on-brand mt-group mb-6">Защита проекта</h2>
     <p class="t-body t-on-default">
       Вместе с&nbsp;проблемами группы определяют сроки защиты своих практических проектов (обычно
       через три&nbsp;месяц после начала работы над&nbsp;проблемой). Программа обучения предполагает
@@ -106,7 +108,7 @@ import TermTip from './TermTip.astro';
       проблем перед заказчиком обучения).
     </p>
 
-    <h2 class="t-h-section t-h-section--compact t-on-brand mt-14 mb-6">Вместо заключения</h2>
+    <h2 class="t-h-section t-h-section--compact t-on-brand mt-group mb-6">Вместо заключения</h2>
     <p class="t-body t-on-default">
       Прохождение ключевыми сотрудниками компании тренинга «Профессиональное Решение Проблем»
       является весьма желательным фактором, так&nbsp;как приобретение и&nbsp;постоянное применение
@@ -116,7 +118,7 @@ import TermTip from './TermTip.astro';
       Системы Профессионального Решения Проблем.
     </p>
 
-    <div class="mt-14 flex justify-center">
+    <div class="mt-group flex justify-center">
       <a href="#" class="inline-flex items-center gap-3 px-6 py-3.5 bg-brand-red text-white hover:bg-brand-blue transition-colors duration-200 ease-brand t-body-sm font-medium">
         <img src={iconPdfLight.src} alt="" loading="lazy" class="h-5 w-auto shrink-0" />
         <span>Скачать описание тренинга</span>
