@@ -206,8 +206,12 @@ const categoryData: CategoryData[] = [
              content и внутрь <button> по HTML не помещается, да и содержимое
              кнопки в a11y-дереве всё равно схлопывается в её имя. -->
         <!-- Карточки без обрамляющей рамки — стаггер разрешён (паттерн
-             OfferStats.astro). h-full-цепочка выравнивает высоту в ряду. -->
-        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5" data-reveal="group">
+             OfferStats.astro). h-full-цепочка выравнивает высоту в ряду.
+             Сетка 1→2→1→2 по фактической ширине КОЛОНКИ, не вьюпорта:
+             на md (768+) две карточки в ряд дают тексту ≥190px; на lg
+             колонка сжата col-span-7 (рядом фото) — ряд снова один,
+             иначе «документооборот» вылезал за карточку; на xl+ два. -->
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 lg:gap-5" data-reveal="group">
           {categories.map((c, i) => (
             <li style={`--reveal-i:${i}`}>
               <h3 class="h-full">
@@ -219,7 +223,6 @@ const categoryData: CategoryData[] = [
                     <span class="category-card__title">{c.title}</span>
                     <span class="category-card__caption">{c.caption}</span>
                   </span>
-                  <span class="category-card__arrow">→</span>
                 </button>
               </h3>
             </li>
