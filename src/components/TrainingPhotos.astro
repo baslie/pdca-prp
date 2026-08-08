@@ -16,6 +16,7 @@
    scripts/prepare-training-photos.mjs, а здесь просто импортируются. */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { base } from '../scripts/base-url';
 
 const previewFiles = import.meta.glob<{ default: ImageMetadata }>(
   '../assets/images/trainings/preview/*.jpg',
@@ -66,8 +67,6 @@ const photos = slugs.map((slug, i) => {
 
 /* JSON-LD ImageGallery. В схему кладём первые 12 кадров: 93 объекта раздули бы
    HTML на ~30 КБ, а поисковику для понимания типа страницы хватает выборки. */
-const baseRaw = import.meta.env.BASE_URL;
-const base = baseRaw.endsWith('/') ? baseRaw : `${baseRaw}/`;
 const canonical = new URL(base, Astro.site).toString();
 
 const gallerySchema = {

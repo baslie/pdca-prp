@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import { PHONE_HREF, PHONE_DISPLAY, EMAIL } from '../data/contacts';
 
 // Единственный источник данных навигации. Все три состояния шапки (строка
 // первого экрана, закреплённая панель, бургер-оверлей) рендерят ЭТОТ список
@@ -17,9 +18,8 @@ const NAV_ITEMS = [
   { href: '#request', label: 'Контакты' },
 ];
 
-const PHONE_HREF = 'tel:+74957408340';
-const PHONE_TEXT = '8 495 740-83-40';
-const MAIL = 'info@pdca-consulting.ru';
+const PHONE_TEXT = PHONE_DISPLAY;
+const MAIL = EMAIL;
 ---
 
 <!-- Сентинел sticky-состояния шапки: невидимая полоса 8..72px от верха

@@ -2,6 +2,13 @@
 import { Icon } from 'astro-icon/components';
 import mountainsSummit from '../assets/images/mountains-summit.jpg';
 import { typografAttr } from '../../astro-typograf.config.mjs';
+import {
+  PHONE_HREF,
+  PHONE_DISPLAY,
+  EMAIL,
+  TELEGRAM_HANDLE,
+  TELEGRAM_URL,
+} from '../data/contacts';
 
 interface Contact {
   icon: string;
@@ -14,9 +21,9 @@ interface Contact {
 }
 
 const contacts: Contact[] = [
-  { icon: 'lucide:phone', label: 'Телефон', value: '8 495 740-83-40', href: 'tel:+74957408340' },
-  { icon: 'lucide:mail',  label: 'Почта',   value: 'info@pdca-consulting.ru', href: 'mailto:info@pdca-consulting.ru' },
-  { icon: 'lucide:send',  label: 'Telegram', value: '@SnegKres', href: 'https://t.me/SnegKres', external: true },
+  { icon: 'lucide:phone', label: 'Телефон', value: PHONE_DISPLAY, href: PHONE_HREF },
+  { icon: 'lucide:mail',  label: 'Почта',   value: EMAIL, href: `mailto:${EMAIL}` },
+  { icon: 'lucide:send',  label: 'Telegram', value: TELEGRAM_HANDLE, href: TELEGRAM_URL, external: true },
 ];
 
 /*

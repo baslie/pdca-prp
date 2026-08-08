@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import { PHONE_SCHEMA, EMAIL } from '../data/contacts';
+import { base } from '../scripts/base-url';
 
 interface Props {
   title?: string;
@@ -11,10 +13,6 @@ const {
   description = 'Корпоративный тренинг «Профессиональное решение проблем» по методологии кайдзен. 2 дня обучения + 3 месяца сопровождения проектной работы. Денис Булгин, PDCA Consulting.',
 } = Astro.props;
 
-// Нормализуем base так, чтобы он всегда заканчивался на «/». Astro может отдавать
-// BASE_URL и со слешем, и без — конкатенация без нормализации даёт /pdca-prpfavicon.ico.
-const baseRaw = import.meta.env.BASE_URL;
-const base = baseRaw.endsWith('/') ? baseRaw : `${baseRaw}/`;
 const canonical = new URL(base, Astro.site).toString();
 const ogImage = new URL(`${base}og-image.png`, Astro.site).toString();
 
@@ -30,8 +28,8 @@ const organizationSchema = {
   name: 'PDCA Consulting',
   url: canonical,
   logo: new URL(`${base}icons/icon-512.png`, Astro.site).toString(),
-  telephone: '+7 495 740-83-40',
-  email: 'info@pdca-consulting.ru',
+  telephone: PHONE_SCHEMA,
+  email: EMAIL,
 };
 
 const courseSchema = {
