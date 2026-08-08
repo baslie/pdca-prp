@@ -49,8 +49,9 @@ const trainings: string[] = [
 <section id="about-trainer" class="relative z-10 bg-brand-blue">
   <div class="grid grid-cols-1 lg:grid-cols-12">
 
-    <!-- Портрет — edge-to-edge, на lg+ тянется на всю высоту контентной колонки. -->
-    <div class="relative lg:col-span-5">
+    <!-- Портрет — edge-to-edge, на lg+ тянется на всю высоту контентной колонки.
+         На <lg портрет уходит ПОД текст (order-2): сначала читаем, потом смотрим. -->
+    <div class="relative order-2 lg:order-none lg:col-span-5">
       <img src={denisBulgin3.src} alt="Денис Булгин — бизнес-тренер"
            width={denisBulgin3.width} height={denisBulgin3.height} loading="lazy"
            class="block w-full aspect-[3/4] max-lg:max-h-[80vh] object-cover object-top lg:absolute lg:inset-0 lg:h-full lg:w-full lg:aspect-auto" />
