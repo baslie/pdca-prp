@@ -1,5 +1,6 @@
 ---
 import { bsEmbedSrc } from '../scripts/boomstream-embed';
+import BsFallbackOverlay from './BsFallbackOverlay.astro';
 
 interface Props {
   code: string;
@@ -33,16 +34,7 @@ const src = bsEmbedSrc(code);
        5 секунд после приближения к вьюпорту плеер не прислал ни одного
        postMessage (типичный случай — у посетителя VPN и запрос «висит»).
        Скрыт классом hidden; watchdog переключает hidden <-> flex и aria-hidden. -->
-  <div
-    class="absolute inset-0 z-10 hidden flex-col items-center justify-center gap-5 bg-panel px-6 text-center"
-    data-bs-overlay
-    role="status"
-    aria-live="polite"
-    aria-hidden="true"
-  >
-    <p class="t-body-sm t-on-default max-w-prose-narrow">Видео не загрузилось. Если у вас включён VPN&nbsp;— попробуйте его отключить.</p>
-    <button type="button" class="btn-video-retry" data-bs-retry>Попробовать снова</button>
-  </div>
+  <BsFallbackOverlay />
 </div>
 
 <script>

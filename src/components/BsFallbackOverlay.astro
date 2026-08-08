@@ -1,0 +1,22 @@
+---
+/* Оверлей-фолбэк BoomStream: его показывает src/scripts/boomstream-watchdog.ts,
+   если за 5 секунд после приближения плеера к вьюпорту не пришло ни одного
+   postMessage (типичный случай — у посетителя VPN и запрос «висит»).
+   Скрыт классом hidden; watchdog переключает hidden <-> flex и aria-hidden,
+   находит оверлей по data-bs-overlay, кнопку — по data-bs-retry.
+
+   Разметка обязана быть одинаковой у обоих плееров — статического
+   BoomStreamPlayer.astro и модалки ModalVideoReview.astro, — иначе контракт
+   с watchdog разъедется; поэтому она живёт здесь в одном экземпляре. */
+---
+
+<div
+  class="absolute inset-0 z-10 hidden flex-col items-center justify-center gap-5 bg-panel px-6 text-center"
+  data-bs-overlay
+  role="status"
+  aria-live="polite"
+  aria-hidden="true"
+>
+  <p class="t-body-sm t-on-default max-w-prose-narrow">Видео не загрузилось. Если у вас включён VPN&nbsp;— попробуйте его отключить.</p>
+  <button type="button" class="btn-video-retry" data-bs-retry>Попробовать снова</button>
+</div>
