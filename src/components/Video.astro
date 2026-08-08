@@ -1,25 +1,17 @@
 ---
 import BoomStreamPlayer from './BoomStreamPlayer.astro';
+import PanoramaSection from './PanoramaSection.astro';
 import mountainsValley from '../assets/images/mountains-valley.jpg';
 ---
 
 <!-- ========== БЛОК «ВИДЕО-ПРИГЛАШЕНИЕ» ========== -->
-<!-- Фон-панорама + стальной оверлей — тот же приём, что в #offer-stats.
-     Секция обязана быть непрозрачной и z-10, иначе сквозь неё проступают
-     fixed-слои hero (см. docs/STACKING.md). -->
-<section
-  id="video"
-  class="relative z-10 overflow-hidden bg-cover bg-center bg-fixed section-py-lg"
-  style={`background-image: url('${mountainsValley.src}');`}
->
-  <!-- Оверлей в модификации --soft: полная альфа .steel-overlay (0.84)
-       съела бы фактуру ч/б-панорамы в чёрное. -->
-  <div class="absolute inset-0 steel-overlay steel-overlay--soft" aria-hidden="true"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-brand-blue/45 via-transparent to-brand-blue/35" aria-hidden="true"></div>
+<!-- Панорама с оверлеем — PanoramaSection.astro; модификация --soft,
+     чтобы полная альфа не съела фактуру ч/б-панорамы в чёрное. -->
+<PanoramaSection id="video" image={mountainsValley} soft>
 
   <div class="relative w-full section-px">
     <div class="mx-auto w-full max-w-[clamp(40rem,78vw,90rem)]">
       <BoomStreamPlayer code="nm7YeR0q" title="Учебный курс «Профессиональное Решение Проблем»" />
     </div>
   </div>
-</section>
+</PanoramaSection>

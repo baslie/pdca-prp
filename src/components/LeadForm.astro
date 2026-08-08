@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import SectionHeading from './SectionHeading.astro';
+import PanoramaSection from './PanoramaSection.astro';
 import mountainsSummit from '../assets/images/mountains-summit.jpg';
 import { typografAttr } from '../../astro-typograf.config.mjs';
 import {
@@ -55,18 +56,9 @@ const btnSending = typografAttr('Отправляем…');
 ---
 
 <!-- ========== БЛОК «ОСТАВИТЬ ЗАЯВКУ» ========== -->
-<!-- Фон-панорама + стальной оверлей — тот же приём, что в #offer-stats и #video.
-     Секция обязана быть непрозрачной и z-10, иначе сквозь неё проступают
-     fixed-слои hero (см. docs/STACKING.md).
-     Оверлей в полной альфе, без --soft: нижняя половина снимка — светлые
-     облака, а поверх неё лежит текст формы. -->
-<section
-  id="request"
-  class="relative z-10 overflow-hidden section-py-lg bg-cover bg-center bg-fixed"
-  style={`background-image: url('${mountainsSummit.src}');`}
->
-  <div class="absolute inset-0 steel-overlay" aria-hidden="true"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-brand-blue/45 via-transparent to-brand-blue/35" aria-hidden="true"></div>
+<!-- Панорама с оверлеем — PanoramaSection.astro. Полная альфа, без --soft:
+     нижняя половина снимка — светлые облака, а поверх неё лежит текст формы. -->
+<PanoramaSection id="request" image={mountainsSummit}>
 
   <div class="relative w-full section-px">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
@@ -243,7 +235,7 @@ const btnSending = typografAttr('Отправляем…');
       </div>
     </div>
   </div>
-</section>
+</PanoramaSection>
 
 <script>
   import '../scripts/lead-form';

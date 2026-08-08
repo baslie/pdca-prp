@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import SectionHeading from './SectionHeading.astro';
+import PanoramaSection from './PanoramaSection.astro';
 import { formatStatNumber } from '../scripts/format';
 import mountainsClouds from '../assets/images/mountains-clouds.jpg';
 
@@ -36,15 +37,7 @@ const formatStat = formatStatNumber;
 ---
 
 <!-- ========== БЛОК «МЫ ПРЕДЛАГАЕМ + СТАТИСТИКА» ========== -->
-<section
-  id="offer-stats"
-  class="relative z-10 overflow-hidden section-py-lg bg-cover bg-center bg-fixed"
-  style={`background-image: url('${mountainsClouds.src}');`}
->
-  <!-- Двухслойный overlay: «стальной» синий (.steel-overlay, см. global.css)
-       вместо прежнего нейтрально-тёмного + вертикальная виньетка фирменным синим. -->
-  <div class="absolute inset-0 steel-overlay" aria-hidden="true"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-brand-blue/45 via-transparent to-brand-blue/35" aria-hidden="true"></div>
+<PanoramaSection id="offer-stats" image={mountainsClouds}>
 
   <div class="relative w-full section-px">
 
@@ -85,7 +78,7 @@ const formatStat = formatStatNumber;
     </p>
 
   </div>
-</section>
+</PanoramaSection>
 
 <script>
   import '../scripts/stats-counter';
