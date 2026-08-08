@@ -126,6 +126,11 @@
      scrollTo по элементу вычитает это значение сам — источник один,
      ручной offset не нужен и дал бы двойной отступ. */
   html { scroll-padding-top: calc(var(--header-h) + 0.75rem); }
+  /* Жёлоб под скроллбар резервируется всегда: лок скролла (body.modal-open,
+     .lenis-stopped) прячет классический скроллбар Windows, и без резерва ICB
+     расширялся бы на ~15px — fixed-шапка и бургер прыгали вправо при каждом
+     открытии меню или модалки. Overlay-скроллбары (мобильные, macOS) — no-op. */
+  html { scrollbar-gutter: stable; }
 
   /* ============================================================
      LENIS (плавный скролл, src/scripts/smooth-scroll.ts).
@@ -1093,7 +1098,12 @@
     position: fixed;
     inset: 0;
     display: flex;
-    align-items: center;                  /* блок пунктов центрирован по вертикали */
+    /* Центрирует панель margin-block: auto на ней самой, НЕ align-items: center:
+       auto-margin при нехватке высоты (landscape телефона) прижимает панель
+       к верху и отдаёт остальное прокрутке, а align-items: center обрезал бы
+       верх недостижимо — прокрутка до него не добирается. */
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: rgb(255 255 255 / 0.78);  /* белый акцент поверх blur, не заливка */
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
@@ -1119,14 +1129,21 @@
   }
 
   /* Поля блока пунктов = лесенка .section-px (инлайном: @apply на
-     composition-класс того же слоя ненадёжен). */
+     composition-класс того же слоя ненадёжен). Все четыре ступени,
+     включая 64rem: иначе в 1024–1279px пункты стояли бы на 48px,
+     а бургер и лого секций — на 80px (lg:px-20). */
   .site-nav__panel {
     display: flex;
     flex-direction: column;
+    margin-block: auto;                   /* безопасное вертикальное центрирование */
+    padding-block: var(--spacing-group);  /* воздух над/под панелью при прокрутке */
+    max-width: 100%;                      /* контент не вылезает за fixed-оверлей */
+    min-width: 0;
     padding-inline: 1.5rem;
   }
   @media (min-width: 40rem) { .site-nav__panel { padding-inline: 2.5rem; } }
   @media (min-width: 48rem) { .site-nav__panel { padding-inline: 3rem; } }
+  @media (min-width: 64rem) { .site-nav__panel { padding-inline: 5rem; } }
 
   .site-nav__list {
     list-style: none;
@@ -1202,6 +1219,8 @@
       position: absolute;
       inset: 0;
       justify-content: center;
+      align-items: center;                /* строка по центру высоты шапки */
+      overflow-y: visible;
       background: none;
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
@@ -1225,6 +1244,8 @@
       flex-direction: row;
       align-items: center;
       height: 2.75rem;                    /* h-11 — строка прежнего контактного блока */
+      margin-block: 0;                    /* сбросы оверлейного центрирования: */
+      padding-block: 0;                   /* строку в шапке ведёт align-items выше */
       column-gap: var(--nav-gap);
       white-space: nowrap;
       padding-inline: 0;
