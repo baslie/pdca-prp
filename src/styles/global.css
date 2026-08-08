@@ -38,7 +38,6 @@
   --color-panel: #F7F7F7;
   --color-surface: #EBEBEB;
   --color-border: #D4D4D4;
-  --color-muted: #8B8B8B;
   --color-ink: #2B2B2B;
   --color-ink-dark: #0C0C0C;
 
@@ -59,23 +58,8 @@
      порождают утилит и стоят рядом с --modal-dur-*. */
   --ease-brand: cubic-bezier(0.23, 1, 0.32, 1);
 
-  /* Кастомные text-* (микротексты).
-     v4 синтаксис: --text-NAME + --text-NAME--line-height / --letter-spacing / --font-weight. */
-  --text-eyebrow: 0.6875rem;
-  --text-eyebrow--line-height: 1.4;
-  --text-eyebrow--letter-spacing: 0.32em;
-  --text-eyebrow--font-weight: 600;
-
-  --text-meta: 0.875rem;
-  --text-meta--line-height: 1.45;
-
-  --text-hint: 0.75rem;
-  --text-hint--line-height: 1.4;
-
   /* tracking-* */
   --tracking-display: -0.03em;
-  --tracking-heading: -0.02em;
-  --tracking-label: 0.32em;
 
   /* max-w-* (в v4 namespace --container-* отвечает за max-w-*). */
   --container-prose: 65ch;
@@ -155,7 +139,7 @@
      iframe (BoomStream) не «залипает» внутри плеера. */
   .lenis.lenis-smooth iframe { pointer-events: none; }
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -849,7 +833,6 @@
   .t-on-soft        { color: rgb(43 43 43 / 0.45); }
   .t-on-dark        { @apply text-white; }
   .t-on-dark-muted  { color: rgb(255 255 255 / 0.75); }
-  .t-on-dark-soft   { color: rgb(255 255 255 / 0.55); }
 
   /* Blend-вариант фирменного синего для текста поверх fixed-фотослоёв hero.
      mix-blend-difference считает |фон − цвет|: чтобы на белом фоне получился
@@ -902,20 +885,8 @@
       color            var(--dur-hover) var(--ease-brand);
   }
   .btn-primary:hover { @apply bg-brand-blue text-white; }
-  .btn-secondary {
-    @apply inline-flex items-center justify-center border border-brand-red text-brand-red font-semibold;
-    padding: clamp(1rem, 1.6vw, 1.75rem) clamp(2.5rem, 4.5vw, 4.5rem);
-    font-size: clamp(1.0625rem, 1.35vw, 1.5rem);
-    letter-spacing: 0.005em;
-    min-width: clamp(13rem, 18vw, 19rem);
-    transition:
-      background-color var(--dur-hover) var(--ease-brand),
-      border-color     var(--dur-hover) var(--ease-brand),
-      color            var(--dur-hover) var(--ease-brand);
-  }
-  .btn-secondary:hover { @apply bg-brand-blue border-brand-blue text-white; }
 
-  /* Служебная кнопка «← Назад» в модалках. Намеренно тише .btn-secondary
+  /* Служебная кнопка «← Назад» в модалках. Намеренно тише .btn-primary
      (тот плакатный: min-width 13rem и кегль до 1.5rem) — это навигация,
      а не CTA. Габариты и палитра — как у соседнего крестика. */
   .btn-modal-back {

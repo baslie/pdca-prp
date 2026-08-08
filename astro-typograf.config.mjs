@@ -120,7 +120,6 @@ export const TYPOGRAF_SELECTOR = [
   '.termtip__bubble',
   '.certificate-doc__hint',
   '.gallery-item__hint',
-  '.trainer-pill',
   // Лид-форма: подписи полей и согласия живут на <label>, заголовок отладочной
   // панели — на <summary>. Ни того, ни другого тега в списке выше нет.
   // .contact-row__link сюда НЕ добавлен намеренно: в нём телефон и e-mail —
@@ -134,7 +133,6 @@ export const TYPOGRAF_SELECTOR = [
   '.site-nav__link',
   // Кнопки и ссылки-CTA
   '.btn-primary',
-  '.btn-secondary',
   '.btn-modal-back',
   '.btn-video-retry',
 ].join(', ');
