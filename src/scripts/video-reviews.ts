@@ -9,11 +9,8 @@
 import EmblaCarousel from 'embla-carousel';
 import { setupModal } from './modal';
 import { registerDynamicPlayer } from './boomstream-watchdog';
+import { BS_ORIGIN, bsEmbedSrc } from './boomstream-embed';
 import { prefersReducedMotion } from './in-view';
-
-const BS_ORIGIN = 'https://play.boomstream.com';
-// Параметры плеера те же, что у статического embed'а (BoomStreamPlayer.astro).
-const srcFor = (code: string): string => `${BS_ORIGIN}/${code}?color=false&title=0`;
 
 // Читается один раз при загрузке модуля — как и раньше.
 const reduceMotion = prefersReducedMotion();
@@ -108,7 +105,7 @@ document.addEventListener('click', (e) => {
   }
 
   currentCode = code;
-  iframe.src = srcFor(code);
+  iframe.src = bsEmbedSrc(code);
   watchdog?.arm(code, iframe.src);
   modal.open(trigger);
 });

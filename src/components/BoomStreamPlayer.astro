@@ -1,4 +1,6 @@
 ---
+import { bsEmbedSrc } from '../scripts/boomstream-embed';
+
 interface Props {
   code: string;
   title?: string;
@@ -9,7 +11,7 @@ const {
   title = 'Видео',
 } = Astro.props;
 
-const src = `https://play.boomstream.com/${code}?color=false&title=0`;
+const src = bsEmbedSrc(code);
 ---
 
 <div

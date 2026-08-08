@@ -21,7 +21,8 @@
 // таймер взводится arm()/снимается disarm() вручную, без IntersectionObserver.
 // Vite дедуплицирует модуль, поэтому массив watches и message-листенер общие.
 
-const BS_ORIGIN = 'https://play.boomstream.com';
+import { BS_ORIGIN } from './boomstream-embed';
+
 const WATCHDOG_TIMEOUT_MS = 5_000;
 // Взводим таймер чуть раньше входа в кадр. Порог браузерного loading=lazy
 // заметно больше (Chrome начинает грузить iframe за ~1000+px), так что к
