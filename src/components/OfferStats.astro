@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { formatStatNumber } from '../scripts/format';
 import mountainsClouds from '../assets/images/mountains-clouds.jpg';
 
 interface Feature {
@@ -29,12 +30,8 @@ const stats: Stat[] = [
   { value: 13_000, caption: 'довольных участников' },
 ];
 
-// Разделитель разрядов — неразрывный пробел: с обычным «13 000» ломается
-// на две строки в узкой карточке. Здесь форматируется финальное значение
-// для HTML, в src/scripts/stats-counter.ts — промежуточные кадры счётчика;
-// формула одна и та же, поэтому цифра не «прыгает» в момент финиша.
-const formatStat = (n: number): string =>
-  String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+// Формула общая с runtime-счётчиком; NBSP-разделитель — см. src/scripts/format.ts.
+const formatStat = formatStatNumber;
 ---
 
 <!-- ========== БЛОК «МЫ ПРЕДЛАГАЕМ + СТАТИСТИКА» ========== -->

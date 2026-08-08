@@ -13,17 +13,13 @@
 
 import { gsap } from 'gsap';
 import { onceInView, prefersReducedMotion } from './in-view';
+import { formatStatNumber as format } from './format';
 
 const DURATION = 1.2;
 // power2.out: почти весь путь проходится в начале, финиш мягкий. Число должно
 // быстро стать «крупным» и спокойно доехать до точного значения, а не ползти
 // равномерно все 1,2 с.
 const EASE = 'power2.out';
-
-// Тот же разделитель разрядов, что и в OfferStats.astro. Разъедутся формулы —
-// цифра дёрнется в момент финиша, когда JS-значение сменится вёрсточным.
-const format = (n: number): string =>
-  String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 const group = document.querySelector<HTMLElement>('[data-stats]');
 const numbers = group
