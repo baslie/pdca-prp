@@ -1428,11 +1428,23 @@
     .category-row:hover .category-row__text { transform: none; }
   }
 
-  /* Glass-карточки поверх горной панорамы в секции #offer-stats. */
-  .feature-card { @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-4 py-7 sm:py-8; }
-  .feature-card__icon { @apply w-10 h-10 mb-5; color: #fff; }
-  .feature-card__label { @apply text-[11px] md:text-xs font-semibold uppercase tracking-wider leading-snug; color: #fff; }
-  .stat-card { @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-6 py-8 md:px-7 md:py-10; container-type: inline-size; }
+  /* Glass-карточки поверх горной панорамы в секции #offer-stats.
+     Transition вне hover-гейта: уход курсора анимируется так же плавно. */
+  .feature-card {
+    @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-4 py-7 sm:py-8;
+    transition: background-color var(--dur-hover) var(--ease-brand);
+  }
+  .feature-card__icon { @apply w-10 h-10 mb-5; color: #fff; transition: color var(--dur-hover) var(--ease-brand); }
+  .feature-card__label {
+    @apply text-[11px] md:text-xs font-semibold uppercase tracking-wider leading-snug;
+    color: #fff;
+    transition: color var(--dur-hover) var(--ease-brand);
+  }
+  .stat-card {
+    @apply bg-white/10 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center text-center px-6 py-8 md:px-7 md:py-10;
+    container-type: inline-size;
+    transition: background-color var(--dur-hover) var(--ease-brand);
+  }
   .stat-card__number {
     @apply font-black leading-none tracking-display;
     color: #fff;
@@ -1452,12 +1464,25 @@
        Минимум 1.5rem (а не 1.75) — для вьюпортов <= ~330px, где в clamp упирается
        именно нижняя граница. */
     font-size: clamp(1.5rem, 29cqi, 4.5rem);
+    transition: color var(--dur-hover) var(--ease-brand);
   }
   .stat-card__caption {
     @apply mt-4;
     font-size: 0.875rem;
     line-height: 1.45;
     color: rgb(255 255 255 / 0.75);
+    transition: color var(--dur-hover) var(--ease-brand);
+  }
+  /* Ховер-инверсия: стекло → непрозрачный белый, содержимое — фирменный синий,
+     подписи — чернильные (лейблу максимальный контраст: он самый мелкий).
+     Под hover-гейтом: на таче :hover фабрикуется тапом и залипает. */
+  @media (hover: hover) {
+    .feature-card:hover,
+    .stat-card:hover { background-color: var(--color-bg); }
+    .feature-card:hover .feature-card__icon,
+    .stat-card:hover .stat-card__number { color: var(--color-brand-blue); }
+    .feature-card:hover .feature-card__label { color: var(--color-ink-dark); }
+    .stat-card:hover .stat-card__caption { color: var(--color-ink); }
   }
 
   /* ============================================================
