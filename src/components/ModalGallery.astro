@@ -1,3 +1,7 @@
+---
+import IconClose from './IconClose.astro';
+---
+
 <!-- ========== ЛАЙТБОКС ГАЛЕРЕИ (#training-photos) ==========
      Схема входа/выхода — как у #modal-certificate (backdrop + карточка),
      но затемнение плотнее: под фотографией фон должен уйти в ноль.
@@ -37,9 +41,7 @@
 
   <button type="button" id="modal-gallery-close" data-gallery-ctl
           aria-label="Закрыть" class="modal-gallery-close">
-    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
+    <IconClose />
   </button>
 </dialog>
 
