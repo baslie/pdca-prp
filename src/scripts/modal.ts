@@ -27,6 +27,9 @@ export function setupModal(
   opts: SetupModalOptions,
 ): ModalController | null {
   if (!dlg) return null;
+  // Narrowing параметра не действует внутри вложенных open/close —
+  // фиксируем non-null в const, чтобы обойтись без assertions dlg!.
+  const d = dlg;
 
   const triggers = opts.trigger ? [opts.trigger] : [];
   const closeBtns = opts.closeBtns ?? (opts.closeBtn ? [opts.closeBtn] : []);
@@ -46,14 +49,14 @@ export function setupModal(
 
   function open(trigger?: HTMLElement | null) {
     onOpen?.(trigger);
-    dlg!.showModal();
+    d.showModal();
     // Сброс прокрутки — строго ПОСЛЕ showModal(): у скрытого <dialog>
     // нет скролл-бокса, присвоение scrollTop до открытия игнорируется.
-    dlg!.scrollTop = 0;
+    d.scrollTop = 0;
     lock();
   }
   function close() {
-    dlg!.close();
+    d.close();
   }
 
   // Триггер передаём в open() — по нему onOpen считает, откуда «расти» модалке.
