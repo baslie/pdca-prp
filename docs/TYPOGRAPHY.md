@@ -255,7 +255,7 @@ Body растёт линейно по всей дельте viewport. Тот ж�
 Что нельзя делать (отлавливается grep'ом ниже):
 
 ```bash
-# Запуск из корня репозитория (wireframes/ — прототипы, намеренно вне охвата)
+# Запуск из корня репозитория
 git grep -n -E 'text-(ink|white)/(60|70|75|80|85|90)' -- src/
 git grep -n -E 'tracking-\[-0\.0(05|1|25|3)em\]'            -- src/
 git grep -n -E 'font-(bold|extrabold)'                      -- src/
