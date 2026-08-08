@@ -1951,7 +1951,7 @@
   .prp-octagon__shape {
     position: absolute; inset: 0; width: 100%; height: 100%;
     overflow: visible; z-index: 0;
-    /* Двухслойный октагон (см. PrpSteps.astro): нижний слой --outline — контур
+    /* Двухслойный октагон (см. PrpSteps.astro): нижний слой — контур
        (stroke="currentColor" в <symbol id="prp-octagon-outline">), верхний
        --fill — сплошная заливка. Цвет обоих — токен фирменного синего отсюда.
        Заливку GSAP растит scale'ом из центра, контур виден всегда. */

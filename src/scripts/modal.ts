@@ -7,7 +7,6 @@ import { lenis } from './smooth-scroll';
 
 export interface SetupModalOptions {
   trigger?: HTMLElement | null;
-  triggers?: (HTMLElement | null | undefined)[];
   closeBtn?: HTMLElement | null;
   closeBtns?: (HTMLElement | null | undefined)[];
   getCard: () => HTMLElement | null;
@@ -29,7 +28,7 @@ export function setupModal(
 ): ModalController | null {
   if (!dlg) return null;
 
-  const triggers = opts.triggers ?? (opts.trigger ? [opts.trigger] : []);
+  const triggers = opts.trigger ? [opts.trigger] : [];
   const closeBtns = opts.closeBtns ?? (opts.closeBtn ? [opts.closeBtn] : []);
   const getCard = opts.getCard;
   const onOpen = opts.onOpen;
