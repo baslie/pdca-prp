@@ -1,7 +1,8 @@
 // Блок «Отзывы»: клик по карточке бегущего ряда открывает полный текст
 // в модалке #modal-review. Вся механика диалога (lock прокрутки, Esc,
 // клик мимо карточки, снятие lock при любом закрытии) — в общем setupModal.
-// Сам конвейер — чистый CSS (.marquee в global.css), JS ему не нужен.
+// Сам конвейер ведёт reviews-marquee.ts (GSAP ticker + Observer, драг);
+// CSS-анимация .marquee в global.css — no-JS-фолбэк.
 
 import { setupModal } from './modal';
 
@@ -18,6 +19,9 @@ const modal = setupModal(dlg, {
 // Делегирование: карточек 82 (41 × 2 из-за дубликата бесшовного цикла),
 // один слушатель на документ вместо адресных подписок.
 document.addEventListener('click', (e) => {
+  // Клик, рождённый протяжкой ленты, гасит reviews-marquee.ts (preventDefault
+  // в capture) — паритет с video-reviews.ts.
+  if (e.defaultPrevented) return;
   const trigger = (e.target as Element | null)?.closest<HTMLElement>('[data-review-card]');
   if (!trigger || !modal || !textEl || !nameEl || !metaEl) return;
 

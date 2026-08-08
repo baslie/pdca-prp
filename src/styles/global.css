@@ -2168,6 +2168,16 @@
   }
   /* Пауза и при клавиатурной фокусировке карточки внутри ряда. */
   .marquee:focus-within .marquee__track { animation-play-state: paused; }
+  /* Класс is-js ставит reviews-marquee.ts: лента переезжает на JS-двигатель
+     (GSAP ticker + Observer, драг с инерцией). CSS-анимация обязана уйти —
+     иначе два translateX на одном треке; правила выше остаются no-JS-фолбэком.
+     touch-action: pan-y отдаёт вертикальный свайп по ленте странице; гейт
+     классом обязателен и тут: reduce-фолбэк листается нативным overflow-x. */
+  .marquee.is-js { touch-action: pan-y; }
+  .marquee.is-js .marquee__track { animation: none; }
+  @media (hover: hover) {
+    .marquee.is-js { cursor: grab; }
+  }
   /* Ветка prefers-reduced-motion конвейера — в конце файла, ВНЕ слоёв:
      display: none для [data-dup] отсюда проигрывал бы утилите `flex`
      на карточке (layer utilities сильнее layer components). */

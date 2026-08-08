@@ -119,6 +119,8 @@ const rowConfig = [
      три встречных бегущих ряда текстовых карточек («Конвейер» из
      wireframes/reviews.html). relative z-10 + непрозрачный bg обязательны:
      без них сквозь секцию проступают fixed-слои hero (Денис и гора).
+     Ряды ведёт reviews-marquee.ts (GSAP ticker + Observer: авто-ход, драг
+     с инерцией, бесконечный wrap); CSS-анимация .marquee — no-JS-фолбэк.
      Клик по текстовой карточке открывает полный текст в <dialog>
      (ModalReview.astro, логика — src/scripts/reviews.ts, подключён там же). -->
 <section id="reviews" class="relative z-10 bg-bg section-py">
@@ -169,3 +171,7 @@ const rowConfig = [
     ))}
   </div>
 </section>
+
+<script>
+  import '../scripts/reviews-marquee';
+</script>

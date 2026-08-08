@@ -172,7 +172,8 @@ grep -rnE "\b(gap(-[xy])?|[mp][trblxy]?)-\[clamp" src/
 | Однократное появление при скролле | IntersectionObserver + CSS-transition | `src/scripts/reveal.ts` + `[data-reveal]` в разметке |
 | Числовая интерполяция | GSAP core | **только** 4 цифры `#offer-stats` (`src/scripts/stats-counter.ts`) |
 | Ховер / фокус / состояние | CSS-transition | `global.css` |
-| Бесконечное движение | CSS `@keyframes` | конвейеры отзывов, спиннер галереи |
+| Бесконечное движение + drag | GSAP ticker + Observer | конвейеры отзывов (`src/scripts/reviews-marquee.ts`); CSS `@keyframes` — no-JS-фолбэк |
+| Бесконечное движение | CSS `@keyframes` | спиннер галереи |
 
 ### Плавный скролл (Lenis) — контракт
 
@@ -201,7 +202,8 @@ grep -rnE "\b(gap(-[xy])?|[mp][trblxy]?)-\[clamp" src/
   `html.lenis { scroll-behavior: auto !important; }` — в поставке 1.3.x его
   нет, без него нативный smooth «резинит» каждую запись scrollTop.
 - Связка с GSAP: `autoRaf: false`, raf крутится в `gsap.ticker`,
-  `lagSmoothing(0)` — второй rAF-цикл не заводить.
+  `lagSmoothing(0)` — второй rAF-цикл не заводить. Тик конвейера отзывов
+  (`reviews-marquee.ts`) живёт в том же `gsap.ticker`.
 
 **Первый экран статичен.** В `Hero.astro` и `DenisFixed.astro` анимации нет и
 быть не должно — решение заказчика: первый экран грузится быстро и лаконично.
