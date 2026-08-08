@@ -222,7 +222,7 @@
   body.modal-open { overflow: hidden; }
 
   /* ============================================================
-     АНИМАЦИЯ МОДАЛОК — общие тайминги для #modal-about и #modal-examples.
+     АНИМАЦИЯ МОДАЛОК — общие тайминги всех шести <dialog>.
      Схема CSS-only: @starting-style задаёт состояние «на входе»,
      transition-behavior: allow-discrete на display/overlay даёт выход
      без JS-таймеров (close() в modal.ts остаётся мгновенным вызовом).
@@ -324,8 +324,22 @@
   .modal-scroll::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.12); }
   .modal-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(0,0,0,0.22); }
 
-  /* Модалка категорий — fullscreen-overlay со скроллом всей карточки. */
-  dialog#modal-examples {
+  /* ============================================================
+     ПЯТЬ OVERLAY-МОДАЛОК — общая схема через :is().
+     #modal-examples, #modal-certificate, #modal-review,
+     #modal-video-review, #modal-gallery устроены одинаково:
+     fullscreen-<dialog> со скроллом, затемняющий ::backdrop с fade
+     и карточка с fade + подъёмом. Расхождения (плотность затемнения,
+     overflow галереи) — точечными правилами СРАЗУ ПОСЛЕ общего блока:
+     специфичность у них та же (:is() берёт максимум из списка),
+     побеждает порядок в файле.
+
+     Именно :is(), НЕ :where(): where обнулил бы вклад id (0-1-1 →
+     0-0-1), и согласование с [open]-правилами и reduce-сбросом ниже
+     разъехалось бы. #modal-about (circular reveal) в схему не входит —
+     его правила выше. Уникальные габариты/фон карточек — в секциях
+     своих модалок ниже. */
+  dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery) {
     width: 100%;
     height: 100%;
     max-width: none;
@@ -340,12 +354,16 @@
       display var(--modal-dur-out) allow-discrete,
       overlay var(--modal-dur-out) allow-discrete;
   }
-  dialog#modal-examples[open] {
+  dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open] {
     transition:
       display var(--modal-dur-in) allow-discrete,
       overlay var(--modal-dur-in) allow-discrete;
   }
-  dialog#modal-examples::backdrop {
+  /* Скролла у галереи нет — кадр всегда вписан в viewport, центровку
+     берёт .modal-gallery-stage. */
+  dialog#modal-gallery { overflow: hidden; }
+
+  dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(3px);
     opacity: 0;
@@ -354,7 +372,7 @@
       display var(--modal-dur-out) allow-discrete,
       overlay var(--modal-dur-out) allow-discrete;
   }
-  dialog#modal-examples[open]::backdrop {
+  dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open]::backdrop {
     opacity: 1;
     transition:
       opacity var(--modal-dur-in) var(--modal-ease),
@@ -362,21 +380,27 @@
       overlay var(--modal-dur-in) allow-discrete;
   }
   @starting-style {
-    dialog#modal-examples[open]::backdrop { opacity: 0; }
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open]::backdrop { opacity: 0; }
   }
-  .modal-examples-card {
-    background: #fff;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
-    max-width: min(720px, 92vw);
-    width: 100%;
-    margin: 0 auto;
+  /* Плотность затемнения: 0.4 — текстовые оверлеи (дефолт в общем блоке),
+     0.75 — «киношное» под сертификат и видео, 0.9 — галерея: под фотографией
+     фон обязан уйти почти в ноль, иначе белая страница сбивает восприятие
+     цвета кадра; блюрить при такой плотности уже нечего. */
+  dialog:is(#modal-certificate, #modal-video-review)::backdrop { background: rgba(0, 0, 0, 0.75); }
+  dialog#modal-gallery::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: none;
+  }
+
+  /* Анимация карточек — fade + подъём, одна на все пять. */
+  :is(.modal-examples-card, .modal-certificate-card, .modal-review-card, .modal-video-card, .modal-gallery-card) {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
     transition:
       opacity   var(--modal-dur-out) var(--modal-ease),
       transform var(--modal-dur-out) var(--modal-ease);
   }
-  dialog#modal-examples[open] .modal-examples-card {
+  dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open] :is(.modal-examples-card, .modal-certificate-card, .modal-review-card, .modal-video-card, .modal-gallery-card) {
     opacity: 1;
     transform: none;
     transition:
@@ -384,55 +408,23 @@
       transform var(--modal-dur-in) var(--modal-ease);
   }
   @starting-style {
-    dialog#modal-examples[open] .modal-examples-card {
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open] :is(.modal-examples-card, .modal-certificate-card, .modal-review-card, .modal-video-card, .modal-gallery-card) {
       opacity: 0;
       transform: translateY(12px) scale(0.98);
     }
   }
 
-  /* Лайтбокс сертификата — та же схема, что у #modal-examples: overlay со
-     скроллом всей карточки. Отличие одно — карточка держит пропорции листа
-     по высоте вьюпорта, а не по фиксированной max-width. */
-  dialog#modal-certificate {
+  /* Модалка категорий: карточка — текстовый лист шириной текстового эталона. */
+  .modal-examples-card {
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    max-width: min(720px, 92vw);
     width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    background: transparent;
-    border: none;
-    padding: var(--dialog-py) var(--dialog-px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    transition:
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
+    margin: 0 auto;
   }
-  dialog#modal-certificate[open] {
-    transition:
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  dialog#modal-certificate::backdrop {
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(3px);
-    opacity: 0;
-    transition:
-      opacity var(--modal-dur-out) var(--modal-ease),
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-certificate[open]::backdrop {
-    opacity: 1;
-    transition:
-      opacity var(--modal-dur-in) var(--modal-ease),
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  @starting-style {
-    dialog#modal-certificate[open]::backdrop { opacity: 0; }
-  }
-  /* Документ вертикальный (A4 — 1:1.414), поэтому ограничение идёт по ВЫСОТЕ
+
+  /* Лайтбокс сертификата.
+     Документ вертикальный (A4 — 1:1.414), поэтому ограничение идёт по ВЫСОТЕ
      вьюпадра, а ширину считает пропорция самой картинки: при обычном width:100%
      лист упирается в max-width и уходит вниз за экран — сертификат приходилось бы
      скроллить, чтобы увидеть целиком. calc повторяет вертикальный padding
@@ -443,24 +435,6 @@
     margin-inline: auto;
     background: #fff;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-    transition:
-      opacity   var(--modal-dur-out) var(--modal-ease),
-      transform var(--modal-dur-out) var(--modal-ease);
-  }
-  dialog#modal-certificate[open] .modal-certificate-card {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity   var(--modal-dur-in) var(--modal-ease),
-      transform var(--modal-dur-in) var(--modal-ease);
-  }
-  @starting-style {
-    dialog#modal-certificate[open] .modal-certificate-card {
-      opacity: 0;
-      transform: translateY(12px) scale(0.98);
-    }
   }
   .modal-certificate-card img {
     display: block;
@@ -485,49 +459,9 @@
            transition-colors duration-150 ease-brand;
   }
 
-  /* Модалка полного отзыва (#reviews) — та же схема, что у #modal-examples:
-     fullscreen-overlay со скроллом всей карточки. Карточка — текстовая
-     figure-цитата на белом с крестиком в углу. */
-  dialog#modal-review {
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    background: transparent;
-    border: none;
-    padding: var(--dialog-py) var(--dialog-px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    transition:
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-review[open] {
-    transition:
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  dialog#modal-review::backdrop {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(3px);
-    opacity: 0;
-    transition:
-      opacity var(--modal-dur-out) var(--modal-ease),
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-review[open]::backdrop {
-    opacity: 1;
-    transition:
-      opacity var(--modal-dur-in) var(--modal-ease),
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  @starting-style {
-    dialog#modal-review[open]::backdrop { opacity: 0; }
-  }
-  /* position: relative — якорь для абсолютного крестика внутри карточки. */
+  /* Модалка полного отзыва (#reviews): карточка — текстовая figure-цитата
+     на белом с крестиком в углу.
+     position: relative — якорь для абсолютного крестика внутри карточки. */
   .modal-review-card {
     position: relative;
     background: #fff;
@@ -536,71 +470,13 @@
     width: 100%;
     margin: 0 auto;
     padding: var(--spacing-panel);
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-    transition:
-      opacity   var(--modal-dur-out) var(--modal-ease),
-      transform var(--modal-dur-out) var(--modal-ease);
-  }
-  dialog#modal-review[open] .modal-review-card {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity   var(--modal-dur-in) var(--modal-ease),
-      transform var(--modal-dur-in) var(--modal-ease);
-  }
-  @starting-style {
-    dialog#modal-review[open] .modal-review-card {
-      opacity: 0;
-      transform: translateY(12px) scale(0.98);
-    }
   }
 
-  /* Модалка видеоотзыва (#reviews) — та же схема, что у #modal-review.
-     Отличия: backdrop 0.75 как у сертификата («киношное» затемнение под видео)
-     и карточка без собственного паддинга — плеер 16:9 прижат к краям, паддинг
-     получает только текстовая часть (утилитами в разметке). */
-  dialog#modal-video-review {
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    background: transparent;
-    border: none;
-    padding: var(--dialog-py) var(--dialog-px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    transition:
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-video-review[open] {
-    transition:
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  dialog#modal-video-review::backdrop {
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(3px);
-    opacity: 0;
-    transition:
-      opacity var(--modal-dur-out) var(--modal-ease),
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-video-review[open]::backdrop {
-    opacity: 1;
-    transition:
-      opacity var(--modal-dur-in) var(--modal-ease),
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  @starting-style {
-    dialog#modal-video-review[open]::backdrop { opacity: 0; }
-  }
-  /* Шире текстового эталона: на 960px кадр 16:9 высотой 540px — влезает в
-     1080p-экран вместе с паддингами диалога и подписью. */
+  /* Модалка видеоотзыва (#reviews). Карточка без собственного паддинга —
+     плеер 16:9 прижат к краям, паддинг получает только текстовая часть
+     (утилитами в разметке). Шире текстового эталона: на 960px кадр 16:9
+     высотой 540px — влезает в 1080p-экран вместе с паддингами диалога
+     и подписью. */
   .modal-video-card {
     position: relative;
     background: #fff;
@@ -608,24 +484,6 @@
     max-width: min(960px, 92vw);
     width: 100%;
     margin: 0 auto;
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-    transition:
-      opacity   var(--modal-dur-out) var(--modal-ease),
-      transform var(--modal-dur-out) var(--modal-ease);
-  }
-  dialog#modal-video-review[open] .modal-video-card {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity   var(--modal-dur-in) var(--modal-ease),
-      transform var(--modal-dur-in) var(--modal-ease);
-  }
-  @starting-style {
-    dialog#modal-video-review[open] .modal-video-card {
-      opacity: 0;
-      transform: translateY(12px) scale(0.98);
-    }
   }
   /* Крестик прижат к вьюпорту (паттерн .modal-certificate-close): внутри
      карточки он лёг бы на угол iframe и перекрывал контролы плеера. */
@@ -636,48 +494,9 @@
            transition-colors duration-150 ease-brand;
   }
 
-  /* Лайтбокс галереи (#training-photos) — схема #modal-certificate, но затемнение
-     плотнее (0.9): под фотографией фон обязан уйти в ноль, иначе белая страница
-     сбивает восприятие цвета кадра. Скролла у диалога нет — кадр всегда вписан
-     в viewport, поэтому overflow: hidden, а центровку берёт на себя .stage. */
-  dialog#modal-gallery {
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    background: transparent;
-    border: none;
-    padding: var(--dialog-py) var(--dialog-px);
-    overflow: hidden;
-    transition:
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-gallery[open] {
-    transition:
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  dialog#modal-gallery::backdrop {
-    background: rgba(0, 0, 0, 0.9);
-    opacity: 0;
-    transition:
-      opacity var(--modal-dur-out) var(--modal-ease),
-      display var(--modal-dur-out) allow-discrete,
-      overlay var(--modal-dur-out) allow-discrete;
-  }
-  dialog#modal-gallery[open]::backdrop {
-    opacity: 1;
-    transition:
-      opacity var(--modal-dur-in) var(--modal-ease),
-      display var(--modal-dur-in) allow-discrete,
-      overlay var(--modal-dur-in) allow-discrete;
-  }
-  @starting-style {
-    dialog#modal-gallery[open]::backdrop { opacity: 0; }
-  }
-  /* height: 100% берётся от контент-бокса диалога (box-sizing: border-box из
+  /* Лайтбокс галереи (#training-photos). Отклонения от общей схемы
+     (overflow: hidden, затемнение 0.9 без блюра) — в общем блоке выше.
+     height: 100% берётся от контент-бокса диалога (box-sizing: border-box из
      preflight), поэтому вертикальная центровка учитывает его паддинги. */
   .modal-gallery-stage {
     height: 100%;
@@ -690,24 +509,6 @@
     margin: 0;
     max-width: 100%;
     max-height: 100%;
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-    transition:
-      opacity   var(--modal-dur-out) var(--modal-ease),
-      transform var(--modal-dur-out) var(--modal-ease);
-  }
-  dialog#modal-gallery[open] .modal-gallery-card {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity   var(--modal-dur-in) var(--modal-ease),
-      transform var(--modal-dur-in) var(--modal-ease);
-  }
-  @starting-style {
-    dialog#modal-gallery[open] .modal-gallery-card {
-      opacity: 0;
-      transform: translateY(12px) scale(0.98);
-    }
   }
   /* Кадр вписывается по обеим осям. calc повторяет вертикальные паддинги
      диалога и вычитает строку счётчика — иначе подпись уезжает за экран. */
@@ -762,42 +563,20 @@
 
   /* Уважаем системную настройку: все модалки открываются/закрываются мгновенно.
      Перечисляем и [open]-варианты: @media не добавляет специфичности, а без них
-     transition из правил входа перебил бы этот сброс. */
+     transition из правил входа перебил бы этот сброс. Группы зеркалят
+     :is()-селекторы общего блока — каждая пара «правило анимации → его сброс»
+     держит одну и ту же специфичность, побеждает позиция в файле. */
   @media (prefers-reduced-motion: reduce) {
     dialog#modal-about,
     dialog#modal-about[open],
     .modal-about-content,
     dialog#modal-about[open] .modal-about-content,
-    dialog#modal-examples,
-    dialog#modal-examples[open],
-    dialog#modal-examples::backdrop,
-    dialog#modal-examples[open]::backdrop,
-    .modal-examples-card,
-    dialog#modal-examples[open] .modal-examples-card,
-    dialog#modal-certificate,
-    dialog#modal-certificate[open],
-    dialog#modal-certificate::backdrop,
-    dialog#modal-certificate[open]::backdrop,
-    .modal-certificate-card,
-    dialog#modal-certificate[open] .modal-certificate-card,
-    dialog#modal-review,
-    dialog#modal-review[open],
-    dialog#modal-review::backdrop,
-    dialog#modal-review[open]::backdrop,
-    .modal-review-card,
-    dialog#modal-review[open] .modal-review-card,
-    dialog#modal-video-review,
-    dialog#modal-video-review[open],
-    dialog#modal-video-review::backdrop,
-    dialog#modal-video-review[open]::backdrop,
-    .modal-video-card,
-    dialog#modal-video-review[open] .modal-video-card,
-    dialog#modal-gallery,
-    dialog#modal-gallery[open],
-    dialog#modal-gallery::backdrop,
-    dialog#modal-gallery[open]::backdrop,
-    .modal-gallery-card,
-    dialog#modal-gallery[open] .modal-gallery-card {
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery),
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open],
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)::backdrop,
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open]::backdrop,
+    :is(.modal-examples-card, .modal-certificate-card, .modal-review-card, .modal-video-card, .modal-gallery-card),
+    dialog:is(#modal-examples, #modal-certificate, #modal-review, #modal-video-review, #modal-gallery)[open] :is(.modal-examples-card, .modal-certificate-card, .modal-review-card, .modal-video-card, .modal-gallery-card) {
       transition: none;
       clip-path: none;
       opacity: 1;
