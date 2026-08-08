@@ -194,8 +194,18 @@
      min); 20px достигалось только при vw ≥ 1905px. Новая формула
      clamp(min, ax + b, max) растёт линейно от 17px до 20px на дельте
      360–1280px. */
-  .t-body    { font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem); line-height: 1.65; }
-  .t-body-sm { font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem); line-height: 1.55; }
+  /* Формулы двух body-кеглей — в переменных, а не литералом в правиле:
+     @apply на роли из @layer base в v4 ненадёжен, и component-классы
+     (.btn-modal-back, .field__label и др.) вынуждены брать кегль инлайном —
+     через var() литерал остаётся в одном экземпляре. Именно :root, а не
+     @theme: namespace --text-* породил бы утилиты text-body/text-body-sm —
+     вторые имена для тех же ролей. */
+  :root {
+    --t-body-size:    clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem);
+    --t-body-sm-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+  }
+  .t-body    { font-size: var(--t-body-size); line-height: 1.65; }
+  .t-body-sm { font-size: var(--t-body-sm-size); line-height: 1.55; }
   .t-quote   {
     font-size: clamp(1.125rem, 1.4vw, 1.625rem);
     line-height: 1.4;
@@ -854,14 +864,14 @@
   .t-modal-list-item__num {
     @apply shrink-0 w-8 text-right tabular-nums transition-colors duration-150 ease-brand;
     color: rgb(43 43 43 / 0.45);   /* инлайн t-on-soft: @apply на components-классы внутри того же слоя ненадёжен */
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
   }
   .t-modal-list-item__num::after { content: '.'; }
   .t-modal-list-item:hover .t-modal-list-item__num { @apply text-ink-dark; }
-  /* Инлайн t-body-sm (определён в @layer base; в v4 @apply на base-классы ненадёжен). */
+  /* Кегль t-body-sm через var (в v4 @apply на base-классы ненадёжен). */
   .t-modal-list-item__text {
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
   }
 
@@ -891,19 +901,19 @@
            bg-panel/90 text-ink-dark
            hover:bg-ink-dark hover:text-white
            transition-colors duration-200 ease-brand;
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
   }
 
   /* Кнопка «Попробовать снова» в оверлее-фолбэке BoomStream-плеера
      (BoomStreamPlayer.astro + src/scripts/boomstream-watchdog.ts).
      Палитра — как у .btn-primary, габариты служебные, как у .btn-modal-back:
-     это ремонтная кнопка, не CTA. Кегль — формула t-body-sm инлайном. */
+     это ремонтная кнопка, не CTA. Кегль — t-body-sm через var. */
   .btn-video-retry {
     @apply inline-flex items-center justify-center h-10 px-5
            bg-brand-red text-bg font-semibold
            transition-colors duration-200 ease-brand;
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
   }
   .btn-video-retry:hover { @apply bg-brand-blue text-white; }
@@ -1170,7 +1180,7 @@
        перекрывает минимум WCAG 2.5.8 (24px), соседняя цель — такая же
        ссылка, цена промаха нулевая. */
     padding: 0.25rem 0;
-    font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem);  /* формула .t-body инлайном */
+    font-size: var(--t-body-size);
     line-height: 1.65;
   }
   .site-nav__phone { font-weight: 500; }  /* акцент телефона в оверлее */
@@ -1374,7 +1384,7 @@
   }
   .category-card__caption {
     @apply block mt-1;
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
     /* Словарные переносы (html lang="ru"): «документооборот» в узкой колонке
        делится дефисом по слогам, а не тупым разрезом break-word. */
@@ -1489,7 +1499,7 @@
   }
   .contact-row__link {
     @apply font-medium break-words;
-    font-size: clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem);  /* формула .t-body */
+    font-size: var(--t-body-size);
     line-height: 1.4;
     color: #fff;
     transition: color var(--dur-hover) var(--ease-brand);
@@ -1500,7 +1510,7 @@
   .field { @apply flex flex-col; }
   .field__label {
     @apply font-medium mb-2 flex items-baseline gap-2;
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);  /* формула .t-body-sm */
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
     color: #fff;
   }
@@ -1827,11 +1837,11 @@
     font-size: clamp(1.375rem, 2.2vw, 1.875rem);
     line-height: 1.05;
   }
-  /* Формула .t-body-sm + цвет .t-on-muted инлайном: @apply на классы того же
-     @layer components в v4 ненадёжен (см. .t-modal-list-item__num). */
+  /* Кегль t-body-sm через var + цвет .t-on-muted инлайном: @apply на классы
+     того же @layer components в v4 ненадёжен (см. .t-modal-list-item__num). */
   .credential-card__text {
     margin-top: 0.75rem;
-    font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
+    font-size: var(--t-body-sm-size);
     line-height: 1.55;
     font-weight: 400;
     color: rgb(43 43 43 / 0.70);
