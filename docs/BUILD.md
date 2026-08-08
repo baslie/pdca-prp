@@ -13,7 +13,7 @@
 |---|---|---|
 | Фреймворк | Astro 7 (static output, Rust-компилятор, Vite 8) | `astro.config.mjs` |
 | Стили | Tailwind v4 через `@tailwindcss/vite` Vite-плагин | `src/styles/global.css` |
-| Дизайн-токены | CSS-переменные namespace (`--color-*`, `--font-*`, `--text-*`, `--tracking-*`, `--container-*`) | блок `@theme { ... }` в `src/styles/global.css` |
+| Дизайн-токены | CSS-переменные namespace (`--color-*`, `--font-*`, `--tracking-*`, `--container-*`, `--spacing-*`, `--ease-*`) | блок `@theme { ... }` в `src/styles/global.css` |
 | Логика | TypeScript (strict) | `src/scripts/*.ts`, подключаются `<script>` в компонентах |
 | Иконки | `astro-icon` + `@iconify-json/lucide` (build-time inline SVG) | `<Icon name="lucide:..." />` в .astro |
 | Анимация | `gsap` + `gsap/ScrollTrigger` из npm | `src/scripts/prp-diagram-scroll.ts` |
@@ -23,9 +23,14 @@
 
 ## Дизайн-токены — где править
 
-Вся палитра, шрифт `font-sans`, кастомные `text-eyebrow/meta/hint`,
-`tracking-display/heading/label`, `max-w-prose/prose-narrow` живут в
+Вся палитра, шрифт `font-sans`, `tracking-display`, `max-w-prose/prose-narrow`,
+шкала отступов `--spacing-*` и кривая `--ease-brand` живут в
 `src/styles/global.css` внутри блока `@theme { ... }`. Источник правды один.
+
+Переменные, которые НЕ должны порождать утилит, живут не в `@theme`,
+а в `:root` внутри `@layer base` того же файла: длительности (`--dur-*`,
+`--modal-*`), кегли body-ролей (`--t-body-size`, `--t-body-sm-size`),
+цвет `--t-on-dark-muted-color`, геометрия шапки и модального слоя.
 
 ## Палитра: два фирменных цвета + нейтрали
 
@@ -33,7 +38,7 @@
 |---|---|---|
 | `--color-brand-red` | `#e84249` (Pantone Red 032 C) | акценты в заголовках, кнопки в покое, стрелки диаграммы ПРП, плашка логотипа, иероглифы 改善 |
 | `--color-brand-blue` | `#003154` (Pantone 648 C) | фон «О тренере», октагоны ПРП, ховер кнопок и карточек, дуотон горы в hero |
-| `--color-bg` / `panel` / `surface` / `border` / `muted` / `ink` / `ink-dark` | `#FFFFFF` … `#0C0C0C` | нейтрали: фоны, линии, три уровня текста |
+| `--color-bg` / `panel` / `surface` / `border` / `ink` / `ink-dark` | `#FFFFFF` … `#0C0C0C` | нейтрали: фоны, линии, два уровня текста (приглушённые тона — производные через `rgb(43 43 43 / N)` в ролях `.t-on-*`) |
 
 **Красный и синий на сайте только эти два — плюс их производные.** Оттенок
 получают из токена, а не новым хексом: `color-mix(in srgb, var(--color-brand-blue) 65%, var(--color-ink-dark))`
@@ -115,6 +120,10 @@ Get-NetTCPConnection -LocalPort 4321 -State Listen -ErrorAction SilentlyContinue
 ## Анти-паттерны
 
 - `theme('colors.X')` в CSS — **v3-синтаксис, удалён в v4**. Используй `var(--color-X)`.
+- Имена Tailwind-утилит в `docs/*.md` — попадают в прод-CSS: сканер v4 обходит
+  все негитигнорные файлы проекта, и класс, упомянутый только в документации,
+  добавляет мёртвое правило в бандл. Упоминая утилиту, которой нет в `src/`,
+  разрывай имя (например, `text-` + `5xl`) или перефразируй.
 - Новый хекс красного или синего где угодно, кроме блока `@theme` — оттенок берётся из `--color-brand-red/-blue` через `color-mix()`.
 - Возврат CDN `cdn.tailwindcss.com` — нельзя, прод-warning в DevTools.
 - Правка `dist/_astro/*.css` напрямую — бесполезно, перезатрётся следующим `astro build`. Меняй `src/styles/global.css`.

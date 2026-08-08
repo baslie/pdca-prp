@@ -16,6 +16,7 @@
 | Галерея `#training-photos`, кадры, лайтбокс | [docs/GALLERY.md](docs/GALLERY.md) |
 | Лид-форма `#request`, валидация, honeypot, UTM-хвост | [docs/LEAD-FORM.md](docs/LEAD-FORM.md) |
 | Видео, BoomStream, embed, autoplay, watchdog | [docs/VIDEO.md](docs/VIDEO.md) |
+| Контент: проекты, отзывы, клиенты, фото, регалии, контакты | [src/data/](src/data/) — данные с типами; компоненты их только импортируют |
 | Стек, дизайн-токены и палитра, package.json, деплой, dev-сервер | [docs/BUILD.md](docs/BUILD.md) |
 | «Что осталось сделать», планы, задачи | [docs/BACKLOG.md](docs/BACKLOG.md) — единственный источник правды; выполнил пункт — вычеркни там же |
 | Правила и селектор Типографа | [astro-typograf.config.mjs](astro-typograf.config.mjs) (комментарии в конфиге) |
@@ -74,6 +75,8 @@ npm run dev         # dev-сервер с HMR -> http://localhost:4321/pdca-prp/
 npm run build       # прод-сборка в dist/
 npm run preview     # отдать dist/ как настоящий статик
 npm run check       # astro check (TypeScript + Astro диагностика)
+npm run audit:typography  # покрытие Типографом (гонять после build)
+npm run photos:prepare    # ужать новые кадры галереи (см. docs/GALLERY.md)
 ```
 
 ## Dev-сервер

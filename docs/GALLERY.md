@@ -27,7 +27,7 @@ Astro эмитит в `dist/` **исходник** каждого импорти
 ```powershell
 # 1. Положить исходники .jpg в src/assets/images/trainings/full/
 #    и превью с ТЕМИ ЖЕ именами — в .../preview/
-node scripts/prepare-training-photos.mjs
+npm run photos:prepare
 ```
 
 Скрипт переименовывает исходники в `denis-bulgin-trening-NNN.webp`, ужимает до 1920px по длинной стороне (`withoutEnlargement` — мелкие кадры не растягиваются) и удаляет `.jpg`. Превью он не трогает: их всё равно перекодирует `<Image />`, а webp → webp — лишний цикл потерь.

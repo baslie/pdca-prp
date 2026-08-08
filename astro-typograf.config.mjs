@@ -84,7 +84,7 @@ export const TYPOGRAF_OPTIONS = {
  * aria-label и title лежат либо в <head>, либо в атрибутах, куда селектор
  * не достаёт по определению.
  *
- * Проверить покрытие: `node scripts/audit-typography.mjs` после сборки.
+ * Проверить покрытие: `npm run audit:typography` после сборки.
  *
  * Голые `a` и `button` в список НЕ входят намеренно: в Header.astro и в
  * лид-форме в ссылках живут e-mail и телефон, их типографировать нельзя.
