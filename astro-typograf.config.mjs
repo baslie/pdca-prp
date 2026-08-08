@@ -8,7 +8,7 @@
  *
  * Типограф работает ТОЛЬКО на сборке (`astro build`), по готовому HTML в dist/.
  * Исходники .astro он не трогает — в `npm run dev` типографики не будет.
- * Подробности и правила игры — в CLAUDE.md, раздел «Микротипографика».
+ * Подробности и правила игры — в docs/TYPOGRAPHY.md, раздел 9 «Микротипографика».
  */
 import typograf from 'astro-typograf';
 import Typograf from 'typograf';

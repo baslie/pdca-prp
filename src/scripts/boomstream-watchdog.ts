@@ -4,7 +4,7 @@
 // load у cross-origin iframe срабатывает даже на странице ошибки, error не
 // срабатывает вовсе. Единственный надёжный сигнал успеха — postMessage-события
 // плеера (loaded/play/time/...; поля method, code, time, duration; см.
-// CLAUDE.md, раздел «Видео BoomStream»).
+// docs/VIDEO.md).
 //
 // Логика: плеер приблизился к вьюпорту (IntersectionObserver) → таймер 5 с.
 // Ни одного сообщения с нашим code за это время → показать оверлей с подсказкой

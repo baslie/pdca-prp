@@ -1,95 +1,22 @@
 # PDCA-PRP
 
 Лендинг тренинга «Профессиональное Решение Проблем» Дениса Булгина.
-
-## Что осталось сделать
-
-Актуальный бэклог проекта. Держать в синхроне: сделали пункт — снимаем галочку
-и убираем из списка.
-
-### 1. Форма заявки
-
-**Фронтенд готов.** Блок `#request` (`src/components/LeadForm.astro`) — контакты
-слева, форма справа, поверх горной панорамы. Поля, валидация, состояния
-отправки, honeypot, чекбокс согласия и привязка реферального хвоста работают.
-Осталось увезти заявку с сайта.
-
-- [ ] **Решить, куда уходят заявки.** Сайт статический на GitHub Pages, бэкенда
-      нет — нужен внешний обработчик: Formspree / Getform / Google Forms либо
-      serverless-функция с отправкой в Telegram. Точка подключения ровно одна —
-      функция `sendLead()` в `src/scripts/lead-form.ts`, сейчас заглушка
-      с `console.log`. Сигнатуру менять не нужно: форма уже умеет ждать промис
-      и разводить успех и ошибку сети.
-- [ ] Ссылка на политику конфиденциальности в чекбоксе согласия — сейчас
-      `href="#"` с пометкой `TODO(legal)` (см. п. 3).
-- [ ] Капча провайдера, если honeypot окажется недостаточным.
-- [ ] Перенацелить CTA на `#request`: кнопка «Подробнее» в hero ведёт
-      на `#about-training`, в offer-блоке CTA нет вовсе.
-
-### 2. Футер
-
-- [ ] Компонент `src/components/Footer.astro`, последним в `index.astro` —
-      после `<LeadForm />`.
-- [ ] Контакты Дениса, ссылки на соцсети, копирайт с годом. Телефон, почта
-      и Telegram уже собраны в левой колонке `LeadForm.astro` — брать оттуда,
-      чтобы не разъехались (централизованного конфига контактов в проекте нет,
-      значения дублируются в `Header.astro`, `LeadForm.astro` и JSON-LD
-      в `BaseLayout.astro`).
-- [ ] Блок юридических ссылок (п. 3) и реквизиты (ИП/самозанятый, ИНН) —
-      уточнить у заказчика, что именно публикуем.
-- [ ] Навигация-якоря по секциям страницы — если делаем, брать список пунктов
-      из `NAV_ITEMS` в `Header.astro`, чтобы не разъехались.
-
-### 3. Юридические документы
-
-Без них нельзя собирать персональные данные через форму (152-ФЗ).
-
-- [ ] Политика конфиденциальности.
-- [ ] Согласие на обработку персональных данных (текст под чекбоксом формы).
-- [ ] Публичная оферта / условия оказания услуг — уточнить у заказчика,
-      нужна ли (зависит от того, продаём ли мы с сайта).
-- [ ] Формат размещения: отдельные страницы `src/pages/privacy.astro` и т. д.
-      (не PDF — так документы индексируются и открываются с телефона).
-- [ ] Ссылки в футере и рядом с чекбоксом формы.
-
-### 4. Хвосты
-
-- [ ] Скан сертификата Euclides Coimbra: сейчас в `index.astro` заглушка,
-      импорт закомментирован (строки 22–26) — файл в `src/assets/images/`,
-      раскомментировать и передать в `<Certificate>` **и** `<ModalCertificate>`.
-- [ ] Настоящий OG-баннер 1200×630 вместо копии `denis-bulgin.png`
-      в `public/og-image.png`.
-- [ ] Перед публичным анонсом — снять `noindex` и открыть `robots.txt`.
-      Полный чек-лист: раздел «Чек-лист перед публичным анонсом» в `CLAUDE.md`.
+Прод: <https://roman-purtow.ru/pdca-prp/>
 
 ## Стек
 
-- **Astro 7** — статический сайт (`output: "static"`), компонентная декомпозиция,
-  один Layout + одна страница + ~10 компонентов в `src/components/`.
-- **Tailwind CSS v4** — через официальный Vite-плагин `@tailwindcss/vite`,
-  единый стилевой файл `src/styles/global.css` (`@import "tailwindcss"`,
-  `@theme`-токены, `@layer base/components`).
-- **TypeScript** (strict, через `astro/tsconfigs/strict`) для всей логики
-  в `src/scripts/`.
-- **GSAP 3 + ScrollTrigger** (npm) — scrub-анимация диаграммы ПРП и счётчик
-  цифр в блоке «Мы предлагаем». Появление блоков при скролле сделано без GSAP:
-  IntersectionObserver + CSS-transition (`src/scripts/reveal.ts`).
-- **Lenis** — плавный инерционный скролл страницы (`src/scripts/smooth-scroll.ts`):
-  дефолтный режим поверх нативного window-скролла, синхронизация со
-  ScrollTrigger через `gsap.ticker`, стоп/старт при модалках и бургере,
-  плавные якоря. При `prefers-reduced-motion` не инициализируется.
-- **astro-icon + @iconify-json/lucide** — иконки рендерятся как inline SVG
-  на build-time (без CDN, без runtime-замены).
-- **astro-typograf + typograf** — русская микротипографика (неразрывные
-  пробелы, тире, «ёлочки») расставляется автоматически по собранному HTML.
-  Работает только на `npm run build`, исходники не трогает. Конфигурация —
-  `astro-typograf.config.mjs`, проверка покрытия — `scripts/audit-typography.mjs`.
-- **Inter** (Google Fonts) + **Yuji Mai** (только один иероглиф 改善).
+- **Astro 7** — статик, один Layout + одна страница + ~20 компонентов.
+- **Tailwind CSS v4** — Vite-плагин, единый `src/styles/global.css` (`@theme`-токены).
+- **TypeScript** (strict) — вся логика в `src/scripts/`.
+- **GSAP 3 + ScrollTrigger** — scrub-диаграмма ПРП, счётчик цифр, конвейеры отзывов.
+- **Lenis** — плавный инерционный скролл, синхронизирован с GSAP через `gsap.ticker`.
+- **astro-icon + lucide** — иконки inline SVG на build-time.
+- **astro-typograf** — русская микротипографика автоматически по собранному HTML.
+- **Inter** + **Yuji Mai** (Google Fonts).
 - **BoomStream** — видеоплеер, прямой `<iframe>` без SDK.
-- **GitHub Actions** (`withastro/action@v3` + `actions/deploy-pages@v4`) —
-  CI/CD на каждом push в `main`.
-- **GitHub Pages** — хостинг, custom-домен `roman-purtow.ru`, project page
-  под путём `/pdca-prp/`.
+- **GitHub Actions + GitHub Pages** — CI/CD на каждом push в `main`.
+
+Полная таблица с колонкой «где править» — [docs/BUILD.md](docs/BUILD.md).
 
 ## Структура
 
@@ -111,109 +38,52 @@
 │   │                                    OfferStats, PrpSteps, AboutTrainer, Certificate,
 │   │                                    Clients, Reviews, VideoReviews, Modal*,
 │   │                                    BoomStreamPlayer, SkyFixed, DenisFixed,
-│   │                                    Logo, TermTip
-│   ├── scripts/                       ← modal.ts, modal-about.ts, examples.ts,
-│   │                                    certificate.ts, reviews.ts, video-reviews.ts,
-│   │                                    boomstream-watchdog.ts, prp-diagram-scroll.ts
+│   │                                    Logo, TermTip, LeadForm
+│   ├── scripts/                       ← modal.ts, examples.ts, reviews.ts, gallery.ts,
+│   │                                    lead-form.ts, referral.ts, smooth-scroll.ts,
+│   │                                    boomstream-watchdog.ts, prp-diagram-scroll.ts…
 │   ├── styles/global.css              ← Tailwind v4 + @theme + @layer base/components
 │   └── assets/                        ← images, svg — через Vite asset pipeline (hashed URLs)
 ├── public/                    ← статика «как есть»: favicon.ico, icons/, og-image.png,
 │                                site.webmanifest, browserconfig.xml, robots.txt
-├── docs/
-│   ├── TYPOGRAPHY.md          ← источник правды по тексту (см. ниже);
-│   │                            раздел 9 — микротипографика
-│   └── SPACING.md             ← источник правды по отступам и ритму
-├── CLAUDE.md                  ← инструкции для AI-агента и людей-разработчиков
+├── docs/                      ← документация по темам (см. «Документация» ниже)
+├── CLAUDE.md                  ← роутер: карта документации + железные правила
 └── README.md
 ```
 
-## Локальный dev
+## Быстрый старт
 
 ```powershell
 npm install                     # один раз после клона
-npm run dev                     # http://localhost:4321/pdca-prp/
-```
-
-Astro поднимает встроенный dev-сервер с HMR. Tailwind собирается на лету через
-Vite-плагин. Учитывает `base: '/pdca-prp'` из `astro.config.mjs` — открывать
-надо именно с этим префиксом.
-
-Прод-проверка:
-
-```powershell
-npm run build                   # генерирует dist/
-npm run preview                 # отдаёт dist/ как настоящий статик
-```
-
-Типы:
-
-```powershell
+npm run dev                     # http://localhost:4321/pdca-prp/  (префикс base обязателен)
+npm run build && npm run preview   # прод-проверка (типографика есть только в сборке)
 npm run check                   # astro check (TypeScript + Astro)
 ```
 
-## Типографика
+## Документация
 
-Весь текст на странице подчинён единой системе: **8 ролей** (`.t-display`,
-`.t-h-section` +`--compact`, `.t-h-sub`, `.t-lead`, `.t-body`, `.t-body-sm`,
-`.t-quote`, плюс микротексты `.t-eyebrow`/`.t-meta`/`.t-hint`),
-**7 цветов** (`.t-on-strong/default/muted/soft` для светлого фона,
-`.t-on-dark/-muted/-soft` для тёмного), **4 веса** (400/500/600/900).
-
-Единственный источник правды — [`docs/TYPOGRAPHY.md`](docs/TYPOGRAPHY.md).
-Открыть и прочитать **перед** любой правкой текста, заголовков, подписей
-или стилей. Там же — список анти-паттернов.
-
-## Отступы и ритм
-
-Воздух на странице тоже система: отступ — это **роль**, а не число.
-Шесть токенов в `@theme` (`--spacing-section`, `-section-lg`, `-block`,
-`-group`, `-gutter`, `-panel`) дают и `var()` в CSS, и Tailwind-утилиты
-(`mt-block`, `gap-gutter`, `p-panel`), плюс composition-классы `.section-py` /
-`.section-py-lg` для вертикали секции и `.section-px` / `.section-px-wide`
-для полей.
-
-Единственный источник правды — [`docs/SPACING.md`](docs/SPACING.md): шкала
-с расчётом значений на 390/1440/1920px, карта страницы по секциям,
-четыре задокументированных исключения и контрольные grep'ы.
+| Файл | Что внутри |
+|---|---|
+| [docs/BACKLOG.md](docs/BACKLOG.md) | бэклог «Что осталось сделать» + чек-лист перед анонсом |
+| [docs/TYPOGRAPHY.md](docs/TYPOGRAPHY.md) | шкала ролей текста, цвета, веса; §9 — микротипографика |
+| [docs/SPACING.md](docs/SPACING.md) | шкала отступов, карта страницы, исключения |
+| [docs/MOTION.md](docs/MOTION.md) | система движения: Lenis, GSAP, scroll-reveal, токены |
+| [docs/STACKING.md](docs/STACKING.md) | fixed-слои hero, blend-режимы, правило z-10 + фон |
+| [docs/GALLERY.md](docs/GALLERY.md) | галерея тренингов: ассеты, лайтбокс, свёртка |
+| [docs/LEAD-FORM.md](docs/LEAD-FORM.md) | лид-форма: валидация, honeypot, реферальный хвост |
+| [docs/VIDEO.md](docs/VIDEO.md) | BoomStream: embed, postMessage API, watchdog |
+| [docs/BUILD.md](docs/BUILD.md) | стек, дизайн-токены и палитра, overrides, деплой |
 
 ## Деплой
 
-Сайт публикуется на GitHub Pages автоматически через GitHub Actions:
+Автоматически на GitHub Pages при каждом push в `main` (GitHub Actions,
+~1–2 минуты, статус — вкладка Actions). Публичный URL —
+`https://roman-purtow.ru/pdca-prp/`. Сайт пока закрыт от индексации
+(`noindex` + `robots.txt`); чек-лист снятия — [docs/BACKLOG.md](docs/BACKLOG.md).
+Подробности — [docs/BUILD.md](docs/BUILD.md).
 
-- Репозиторий: `github.com/baslie/pdca-prp`, ветка `main`.
-- Workflow: `.github/workflows/deploy.yml` — `withastro/action@v3` →
-  `npm ci && npm run build` → `actions/deploy-pages@v4`.
-- Публичный URL: `https://roman-purtow.ru/pdca-prp/` (project page под
-  user-доменом `baslie.github.io` → `roman-purtow.ru`, отсюда base `/pdca-prp`).
+## Соглашения
 
-**Разовая настройка** (выполнена при миграции на Astro): в репозитории
-**Settings → Pages → Build and deployment → Source = «GitHub Actions»** (вместо
-устаревшего «Deploy from a branch»). Иначе workflow собирает артефакт,
-но Pages не публикует.
-
-После push в `main` сборка идёт ~1–2 минуты, статус — на вкладке Actions.
-
-## Индексация
-
-На время разработки сайт закрыт от индексации:
-
-- `<meta name="robots" content="noindex, ...">` в `BaseLayout.astro` (плюс
-  отдельные `googlebot` и `yandex` теги).
-- `public/robots.txt` с `Disallow: /` для всех ботов.
-
-Перед публичным анонсом обе меры нужно снять — чек-лист в `CLAUDE.md`.
-
-## Соглашения для контрибьютора
-
-- Перед правкой текста — открыть `docs/TYPOGRAPHY.md`.
-- Перед правкой отступов (`py-*`, `mt-*`, `gap-*`) — открыть `docs/SPACING.md`.
-  Своих `clamp()` в разметке быть не должно: расстояние выбирается из шести
-  ступеней шкалы.
-- Перед добавлением блока после hero — раздел «Стэкинг и fixed-слои hero»
-  в `CLAUDE.md` (нужны `relative z-10` + непрозрачный фон, иначе fixed-слои
-  героики проступают сквозь блок).
-- Коммиты — в стиле уже имеющихся в репозитории (`git log -5 --oneline`):
-  префикс типа (`feat:`/`fix:`/`style:`/`refactor:`/`docs:`/`ci:`/`chore:`),
-  затем суть на русском (можно с английским lead'ом в первой строке).
-- Не использовать `--no-verify`, `--amend`, `git reset --hard`, force-push без
-  явной необходимости.
+- Правила для агентов и людей — [CLAUDE.md](CLAUDE.md): карта «когда какой
+  документ читать» и железные правила.
+- Коммиты — в стиле уже имеющихся (`git log -5 --oneline`): `тип: суть на русском`.
