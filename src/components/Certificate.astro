@@ -65,27 +65,20 @@ const credentials = [
           </p>
         </div>
 
-        <!-- Регалии. Линии — border'ы самих ячеек, а НЕ просветы gap-px: зазор
-             между двумя элементами каждый из них округляет независимо, и при
-             дробной ширине колонки линия местами выходит в 2 физических пикселя.
-             border такого не даёт. Контур замыкается так: боковые и верхнюю
-             рамку даёт контейнер, нижнюю — border-bottom последней ячейки
-             (свой border-b у контейнера удвоил бы линию).
-             Пятая строка — печать института на всю ширину: она замыкает список
-             так же, как реквизит заверителя замыкает документ. -->
-        <!-- Появляется одним блоком, а не ячейка за ячейкой: рамку таблицы
-             рисует контейнер, а стаггер сдвигал бы ячейки внутри неподвижной
-             рамки — на 500 мс линии разъезжались бы с содержимым. -->
+        <!-- Регалии — карточки на panel-фоне, тот же паттерн, что категории
+             #examples и offer-stats. Общей рамки нет — стаггер разрешён.
+             Пятая карточка — печать института на всю ширину: она замыкает
+             список так же, как реквизит заверителя замыкает документ. -->
         <div class="mt-group grid grid-cols-1 sm:grid-cols-2
-                    border-x border-t border-border" data-reveal>
-          {credentials.map((c) => (
-            <article class="credential-card">
+                    gap-3 sm:gap-4 lg:gap-5" data-reveal="group">
+          {credentials.map((c, i) => (
+            <article class="credential-card" style={`--reveal-i:${i}`}>
               <p class="credential-card__key">{c.key}</p>
               <p class="credential-card__text" set:html={c.textHtml}></p>
             </article>
           ))}
 
-          <article class="credential-card credential-card--seal">
+          <article class="credential-card credential-card--seal" style={`--reveal-i:${credentials.length}`}>
             <p class="credential-card__text credential-card__text--seal">
               Старший партнёр Kaizen&nbsp;Institute Western&nbsp;Europe
             </p>
