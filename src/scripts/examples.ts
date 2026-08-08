@@ -40,7 +40,7 @@ if (dlg && listEl && dataRoot && iconEl && titleEl && countEl) {
       titleEl!.textContent = (h3.textContent ?? '').trim();
       return;
     }
-    const fallback = trigger?.querySelector('.category-row__title');
+    const fallback = trigger?.querySelector('.category-card__title');
     titleEl!.textContent = fallback ? (fallback.textContent ?? '').trim() : '';
   }
 

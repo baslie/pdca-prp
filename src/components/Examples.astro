@@ -205,21 +205,21 @@ const categoryData: CategoryData[] = [
              (паттерн WAI-ARIA для аккордеонов), а не наоборот: <h3> — flow
              content и внутрь <button> по HTML не помещается, да и содержимое
              кнопки в a11y-дереве всё равно схлопывается в её имя. -->
-        <!-- Одним блоком, не построчно: разделители рисует divide-y на списке,
-             и стаггер строк расходился бы с неподвижной рамкой border-y. -->
-        <ul class="divide-y divide-neutral-200 border-y border-neutral-200" data-reveal>
-          {categories.map((c) => (
-            <li>
-              <h3>
-                <button type="button" class="category-row" data-category={c.id}>
-                  <span class="category-row__icon">
+        <!-- Карточки без обрамляющей рамки — стаггер разрешён (паттерн
+             OfferStats.astro). h-full-цепочка выравнивает высоту в ряду. -->
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5" data-reveal="group">
+          {categories.map((c, i) => (
+            <li style={`--reveal-i:${i}`}>
+              <h3 class="h-full">
+                <button type="button" class="category-card" data-category={c.id}>
+                  <span class="category-card__icon">
                     <Icon name={c.icon} class="w-7 h-7" />
                   </span>
-                  <span class="category-row__text flex-1">
-                    <span class="category-row__title">{c.title}</span>
-                    <span class="category-row__caption">{c.caption}</span>
+                  <span class="category-card__text flex-1">
+                    <span class="category-card__title">{c.title}</span>
+                    <span class="category-card__caption">{c.caption}</span>
                   </span>
-                  <span class="category-row__arrow">→</span>
+                  <span class="category-card__arrow">→</span>
                 </button>
               </h3>
             </li>

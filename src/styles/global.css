@@ -222,7 +222,7 @@
     font-weight: 500;
   }
   /* Tailwind v4 убрал button { cursor: pointer } из preflight — возвращаем.
-     Покрывает .btn-primary, .category-row, крестики модалок и кнопки «Назад». */
+     Покрывает .btn-primary, .category-card, крестики модалок и кнопки «Назад». */
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
 
@@ -1368,29 +1368,27 @@
   }
   .steel-overlay--soft { opacity: 0.6; }
 
-  /* Строка-категория в секции #examples.
-     Ховер сдвигает вправо иконку и текст — стрелка справа остаётся на месте.
-     Сдвиг именно transform'ом: прежний `padding-left: 0 -> 12px` пересчитывал
-     раскладку строки на каждом кадре, тогда как результат на экране тот же.
-     Ховер под media-гейтом: на таче :hover залипает после тапа и строка
-     оставалась бы сдвинутой (та же оговорка, что у .review-card). */
-  .category-row { @apply w-full text-left flex items-center gap-6 py-6; }
-  .category-row__icon,
-  .category-row__text { transition: transform var(--dur-hover) var(--ease-brand); }
-  @media (hover: hover) {
-    .category-row:hover .category-row__icon,
-    .category-row:hover .category-row__text { transform: translateX(12px); }
+  /* Карточка-категория в секции #examples. Кликабельная кнопка на panel-фоне;
+     фидбек ховера — инверсия в фирменный синий (паттерн .review-card /
+     .client-pill), движение только у стрелки. Ховер под media-гейтом:
+     на таче :hover залипает после тапа и карточка оставалась бы синей. */
+  .category-card {
+    @apply w-full h-full text-left flex items-center gap-6 p-6;
+    background-color: var(--color-panel);
+    transition: background-color var(--dur-hover) var(--ease-brand);
   }
-  .category-row:hover .category-row__title { color: var(--color-brand-red); }
   /* Иконка внутри плитки — lucide со stroke="currentColor", поэтому цвет
-     задаётся на контейнере. Фирменный синий постоянно, без ховера; заливка
-     плитки остаётся нейтральной. Та же пара цветов — у иконки в шапке
-     модалки категорий (#modal-examples-icon в ModalExamples.astro). */
-  .category-row__icon { @apply w-14 h-14 shrink-0 bg-ink-dark/5 text-brand-blue flex items-center justify-center; }
+     задаётся на контейнере. Фирменный синий в покое — та же пара цветов,
+     что у иконки в шапке модалки категорий (#modal-examples-icon). */
+  .category-card__icon {
+    @apply w-14 h-14 shrink-0 bg-ink-dark/5 text-brand-blue flex items-center justify-center;
+    transition:
+      background-color var(--dur-hover) var(--ease-brand),
+      color            var(--dur-hover) var(--ease-brand);
+  }
   /* Название категории — H3 в разметке, формула кегля совпадает с .t-h-sub.
-     Цвет фирменный синий (как у H2 секции и у заголовка модалки категорий),
-     на ховере уходит в фирменный красный — тем же движением, что и стрелка. */
-  .category-row__title {
+     Цвет фирменный синий (как у H2 секции и у заголовка модалки категорий). */
+  .category-card__title {
     @apply block leading-tight;
     font-size: clamp(1.125rem, 1.4vw, 1.375rem);
     letter-spacing: -0.01em;
@@ -1398,34 +1396,50 @@
     color: var(--color-brand-blue);
     transition: color var(--dur-hover) var(--ease-brand);
   }
-  .category-row__caption {
+  .category-card__caption {
     @apply block mt-1;
     font-size: clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem);
     line-height: 1.55;
     color: rgb(43 43 43 / 0.70);
+    transition: color var(--dur-hover) var(--ease-brand);
   }
-  .category-row__arrow {
+  .category-card__arrow {
     @apply text-2xl;
     opacity: 0;
     transform: translateX(24px);
     color: var(--color-brand-red);
     transition:
       transform var(--dur-hover) var(--ease-brand),
-      opacity   var(--dur-hover) var(--ease-brand);
+      opacity   var(--dur-hover) var(--ease-brand),
+      color     var(--dur-hover) var(--ease-brand);
   }
+  /* Инверсия: фон → синий, текст и иконка → белые. Стрелка на синем тоже
+     белая: фирменный красный на brand-blue даёт грязные ~3.9:1. */
   @media (hover: hover) {
-    .category-row:hover .category-row__arrow { opacity: 1; transform: translateX(0); }
+    .category-card:hover { background-color: var(--color-brand-blue); }
+    .category-card:hover .category-card__icon {
+      background-color: rgb(255 255 255 / 0.12);
+      color: #fff;
+    }
+    .category-card:hover .category-card__title { color: #fff; }
+    .category-card:hover .category-card__caption { color: rgb(255 255 255 / 0.75); }
+    .category-card:hover .category-card__arrow { opacity: 1; transform: translateX(0); color: #fff; }
   }
-  /* Клавиатурный фокус показывает стрелку независимо от ховера — иначе на
-     таче и при табуляции строка вообще не даёт понять, что она кликабельна. */
-  .category-row:focus-visible .category-row__arrow { opacity: 1; transform: translateX(0); }
+  /* Клавиатурный фокус даёт тот же фидбек, что и ховер, — вне media-гейта:
+     на таче и при табуляции карточка иначе не даёт понять, что кликабельна. */
+  .category-card:focus-visible { background-color: var(--color-brand-blue); }
+  .category-card:focus-visible .category-card__icon { background-color: rgb(255 255 255 / 0.12); color: #fff; }
+  .category-card:focus-visible .category-card__title { color: #fff; }
+  .category-card:focus-visible .category-card__caption { color: rgb(255 255 255 / 0.75); }
+  .category-card:focus-visible .category-card__arrow { opacity: 1; transform: translateX(0); color: #fff; }
 
   @media (prefers-reduced-motion: reduce) {
-    .category-row__icon,
-    .category-row__text,
-    .category-row__arrow { transition: none; }
-    .category-row:hover .category-row__icon,
-    .category-row:hover .category-row__text { transform: none; }
+    .category-card,
+    .category-card__icon,
+    .category-card__title,
+    .category-card__caption,
+    .category-card__arrow { transition: none; }
+    .category-card__arrow { transform: none; }
   }
 
   /* Glass-карточки поверх горной панорамы в секции #offer-stats.

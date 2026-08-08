@@ -112,8 +112,8 @@ export const TYPOGRAF_SELECTOR = [
   '.t-meta',
   '.t-hint',
   // Компоненты, текст которых живёт на <span>
-  '.category-row__title',
-  '.category-row__caption',
+  '.category-card__title',
+  '.category-card__caption',
   '.review-card__text',
   '.review-card__name',
   '.review-card__meta',

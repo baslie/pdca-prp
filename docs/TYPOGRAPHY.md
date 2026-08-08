@@ -59,7 +59,7 @@ HINT        12 px static ▓
 | Display       | `.t-display`                       | `clamp(2.25rem, 5.4vw, 9rem)`                        | 0.95  | -0.03em   | 900 | H1 героя. Один на странице. |
 | H-section     | `.t-h-section`                     | `clamp(2rem, 3.6vw, 3.75rem)`                        | 1.10  | -0.025em  | 900 | H2 секций. |
 | H-sect compact| `.t-h-section .t-h-section--compact`| `clamp(1.5rem, 2.4vw, 2.25rem)`                     | 1.15  | -0.02em   | 900 | H2 в модалках, H3 в шапках карточек. |
-| H-sub         | `.t-h-sub`                         | `clamp(1.125rem, 1.4vw, 1.375rem)`                   | 1.30  | -0.01em   | 600 | H3 в длинном тексте; та же формула инлайном у `.category-row__title` — названия категорий размечены `<h3>` вокруг кнопки. |
+| H-sub         | `.t-h-sub`                         | `clamp(1.125rem, 1.4vw, 1.375rem)`                   | 1.30  | -0.01em   | 600 | H3 в длинном тексте; та же формула инлайном у `.category-card__title` — названия категорий размечены `<h3>` вокруг кнопки. |
 | Lead          | `.t-lead`                          | `clamp(1.0625rem, 1.25vw, 1.375rem)`                 | 1.55  | -0.005em  | 400 | Лид-абзац под H1. |
 | Body          | `.t-body`                          | `clamp(1.0625rem, 0.7vw + 0.875rem, 1.25rem)`        | 1.65  | 0         | 400 | Основной текст. |
 | Body-sm       | `.t-body-sm`                       | `clamp(0.9375rem, 0.4vw + 0.875rem, 1.0625rem)`      | 1.55  | 0         | 400 | Уменьшенный body, ссылки в списках, описания. |
@@ -108,7 +108,7 @@ HINT        12 px static ▓
 | Уровень | Класс           | Цвет                       | Контраст | Когда |
 |---------|-----------------|----------------------------|----------|-------|
 | Strong  | `.t-on-strong`  | `#0C0C0C` (`ink-dark`)    | 19.6:1 ✅ AAA | H3/H-sub, `<strong>`, имена/credit. |
-| Brand   | `.t-on-brand`   | `#003154` (`brand-blue`) | 13.4:1 ✅ AAA | Заголовки H1/H2 (включая `--compact` в модалках) на светлом фоне; названия категорий в `#examples` — H3, цвет приходит из `.category-row__title`, а на ховере уходит в `brand-red`. |
+| Brand   | `.t-on-brand`   | `#003154` (`brand-blue`) | 13.4:1 ✅ AAA | Заголовки H1/H2 (включая `--compact` в модалках) на светлом фоне; названия категорий в `#examples` — H3, цвет приходит из `.category-card__title`, а на ховере карточка инвертируется в синий и заголовок белеет. |
 | Default | `.t-on-default` | `#2B2B2B` (`ink`)    | 12.6:1 ✅ AAA | Body, lead, list items. |
 | Muted   | `.t-on-muted`   | `#2B2B2B` @ 70%            | 4.6:1  ✅ AA  | Eyebrow, meta, hint, body-sm, captions. |
 | Soft    | `.t-on-soft`    | `#2B2B2B` @ 45%            | —      | Только декор и неважные таймстампы. **Не для основного контента.** |
