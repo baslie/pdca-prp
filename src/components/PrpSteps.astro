@@ -36,11 +36,18 @@ const steps: Step[] = [
 
       <div class="prp-diagram-stage">
 
-        <!-- SVG-спрайт: форма октагона. Один <symbol>, на который ссылаются 5 <use>.
-             Сплошная заливка fill="currentColor" — фон карточки, без обводки. -->
+        <!-- SVG-спрайт: два symbol'а одной формы, на которые ссылаются <use>.
+             Заливка и контур разведены по отдельным символам намеренно:
+             presentation-атрибуты path'а внутри <use> снаружи не переопределить
+             (shadow-контент не селектится), а октагону нужны оба слоя — контур
+             виден всегда, заливку GSAP растит из центра (scale 0 -> 1).
+             vector-effect держит обводку 2px на любом размере октагона. -->
         <svg width="0" height="0" style="position:absolute" aria-hidden="true">
           <symbol id="prp-octagon-shape" viewBox="0 0 100 100">
             <path fill="currentColor" d="M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z" />
+          </symbol>
+          <symbol id="prp-octagon-outline" viewBox="0 0 100 100">
+            <path fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" d="M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z" />
           </symbol>
         </svg>
 
@@ -77,13 +84,19 @@ const steps: Step[] = [
         <ol class="prp-diagram">
           {steps.map((s) => (
             <li class={`prp-octagon prp-octagon--${s.num}`}>
-              <svg viewBox="0 0 100 100" class="prp-octagon__shape" aria-hidden="true">
+              <svg viewBox="0 0 100 100" class="prp-octagon__shape prp-octagon__shape--outline" aria-hidden="true">
+                <use href="#prp-octagon-outline" />
+              </svg>
+              <svg viewBox="0 0 100 100" class="prp-octagon__shape prp-octagon__shape--fill" aria-hidden="true">
                 <use href="#prp-octagon-shape" />
               </svg>
               {s.num !== 5 && <span class="prp-octagon__arrowhead" aria-hidden="true"></span>}
+              <!-- Без .t-on-dark: цвет текста ведёт .prp-octagon__body (белый в базе,
+                   синий в пре-стейте), GSAP твинит его вместе с ростом заливки —
+                   @apply text-white перебивал бы твин каскадом. -->
               <div class="prp-octagon__body">
-                <span class="prp-octagon__num t-on-dark" aria-hidden="true">{s.num}</span>
-                <p class="prp-octagon__text t-on-dark" set:html={s.text}></p>
+                <span class="prp-octagon__num" aria-hidden="true">{s.num}</span>
+                <p class="prp-octagon__text" set:html={s.text}></p>
               </div>
             </li>
           ))}

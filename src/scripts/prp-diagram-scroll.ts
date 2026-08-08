@@ -18,14 +18,16 @@
 //   ≥1280px («крест»)  — октагон 1 → стрелка → … → октагон 5 → замыкающая
 //                        стрелка → кайдзен-орнамент (draw + fill). Без pin:
 //                        stage выше окна, пиннить нечего.
-//   <1280px (колонка)  — только 5 октагонов равными долями: соединительные
-//                        линии и стрелки вниз это псевдоэлементы самого <li>,
-//                        они прокрашиваются вместе с карточкой, а орнамент и
-//                        десктопные стрелки в этой раскладке display:none.
+//   <1280px (колонка)  — только 5 октагонов равными долями. Красные
+//                        соединители (псевдоэлементы <li>) видны сразу:
+//                        они часть контурной схемы, скролл её лишь заливает.
 // prefers-reduced-motion: reduce — без анимации (финальное состояние из CSS).
 //
-// Pre-state (opacity 0.15) задаётся синхронно из CSS-каскада через класс
-// .js-prp-animate (ставится inline-script'ом в <head> BaseLayout).
+// Октагон анимируется «заливкой из центра»: слой .prp-octagon__shape--fill
+// растёт scale 0 → 1, цвет текста на .prp-octagon__body тем же твином идёт
+// из фирменного синего в белый. Pre-state (пустой контур + синий текст)
+// задаётся синхронно из CSS-каскада через класс .js-prp-animate
+// (ставится inline-script'ом в <head> BaseLayout).
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -49,7 +51,6 @@ const A = {
 
   // --- Доли безразмерного timeline, который растягивается на весь диапазон.
   //     Важны их ПРОПОРЦИИ, не абсолютные значения.
-  OCT_START_SCALE: 0.85,
   OCT_DURATION: 0.4,
   ARROW_DURATION: 0.3,
   ORN_DRAW_DURATION: 0.7,
@@ -61,13 +62,17 @@ const A = {
   ORN_FILL_OVERLAP: '-=0.3',
   ORN_STROKE_OVERLAP: '-=0.15',
 
-  // --- Колонка: карточка крупная, сильный scale читается как рывок.
-  COLUMN_START_SCALE: 0.94,
+  // --- Колонка: карточка крупная, равные доли на октагон.
   COLUMN_OCT_DURATION: 1,
 };
 
 const html = document.documentElement;
 const dropPreState = () => html.classList.remove('js-prp-animate');
+
+// Цвет пре-стейта текста — из токена, не хексом: правка --color-brand-blue
+// в @theme не должна требовать правки скрипта.
+const brandBlue = () =>
+  getComputedStyle(html).getPropertyValue('--color-brand-blue').trim() || '#003154';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -77,6 +82,9 @@ if (!section) {
 } else {
   const stage = section.querySelector<HTMLElement>('.prp-diagram-stage');
   const octagons = section.querySelectorAll<HTMLElement>('.prp-octagon');
+  // Индексы fills/bodies совпадают с octagons: по одному слою на <li>.
+  const fills = section.querySelectorAll<SVGSVGElement>('.prp-octagon__shape--fill');
+  const bodies = section.querySelectorAll<HTMLElement>('.prp-octagon__body');
   // Только прямые потомки <svg>. Без '>' первым в выборку попадал <path>
   // наконечника внутри <defs><marker> — он забирал индекс [0], всё смещалось
   // на единицу, и замыкающая стрелка 5->2 выпадала из timeline: вместо того,
@@ -85,7 +93,7 @@ if (!section) {
   const desktopPaths = section.querySelectorAll<SVGPathElement>('.prp-arrows--desktop > path');
   const ornamentPaths = section.querySelectorAll<SVGPathElement>('.prp-ornament__path');
 
-  if (!stage || octagons.length !== 5) {
+  if (!stage || octagons.length !== 5 || fills.length !== 5 || bodies.length !== 5) {
     dropPreState();
   } else {
     // Инициализируем СРАЗУ: бандл — type=module, выполняется после парсинга DOM.
@@ -109,9 +117,9 @@ if (!section) {
           // При reduce-motion CSS @media reduce уже даёт финальное состояние.
           if (reduceMotion) return;
           if (desktopScrub) {
-            return setupDesktopScrub(section, octagons, desktopPaths, ornamentPaths);
+            return setupDesktopScrub(section, fills, bodies, desktopPaths, ornamentPaths);
           }
-          if (columnScrub) return setupColumnScrub(section, octagons);
+          if (columnScrub) return setupColumnScrub(section, fills, bodies);
         },
       );
 
@@ -155,56 +163,64 @@ function blockScrollDistance(section: HTMLElement): number {
 
 function setupDesktopScrub(
   section: HTMLElement,
-  octagons: NodeListOf<HTMLElement>,
+  fills: NodeListOf<SVGSVGElement>,
+  bodies: NodeListOf<HTMLElement>,
   paths: NodeListOf<SVGPathElement>,
   ornamentPaths: NodeListOf<SVGPathElement>,
 ): void {
   try {
-    setPreState(octagons, paths, ornamentPaths);
+    setPreState(fills, bodies, paths, ornamentPaths);
     const tl = createBlockTimeline(section);
-    buildArrowsTimeline(tl, octagons, paths);
+    buildArrowsTimeline(tl, fills, bodies, paths);
     buildOrnamentTimeline(tl, ornamentPaths);
   } catch (e) {
     // Любая ошибка инициализации — возвращаем диаграмму в видимое состояние.
     dropPreState();
-    forceVisibleState(octagons, paths, ornamentPaths);
+    forceVisibleState(fills, bodies, paths, ornamentPaths);
     console.warn('[prp-diagram-scroll] desktop scrub init failed:', e);
   }
 }
 
 // Вертикальная колонка (<1280px): те же 5 октагонов, но равными долями
 // диапазона. Позиции карточек в колонке распределены равномерно, поэтому
-// равномерный timeline попадает почти в такт: карточка начинает краснеть,
+// равномерный timeline попадает почти в такт: карточка начинает заливаться,
 // когда выходит из-за нижней кромки, и дозаливается вскоре после того,
 // как оказалась в кадре целиком.
-function setupColumnScrub(section: HTMLElement, octagons: NodeListOf<HTMLElement>): void {
+function setupColumnScrub(
+  section: HTMLElement,
+  fills: NodeListOf<SVGSVGElement>,
+  bodies: NodeListOf<HTMLElement>,
+): void {
   try {
-    gsap.set(octagons, {
-      opacity: A.PRE_OPACITY,
-      scale: A.COLUMN_START_SCALE,
-      transformOrigin: 'center center',
-    });
+    gsap.set(fills, { scale: 0, transformOrigin: '50% 50%' });
+    gsap.set(bodies, { color: brandBlue() });
     const tl = createBlockTimeline(section);
-    octagons.forEach((oct) => {
-      tl.to(oct, { opacity: 1, scale: 1, duration: A.COLUMN_OCT_DURATION });
+    fills.forEach((fill, i) => {
+      tl.to(fill, { scale: 1, duration: A.COLUMN_OCT_DURATION, ease: 'power1.out' }).to(
+        bodies[i],
+        { color: '#fff', duration: A.COLUMN_OCT_DURATION, ease: 'none' },
+        '<',
+      );
     });
   } catch (e) {
     dropPreState();
-    gsap.set(octagons, { opacity: 1, scale: 1, clearProps: 'transform' });
+    gsap.set(fills, { clearProps: 'transform' });
+    gsap.set(bodies, { clearProps: 'color' });
     console.warn('[prp-diagram-scroll] column scrub init failed:', e);
   }
 }
 
+// Стартовое состояние заливки/текста дублирует CSS-пре-стейт .js-prp-animate
+// явным set'ом: scrub-таймлайн с invalidateOnRefresh перечитывает старты,
+// и они должны быть детерминированы, а не зависеть от момента снятия класса.
 function setPreState(
-  octagons: NodeListOf<HTMLElement>,
+  fills: NodeListOf<SVGSVGElement>,
+  bodies: NodeListOf<HTMLElement>,
   paths: NodeListOf<SVGPathElement>,
   ornamentPaths: NodeListOf<SVGPathElement>,
 ): void {
-  gsap.set(octagons, {
-    opacity: A.PRE_OPACITY,
-    scale: A.OCT_START_SCALE,
-    transformOrigin: 'center center',
-  });
+  gsap.set(fills, { scale: 0, transformOrigin: '50% 50%' });
+  gsap.set(bodies, { color: brandBlue() });
   gsap.set(paths, { opacity: A.PRE_OPACITY });
   if (ornamentPaths.length) {
     gsap.set(ornamentPaths, {
@@ -218,7 +234,8 @@ function setPreState(
 
 function buildArrowsTimeline(
   tl: gsap.core.Timeline,
-  octagons: NodeListOf<HTMLElement>,
+  fills: NodeListOf<SVGSVGElement>,
+  bodies: NodeListOf<HTMLElement>,
   paths: NodeListOf<SVGPathElement>,
 ): void {
   // paths[i] совпадает с порядком в SVG (селектор берёт только прямых
@@ -226,19 +243,19 @@ function buildArrowsTimeline(
   //   [0] 1→2 прямая, [1] 2→3, [2] 3→4, [3] 4→5, [4] 5→2 замыкание цикла.
   // Наконечники отдельно не гасим: marker рисуется в контексте своей линии,
   // её opacity распространяется и на него — стрелка приезжает целиком.
-  const octTween = { opacity: 1, scale: 1, duration: A.OCT_DURATION, ease: 'power1.out' };
+  // Заливка и цвет текста октагона идут парой на одну позицию ('<'):
+  // текст белеет ровно пока растёт синий фон под ним.
   const arrowTween = { opacity: 1, duration: A.ARROW_DURATION };
-  tl.to(octagons[0], octTween)
-    .to(paths[0], arrowTween)
-    .to(octagons[1], octTween)
-    .to(paths[1], arrowTween)
-    .to(octagons[2], octTween)
-    .to(paths[2], arrowTween)
-    .to(octagons[3], octTween)
-    .to(paths[3], arrowTween)
-    .to(octagons[4], octTween)
-    .to(paths[4], arrowTween)
-    .set(paths, { opacity: 1 });
+  const step = (i: number) =>
+    tl
+      .to(fills[i], { scale: 1, duration: A.OCT_DURATION, ease: 'power1.out' })
+      .to(bodies[i], { color: '#fff', duration: A.OCT_DURATION, ease: 'none' }, '<');
+  step(0).to(paths[0], arrowTween);
+  step(1).to(paths[1], arrowTween);
+  step(2).to(paths[2], arrowTween);
+  step(3).to(paths[3], arrowTween);
+  step(4).to(paths[4], arrowTween);
+  tl.set(paths, { opacity: 1 });
 }
 
 function buildOrnamentTimeline(
@@ -277,12 +294,16 @@ function buildOrnamentTimeline(
     );
 }
 
+// Аварийный сброс: clearProps снимает inline-стили GSAP, а dropPreState
+// (вызывается рядом) убирает класс — базовый CSS и есть финальное «залито».
 function forceVisibleState(
-  octagons: NodeListOf<HTMLElement>,
+  fills: NodeListOf<SVGSVGElement>,
+  bodies: NodeListOf<HTMLElement>,
   paths: NodeListOf<SVGPathElement>,
   ornamentPaths: NodeListOf<SVGPathElement>,
 ): void {
-  gsap.set(octagons, { opacity: 1, scale: 1, clearProps: 'transform' });
+  gsap.set(fills, { clearProps: 'transform' });
+  gsap.set(bodies, { clearProps: 'color' });
   gsap.set(paths, { opacity: 1 });
   if (ornamentPaths.length) {
     gsap.set(ornamentPaths, {
