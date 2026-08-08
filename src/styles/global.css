@@ -241,6 +241,13 @@
        Прежняя cubic-bezier(0.22, 1, 0.36, 1) отличалась на глаз неразличимо. */
     --modal-ease: var(--ease-brand);
 
+    /* Контент-фейд «О методе» — тайминги СВОИ, не --modal-dur-*: fade контента
+       короче раскрытия круга (300 против 500), а задержка даёт кругу разойтись
+       до появления текста. Правила — у .modal-about-content ниже. */
+    --modal-about-fade-in:    300ms;
+    --modal-about-fade-out:   220ms;
+    --modal-about-fade-delay: 120ms;
+
     /* ДЛИТЕЛЬНОСТИ ДВИЖЕНИЯ — четыре роли, больше не нужно.
        До унификации на одну роль «ховер» приходилось пять разных значений
        (100 / 150 неявных / 200 / 250 / 300 мс) — это и была главная причина,
@@ -308,10 +315,10 @@
      иначе fade задваивается с clip-path и раскрытие выглядит мутным.
      На входе — с задержкой 120 мс (круг успевает разойтись), на выходе
      гаснет сразу, чтобы не «догонять» схлопывание. */
-  .modal-about-content { opacity: 0; transition: opacity 220ms var(--ease-brand); }
+  .modal-about-content { opacity: 0; transition: opacity var(--modal-about-fade-out) var(--ease-brand); }
   dialog#modal-about[open] .modal-about-content {
     opacity: 1;
-    transition: opacity 300ms var(--ease-brand) 120ms;
+    transition: opacity var(--modal-about-fade-in) var(--ease-brand) var(--modal-about-fade-delay);
   }
   @starting-style {
     dialog#modal-about[open] .modal-about-content { opacity: 0; }
