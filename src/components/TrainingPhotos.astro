@@ -6,6 +6,7 @@
    Кадры, alt-тексты и рассказ, почему full-версии не идут через getImage(), —
    в src/data/training-photos.ts. */
 import { Image } from 'astro:assets';
+import SectionHeading from './SectionHeading.astro';
 import { base } from '../scripts/base-url';
 import { photos } from '../data/training-photos';
 
@@ -36,10 +37,10 @@ const gallerySchema = {
 
   <div class="section-px">
     <header class="max-w-prose mx-auto text-center" data-reveal>
-      <p class="t-eyebrow t-on-muted mb-6">Очные корпоративные программы</p>
-      <h2 class="t-h-section t-on-brand">
+      <SectionHeading>
+        <Fragment slot="eyebrow">Очные корпоративные программы</Fragment>
         Фотографии с <span class="text-brand-red">тренингов</span>
-      </h2>
+      </SectionHeading>
     </header>
   </div>
 

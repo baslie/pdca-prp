@@ -1,5 +1,6 @@
 ---
 import iconPdf from '../assets/svg/icon-pdf.svg';
+import SectionHeading from './SectionHeading.astro';
 import TermTip from './TermTip.astro';
 ---
 
@@ -22,10 +23,10 @@ import TermTip from './TermTip.astro';
       <div class="order-1 lg:order-2 flex flex-col gap-block">
 
         <div data-reveal>
-          <p class="t-eyebrow t-on-muted mb-6">О&nbsp;тренинге</p>
-          <h2 class="t-h-section t-on-brand">
+          <SectionHeading>
+            <Fragment slot="eyebrow">О&nbsp;тренинге</Fragment>
             Философия постоянных <span class="text-brand-red">улучшений</span>
-          </h2>
+          </SectionHeading>
         </div>
 
         <div class="space-y-[clamp(1.25rem,1.9vw,2rem)] t-on-default">

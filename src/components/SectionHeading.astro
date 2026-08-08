@@ -1,0 +1,28 @@
+---
+/* Шапка секции: надзаголовок (.t-eyebrow) + H2 (.t-h-section). Пара повторялась
+   дословно в 10 секциях — теперь единая точка. Обёртки вокруг шапки
+   (max-w-prose / max-w-3xl, text-center, data-reveal) сознательно остаются
+   на местах вызова: их состав от секции к секции разный, и унификация была бы
+   визуальным изменением.
+
+   Тексты передаются СЛОТАМИ, а не пропсами-строками: в пропе `&nbsp;`
+   заэскейпился бы при рендере в `&amp;nbsp;`. Слот eyebrow — надзаголовок,
+   дефолтный слот — содержимое H2.
+
+   ModalAbout свою пару не использует: его H2 несёт id="modal-about-title"
+   и mb-6 — модальная специфика, ради одного сайта пропсы не заводим. */
+interface Props {
+  /** Светлая секция (текст на белом фоне) или тёмная (на синем/фото). */
+  tone?: 'light' | 'dark';
+}
+
+const { tone = 'light' } = Astro.props;
+
+const eyebrowClass = tone === 'dark' ? 't-eyebrow t-on-dark-muted mb-6' : 't-eyebrow t-on-muted mb-6';
+const headingClass = tone === 'dark' ? 't-h-section t-on-dark' : 't-h-section t-on-brand';
+---
+
+<p class={eyebrowClass}><slot name="eyebrow" /></p>
+<h2 class={headingClass}>
+  <slot />
+</h2>

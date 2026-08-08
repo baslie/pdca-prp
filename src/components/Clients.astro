@@ -4,6 +4,7 @@
    у кого логотипа нет. Раньше это была полоса пиллов внизу #about-trainer —
    она перенесена сюда целиком, ни одно название не потеряно.
    Данные и подготовка файлов логотипов — src/data/clients.ts. */
+import SectionHeading from './SectionHeading.astro';
 import { logos, CLIENTS } from '../data/clients';
 ---
 
@@ -13,10 +14,10 @@ import { logos, CLIENTS } from '../data/clients';
 
   <div class="section-px">
     <header class="max-w-prose mx-auto text-center" data-reveal>
-      <p class="t-eyebrow t-on-muted mb-6">Опыт обучения сотрудников организаций</p>
-      <h2 class="t-h-section t-on-brand">
+      <SectionHeading>
+        <Fragment slot="eyebrow">Опыт обучения сотрудников организаций</Fragment>
         Нам <span class="text-brand-red">доверяют</span>
-      </h2>
+      </SectionHeading>
     </header>
   </div>
 

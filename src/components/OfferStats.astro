@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import SectionHeading from './SectionHeading.astro';
 import { formatStatNumber } from '../scripts/format';
 import mountainsClouds from '../assets/images/mountains-clouds.jpg';
 
@@ -48,10 +49,10 @@ const formatStat = formatStatNumber;
   <div class="relative w-full section-px">
 
     <div class="text-center max-w-3xl mx-auto mb-block" data-reveal>
-      <p class="t-eyebrow t-on-dark-muted mb-6">Преимущества и&nbsp;цифры</p>
-      <h2 class="t-h-section t-on-dark">
+      <SectionHeading tone="dark">
+        <Fragment slot="eyebrow">Преимущества и&nbsp;цифры</Fragment>
         Мы&nbsp;<span class="text-brand-red">предлагаем</span>
-      </h2>
+      </SectionHeading>
     </div>
 
     <!-- 6 преимуществ. Карточки в сетке ничем не обрамлены, поэтому здесь

@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import SectionHeading from './SectionHeading.astro';
 import type { ImageMetadata } from 'astro';
 import euclidesCoimbra from '../assets/images/euclides-coimbra.png';
 import kaizenInstitute from '../assets/images/kaizen-institute.png';
@@ -36,10 +37,10 @@ const credentials = [
       <div class="lg:col-span-8">
         <!-- Обёртка нужна ради data-reveal: надзаголовок и H2 появляются одним блоком. -->
         <div data-reveal>
-          <p class="t-eyebrow t-on-muted mb-6">Международное признание</p>
-          <h2 class="t-h-section t-on-brand">
+          <SectionHeading>
+            <Fragment slot="eyebrow">Международное признание</Fragment>
             Сертификат, <span class="text-brand-red">заверенный</span> Kaizen&nbsp;Institute
-          </h2>
+          </SectionHeading>
         </div>
 
         <!-- Портрет стоит прямо у лида, где Эвклид назван по имени: читатель видит,

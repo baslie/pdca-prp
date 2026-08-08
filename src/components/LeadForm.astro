@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import SectionHeading from './SectionHeading.astro';
 import mountainsSummit from '../assets/images/mountains-summit.jpg';
 import { typografAttr } from '../../astro-typograf.config.mjs';
 import {
@@ -72,10 +73,10 @@ const btnSending = typografAttr('Отправляем…');
 
       <!-- ЛЕВАЯ КОЛОНКА — приглашение и контакты -->
       <div class="lg:col-span-5" data-reveal>
-        <p class="t-eyebrow t-on-dark-muted mb-6">Заявка на тренинг</p>
-        <h2 class="t-h-section t-on-dark">
+        <SectionHeading tone="dark">
+          <Fragment slot="eyebrow">Заявка на тренинг</Fragment>
           Обсудим ваш <span class="text-brand-red">проект</span>
-        </h2>
+        </SectionHeading>
 
         <p class="t-lead t-on-dark-muted mt-8 max-w-prose">
           Расскажите о задаче — мы свяжемся с вами, уточним детали

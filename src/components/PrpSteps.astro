@@ -1,4 +1,6 @@
 ---
+import SectionHeading from './SectionHeading.astro';
+
 interface Step {
   num: number;
   text: string;
@@ -28,10 +30,10 @@ const steps: Step[] = [
            к скроллу через GSAP ScrollTrigger (src/scripts/prp-diagram-scroll.ts),
            и второй приём появления поверх неё был бы двойной анимацией. -->
       <div class="mb-group xl:mb-0 max-w-prose mx-auto text-center" data-reveal>
-        <p class="t-eyebrow t-on-muted mb-6">Процесс внедрения</p>
-        <h2 class="t-h-section t-on-brand">
+        <SectionHeading>
+          <Fragment slot="eyebrow">Процесс внедрения</Fragment>
           Шаги по&nbsp;внедрению системы <span class="text-brand-red">ПРП</span>
-        </h2>
+        </SectionHeading>
       </div>
 
       <div class="prp-diagram-stage">

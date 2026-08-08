@@ -1,5 +1,6 @@
 ---
 import denisBulgin3 from '../assets/images/denis-bulgin-3.jpg';
+import SectionHeading from './SectionHeading.astro';
 import { education, trainings } from '../data/about-trainer';
 
 /* Полоса «Опыт обучения сотрудников организаций» уехала отсюда в отдельную
@@ -29,10 +30,10 @@ import { education, trainings } from '../data/about-trainer';
       <!-- Обёртка нужна ради data-reveal: надзаголовок, H2 и оба абзаца лида
            должны появляться одним блоком, а не по очереди. -->
       <div data-reveal>
-        <p class="t-eyebrow t-on-dark-muted mb-6">О тренере</p>
-        <h2 class="t-h-section t-on-dark">
+        <SectionHeading tone="dark">
+          <Fragment slot="eyebrow">О тренере</Fragment>
           Денис <span class="text-brand-red">Булгин</span>
-        </h2>
+        </SectionHeading>
 
         <p class="t-lead t-on-dark mt-8 max-w-prose">
           Бизнес-тренер. Специалист по&nbsp;бережливому производству
