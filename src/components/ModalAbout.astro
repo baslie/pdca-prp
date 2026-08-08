@@ -1,6 +1,6 @@
 ---
 import iconPdfLight from '../assets/svg/icon-pdf-light.svg';
-import TermTip from './TermTip.astro';
+import KaizenIntro from './KaizenIntro.astro';
 ---
 
 <!-- ========== МОДАЛЬНОЕ ОКНО «О МЕТОДЕ» ========== -->
@@ -31,35 +31,7 @@ import TermTip from './TermTip.astro';
     <h2 id="modal-about-title" class="t-h-section t-on-brand mb-6">О&nbsp;методе</h2>
 
     <div class="space-y-5 t-body t-on-default">
-      <p>
-        Всё больше компаний во&nbsp;всём мире принимают концепцию <strong class="font-semibold t-on-strong">кайдзен</strong><TermTip
-          term="кайдзен"
-          text="яп. 改善 — «перемены к лучшему»"
-        />{' '}в&nbsp;качестве доминирующей концепции развития своего бизнеса, основы
-        эффективного менеджмента.
-      </p>
-      <p>
-        Принимая к&nbsp;воплощению в&nbsp;реальность подход, основанный на&nbsp;внесении в&nbsp;деятельность компании
-        постоянных улучшений, нельзя не&nbsp;согласиться со&nbsp;словами создателя самой концепции
-        кайдзен Масааки&nbsp;Имаи:
-      </p>
-
-      <figure class="my-group rounded-sm bg-panel p-panel">
-        <blockquote class="t-quote t-on-strong">
-          Кайдзен начинается с&nbsp;проблемы, или, точнее, с&nbsp;признания, что&nbsp;она существует!
-          Там, где её&nbsp;нет, отсутствует потенциал для&nbsp;совершенствования.
-        </blockquote>
-        <figcaption class="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span class="font-semibold t-on-strong">Масааки&nbsp;Имаи</span>
-          <span class="t-meta t-on-muted">создатель концепции кайдзен</span>
-        </figcaption>
-      </figure>
-
-      <p>
-        Умение <strong class="font-semibold t-on-strong">профессионально решать проблемы</strong>{' '}
-        (вновь возникающие или&nbsp;давно существующие) является важнейшим навыком сотрудников компании,
-        необходимым для&nbsp;осуществления менеджмента, основанного на&nbsp;принципах кайдзен.
-      </p>
+      <KaizenIntro />
     </div>
 
     <h3 class="t-h-sub t-on-strong mt-group mb-6">
