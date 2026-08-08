@@ -47,7 +47,10 @@ const steps: Step[] = [
             <path fill="currentColor" d="M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z" />
           </symbol>
           <symbol id="prp-octagon-outline" viewBox="0 0 100 100">
-            <path fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" d="M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z" />
+            <!-- stroke-width 1 — как у остальных линий сайта (border 1px);
+                 толще нельзя: контур становится жирным и в пустом пре-стейте,
+                 и кантом по краю залитого октагона. -->
+            <path fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" d="M 12 0 L 88 0 L 100 12 L 100 88 L 88 100 L 12 100 L 0 88 L 0 12 Z" />
           </symbol>
         </svg>
 
