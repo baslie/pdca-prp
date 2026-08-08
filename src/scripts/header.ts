@@ -52,6 +52,8 @@ if (header && nav && burger && panel) {
 
   // ---------- 2. Бургер ----------
 
+  // Литерал 80rem дублирует @media (min-width: 80rem) nav-правил в global.css
+  // осознанно: theme()/var() в JS недоступны. Меняешь порог — меняй и там.
   const mqDesktop = window.matchMedia('(min-width: 80rem)');
   const isOpen = () => header.dataset.menu === 'open';
 

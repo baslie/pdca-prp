@@ -106,6 +106,8 @@ if (!section) {
     //    на каждом refresh.
     const init = () => {
       const mm = gsap.matchMedia();
+      // Порог 1280px обязан байт-в-байт совпадать с @media композиции «КРЕСТ»
+      // в global.css (поэтому оба в px, а не в rem). Меняешь — меняй синхронно.
       mm.add(
         {
           desktopScrub: '(min-width: 1280px) and (prefers-reduced-motion: no-preference)',

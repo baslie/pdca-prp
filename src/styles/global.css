@@ -612,13 +612,17 @@
      В HTML используется ТОЛЬКО эти классы; ad-hoc text-ink/N
      и text-white/N — запрещены (см. docs/TYPOGRAPHY.md, антипаттерны).
      ============================================================ */
+  /* Значение t-on-dark-muted — в переменной: семь component-правил ниже
+     (ховеры карточек, подписи лид-формы и пр.) берут этот цвет инлайном,
+     потому что @apply на классы того же слоя в v4 ненадёжен. */
+  :root { --t-on-dark-muted-color: rgb(255 255 255 / 0.75); }
   .t-on-strong      { @apply text-ink-dark; }
   .t-on-brand       { color: var(--color-brand-blue); }  /* заголовки H1/H2 на светлом фоне, 13.4:1 AAA */
   .t-on-default     { @apply text-ink; }
   .t-on-muted       { color: rgb(43 43 43 / 0.70); }   /* #2B2B2B @ 70% */
   .t-on-soft        { color: rgb(43 43 43 / 0.45); }
   .t-on-dark        { @apply text-white; }
-  .t-on-dark-muted  { color: rgb(255 255 255 / 0.75); }
+  .t-on-dark-muted  { color: var(--t-on-dark-muted-color); }
 
   /* Blend-вариант фирменного синего для текста поверх fixed-фотослоёв hero.
      mix-blend-difference считает |фон − цвет|: чтобы на белом фоне получился
@@ -1179,14 +1183,14 @@
       color: #fff;
     }
     .category-card:hover .category-card__title { color: #fff; }
-    .category-card:hover .category-card__caption { color: rgb(255 255 255 / 0.75); }
+    .category-card:hover .category-card__caption { color: var(--t-on-dark-muted-color); }
   }
   /* Клавиатурный фокус даёт тот же фидбек, что и ховер, — вне media-гейта:
      на таче и при табуляции карточка иначе не даёт понять, что кликабельна. */
   .category-card:focus-visible { background-color: var(--color-brand-blue); }
   .category-card:focus-visible .category-card__icon { background-color: rgb(255 255 255 / 0.12); color: #fff; }
   .category-card:focus-visible .category-card__title { color: #fff; }
-  .category-card:focus-visible .category-card__caption { color: rgb(255 255 255 / 0.75); }
+  .category-card:focus-visible .category-card__caption { color: var(--t-on-dark-muted-color); }
 
   @media (prefers-reduced-motion: reduce) {
     .category-card,
@@ -1237,7 +1241,7 @@
     @apply mt-4;
     font-size: 0.875rem;
     line-height: 1.45;
-    color: rgb(255 255 255 / 0.75);
+    color: var(--t-on-dark-muted-color);
     transition: color var(--dur-hover) var(--ease-brand);
   }
   /* Ховер-инверсия: стекло → непрозрачный белый, содержимое — фирменный синий,
@@ -1366,7 +1370,7 @@
   .lead-consent__text {
     font-size: 0.75rem;                /* формула .t-hint инлайном */
     line-height: 1.5;
-    color: rgb(255 255 255 / 0.75);
+    color: var(--t-on-dark-muted-color);
   }
   .lead-consent__link {
     @apply underline underline-offset-2;
@@ -1406,14 +1410,14 @@
     font-size: 0.6875rem;              /* формула .t-eyebrow инлайном */
     letter-spacing: 0.32em;
     line-height: 1.4;
-    color: rgb(255 255 255 / 0.75);
+    color: var(--t-on-dark-muted-color);
   }
   .lead-debug__pre {
     @apply mt-4 overflow-x-auto whitespace-pre-wrap break-words;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.75rem;
     line-height: 1.6;
-    color: rgb(255 255 255 / 0.75);
+    color: var(--t-on-dark-muted-color);
   }
 
   /* ============================================================
@@ -1837,7 +1841,11 @@
     border-color: transparent transparent transparent var(--color-brand-red);
   }
 
-  /* ≥1280px — композиция «КРЕСТ». */
+  /* ≥1280px — композиция «КРЕСТ». Порог намеренно в px, не в rem: он обязан
+     байт-в-байт совпадать со строкой gsap.matchMedia в prp-diagram-scroll.ts
+     (desktopScrub) — иначе при нестандартном базовом кегле браузера CSS-раскладка
+     и скролл-анимация переключались бы на разных ширинах. Меняешь порог —
+     меняй синхронно в обоих файлах. */
   @media (min-width: 1280px) {
     .prp-diagram-stage {
       aspect-ratio: 13 / 10;
@@ -1902,7 +1910,7 @@
     .review-card:hover { background-color: var(--color-brand-blue); }
     .review-card:hover .review-card__text,
     .review-card:hover .review-card__name { color: #fff; }
-    .review-card:hover .review-card__meta { color: rgb(255 255 255 / 0.75); }
+    .review-card:hover .review-card__meta { color: var(--t-on-dark-muted-color); }
   }
 
   /* Бегущий ряд: трек = два одинаковых набора карточек (второй — aria-hidden
