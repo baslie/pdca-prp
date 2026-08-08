@@ -9,6 +9,7 @@ import {
   TYPOGRAF_OPTIONS,
   TYPOGRAF_SELECTOR,
 } from './astro-typograf.config.mjs';
+import { htmlPostprocess } from './astro-html-postprocess.mjs';
 
 export default defineConfig({
   site: 'https://roman-purtow.ru',
@@ -68,6 +69,13 @@ export default defineConfig({
       selector: TYPOGRAF_SELECTOR,
       typografOptions: TYPOGRAF_OPTIONS,
     }),
+    // Чистка прод-HTML — САМОЙ последней в цепочке, и это инвариант, а не
+    // вкус. Типограф обрабатывает innerHTML элемента целиком, вместе с
+    // комментариями внутри <li> и <div>; вырезав их раньше, мы поменяли бы
+    // его вход. Хуки astro:build:done Astro выполняет строго последовательно
+    // в порядке этого массива, поэтому позиция здесь — и есть гарантия.
+    // Что именно делает и почему не HTML-веткой compress — в самом файле.
+    htmlPostprocess(),
   ],
   vite: {
     plugins: [tailwindcss()],
