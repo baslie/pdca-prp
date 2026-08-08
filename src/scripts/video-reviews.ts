@@ -9,12 +9,14 @@
 import EmblaCarousel from 'embla-carousel';
 import { setupModal } from './modal';
 import { registerDynamicPlayer } from './boomstream-watchdog';
+import { prefersReducedMotion } from './in-view';
 
 const BS_ORIGIN = 'https://play.boomstream.com';
 // Параметры плеера те же, что у статического embed'а (BoomStreamPlayer.astro).
 const srcFor = (code: string): string => `${BS_ORIGIN}/${code}?color=false&title=0`;
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Читается один раз при загрузке модуля — как и раньше.
+const reduceMotion = prefersReducedMotion();
 
 /* ===== Слайдер ===== */
 
