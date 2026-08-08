@@ -18,6 +18,7 @@
 | Видео, BoomStream, embed, autoplay, watchdog | [docs/VIDEO.md](docs/VIDEO.md) |
 | Контент: проекты, отзывы, клиенты, фото, регалии, контакты | [src/data/](src/data/) — данные с типами; компоненты их только импортируют |
 | Стек, дизайн-токены и палитра, package.json, деплой, dev-сервер | [docs/BUILD.md](docs/BUILD.md) |
+| Чистка `dist/`, инлайновые скрипты, порядок интеграций | [astro-html-postprocess.mjs](astro-html-postprocess.mjs) (комментарии в файле) + [docs/BUILD.md](docs/BUILD.md) |
 | «Что осталось сделать», планы, задачи | [docs/BACKLOG.md](docs/BACKLOG.md) — единственный источник правды; выполнил пункт — вычеркни там же |
 | Правила и селектор Типографа | [astro-typograf.config.mjs](astro-typograf.config.mjs) (комментарии в конфиге) |
 
@@ -66,6 +67,8 @@
 - `sendLead()` в `lead-form.ts` — единственная точка подключения бэкенда; сигнатуру не менять.
 - Honeypot прячется только `left: -9999px`, не `display: none`.
 - Каждый невоидный тег в `.astro` — с закрывающим: Rust-компилятор Astro 7 падает на невалидном HTML.
+- Порядок интеграций в `astro.config.mjs` фиксирован: `icon → compress → typografHtmlOnly → htmlPostprocess`. Перестановка меняет вход Типографа.
+- HTML-комментарии из `.astro` вырезаются на сборке. Нужен комментарий в проде — только `<!--! … -->`.
 
 ## Команды
 

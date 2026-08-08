@@ -12,6 +12,7 @@
 - **Lenis** — плавный инерционный скролл, синхронизирован с GSAP через `gsap.ticker`.
 - **astro-icon + lucide** — иконки inline SVG на build-time.
 - **astro-typograf** — русская микротипографика автоматически по собранному HTML.
+- **Пост-обработка `dist/`** — своя интеграция: вырезает HTML-комментарии и жмёт инлайновые скрипты (−8,8% raw, −18,8% gzip).
 - **Inter** + **Yuji Mai** (Google Fonts).
 - **BoomStream** — видеоплеер, прямой `<iframe>` без SDK.
 - **GitHub Actions + GitHub Pages** — CI/CD на каждом push в `main`.
@@ -22,8 +23,9 @@
 
 ```
 .
-├── astro.config.mjs           ← site, base, integrations (icon, compress, typograf)
+├── astro.config.mjs           ← site, base, integrations (icon, compress, typograf, html-postprocess)
 ├── astro-typograf.config.mjs  ← микротипографика: правила, селектор, typografAttr()
+├── astro-html-postprocess.mjs ← чистка dist/: комментарии, инлайновые скрипты
 ├── tsconfig.json              ← extends astro/tsconfigs/strict
 ├── package.json               ← scripts: dev / build / preview / check
 ├── .github/workflows/
