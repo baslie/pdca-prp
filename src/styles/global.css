@@ -112,6 +112,14 @@
      расширялся бы на ~15px — fixed-шапка и бургер прыгали вправо при каждом
      открытии меню или модалки. Overlay-скроллбары (мобильные, macOS) — no-op. */
   html { scrollbar-gutter: stable; }
+  /* Страховка от горизонтального скролла: декоративный оверлей, вылезший
+     за правый край, тянул бы за собой scrollWidth всего документа, и страница
+     уезжала бы вбок, оставляя fixed-слои hero на месте. Именно clip, а не
+     hidden: clip не создаёт scroll-контейнер, поэтому position: sticky,
+     scroll-behavior и Lenis работают как прежде. Это сетка безопасности,
+     а НЕ разрешение верстать шире вьюпорта — блок, который переполняет
+     экран, всё равно надо чинить по месту. */
+  html { overflow-x: clip; }
 
   /* ============================================================
      LENIS (плавный скролл, src/scripts/smooth-scroll.ts).
@@ -1331,14 +1339,26 @@
   }
   .field__control::placeholder { color: rgb(255 255 255 / 0.45); }
   .field__control:hover { background-color: rgb(255 255 255 / 0.14); }
+  /* Фокус — белый, не красный: красный на этом сайте означает ошибку, и
+     подсветка активного поля читалась как «я что-то заполнил не так».
+     Приглушённый белый в тон рамке полей и подписям. */
   .field__control:focus-visible {
-    outline: 2px solid var(--color-brand-red);
+    outline: 2px solid rgb(255 255 255 / 0.7);
     outline-offset: 2px;
     border-color: transparent;
     background-color: rgb(255 255 255 / 0.16);
   }
   textarea.field__control { @apply resize-y; min-height: 7rem; }
   .field[data-invalid] .field__control { border-color: var(--color-brand-red); }
+  /* Ошибка перебивает фокус: в поле с ошибкой обводка снова красная.
+     border-color здесь обязателен — правило выше (специфичность 0,3,0)
+     перекрывает прозрачную рамку из фокус-блока (0,2,0), и без этой строки
+     в состоянии «ошибка + фокус» видно две красные линии сразу: рамку 1px
+     и outline 2px. Так в каждом состоянии остаётся ровно одна. */
+  .field[data-invalid] .field__control:focus-visible {
+    outline-color: var(--color-brand-red);
+    border-color: transparent;
+  }
 
   /* Текст ошибки: показывается только при data-invalid на обёртке. Скрытие
      через display, а не opacity, — иначе пустая строка резервирует высоту
@@ -1373,7 +1393,10 @@
     height: 1.1875rem;
     accent-color: var(--color-brand-red);
   }
-  .lead-consent__input:focus-visible { outline: 2px solid var(--color-brand-red); outline-offset: 2px; }
+  /* Тот же белый фокус, что у текстовых полей: два разных цвета фокуса
+     в одной форме читались бы как разные состояния. accent-color выше —
+     заливка самой галочки, она остаётся фирменной красной. */
+  .lead-consent__input:focus-visible { outline: 2px solid rgb(255 255 255 / 0.7); outline-offset: 2px; }
   .lead-consent__text {
     font-size: 0.75rem;                /* формула .t-hint инлайном */
     line-height: 1.5;
@@ -1438,13 +1461,23 @@
      (tracking 0) его не даёт, а tracking-label (0.32em) слишком широк.
      Кегль статичный, как у .t-meta. */
   .client-pill {
-    @apply inline-flex items-center border border-border uppercase
-           transition-colors duration-200 ease-brand;
+    @apply inline-flex items-center border border-border uppercase;
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
     letter-spacing: 0.08em;
     line-height: 1.4;
     color: rgb(43 43 43 / 0.70);   /* инлайн t-on-muted: @apply на components-классы ненадёжен */
+    transition:
+      background-color var(--dur-hover) var(--ease-brand),
+      border-color     var(--dur-hover) var(--ease-brand),
+      color            var(--dur-hover) var(--ease-brand);
+  }
+  /* Инверсия — один набор свойств на два входа. Ховер под гейтом (@media
+     hover), нажатие — без гейта: класс вешает src/scripts/clients-tap.ts
+     только там, где мыши нет, см. docs/MOTION.md, раздел про тач-состояния. */
+  .client-pill.is-pressed {
+    @apply bg-brand-blue border-brand-blue;
+    color: #fff;
   }
   @media (hover: hover) {
     .client-pill:hover {
@@ -1458,7 +1491,8 @@
      и никаких индивидуальных отступов не требуется.
      Ч/б в покое — иначе шесть логотипов с фирменной плашкой (BASF, Экспобанк,
      Аэро, Hubert Burda, ВШБ МГУ, Schindler) читаются как цветные плитки среди
-     прозрачных знаков. Цвет возвращается на ховере конкретного логотипа. */
+     прозрачных знаков. Цвет возвращается на ховере конкретного логотипа,
+     а на тач-устройствах — на время нажатия (класс .is-pressed). */
   .client-logo {
     @apply w-full h-full object-contain;
     filter: grayscale(1) contrast(0.95);
@@ -1467,6 +1501,7 @@
       filter  var(--dur-hover) var(--ease-brand),
       opacity var(--dur-hover) var(--ease-brand);
   }
+  .client-logo-cell.is-pressed .client-logo { filter: none; opacity: 1; }
   @media (hover: hover) {
     .client-logo-cell:hover .client-logo { filter: none; opacity: 1; }
   }
@@ -1517,16 +1552,22 @@
     font-weight: 400;
     text-align: left;
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
+    /* Именно display: none, а не visibility: hidden. Скрытый пузырь обязан
+       исчезать из раскладки: он шире значка и у термина в конце строки торчит
+       за правый край — visibility оставляла его в потоке, и вся страница
+       получала горизонтальную прокрутку. Переход по display дискретный
+       (allow-discrete + @starting-style ниже), анимируются по-прежнему
+       только opacity и transform. */
+    display: none;
     /* --termtip-shift ставит скрипт компонента: у значка в конце строки
        центрированный пузырь вылезает за край вьюпорта, сдвиг возвращает его
        внутрь. По умолчанию 0 — если JS не отработал, поведение прежнее. */
     transform: translate(calc(-50% + var(--termtip-shift, 0px)), 4px);
     transition:
-      opacity    var(--dur-micro) var(--ease-brand),
-      transform  var(--dur-micro) var(--ease-brand),
-      visibility var(--dur-micro);
+      opacity   var(--dur-micro) var(--ease-brand),
+      transform var(--dur-micro) var(--ease-brand),
+      display   var(--dur-micro) allow-discrete;
   }
   /* Хвостик пузыря — треугольник под значком. Сдвиг пузыря компенсируется
      обратным сдвигом хвостика, иначе он уедет вместе с ним. */
@@ -1549,8 +1590,8 @@
       color: #fff;
     }
     .termtip:hover .termtip__bubble {
+      display: block;
       opacity: 1;
-      visibility: visible;
       transform: translate(calc(-50% + var(--termtip-shift, 0px)), 0);
     }
   }
@@ -1560,9 +1601,24 @@
     color: #fff;
   }
   .termtip__btn:focus + .termtip__bubble {
+    display: block;
     opacity: 1;
-    visibility: visible;
     transform: translate(calc(-50% + var(--termtip-shift, 0px)), 0);
+  }
+  /* Стартовые значения перехода из display: none. Без этого блока элемент
+     появлялся бы сразу в конечном состоянии — переход из «не существует»
+     браузеру не с чего начинать. */
+  @starting-style {
+    @media (hover: hover) {
+      .termtip:hover .termtip__bubble {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--termtip-shift, 0px)), 4px);
+      }
+    }
+    .termtip__btn:focus + .termtip__bubble {
+      opacity: 0;
+      transform: translate(calc(-50% + var(--termtip-shift, 0px)), 4px);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .termtip__btn,

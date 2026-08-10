@@ -55,6 +55,9 @@
 
 - `transition-all` запрещён; свойства поимённо, длительность и кривая — только токены (`duration-N ease-brand`, `--dur-*`).
 - Lenis — только дефолтный режим; wrapper/content-transform и GSAP ScrollSmoother запрещены (ломают fixed-слои и blend).
+- Скрытый оверлей (тултип, попап) прячется через `display: none` + `allow-discrete`, не `visibility: hidden` — иначе остаётся в раскладке и даёт горизонтальный скролл.
+- Геометрия оверлея (сдвиг от края экрана) считается в момент показа, не на старте: на старте раскладка ещё не финальная.
+- Ховер, несущий смысл, дублируется тач-состоянием `.is-pressed` — под `@media (hover: hover)` на телефоне эффекта нет вообще.
 - Скроллящийся `<dialog>` обязан нести `data-lenis-prevent`.
 - Анимировать только `transform` и `opacity` — не layout-свойства.
 - В init-скриптах не ждать `window.load` — зависший iframe BoomStream заморозит init навсегда.
@@ -63,6 +66,7 @@
 
 - Пути ассетов — ES-import или `import.meta.env.BASE_URL`; хардкод `/pdca-prp/` запрещён.
 - `overrides` в `package.json` не удалять; `npm audit fix --force` не запускать.
+- `html { overflow-x: clip }` в `@layer base` не удалять — страховка от горизонтального скролла. Именно `clip`, не `hidden`: `hidden` создаёт scroll-контейнер и ломает `sticky`.
 - `Exclude` в `astro.config.mjs` не удалять; `getImage()` на кадрах галереи запрещён.
 - `sendLead()` в `lead-form.ts` — единственная точка подключения бэкенда; сигнатуру не менять.
 - Honeypot прячется только `left: -9999px`, не `display: none`.

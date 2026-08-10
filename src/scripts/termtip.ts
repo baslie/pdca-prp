@@ -6,30 +6,42 @@
 const EDGE_PAD = 12;
 
 // Пузырь центрирован по значку, поэтому у термина в конце строки он вылезает
-// за край экрана. Считаем сдвиг ДО показа: visibility: hidden не убирает
-// элемент из layout, getBoundingClientRect уже знает итоговую геометрию.
-function place(bubble: HTMLElement) {
-  bubble.style.setProperty('--termtip-shift', '0px');
-  const r = bubble.getBoundingClientRect();
+// за край экрана. Считаем сдвиг в момент показа: раскладка к этому времени
+// финальная (шрифты загружены, строка разбита окончательно), а в покое пузырь
+// скрыт через display: none и на прокрутку страницы уже не влияет.
+//
+// Базовую позицию берём арифметически — от центра значка и ширины пузыря,
+// а не записью --termtip-shift: 0px с последующим замером. Chrome не обязан
+// пересчитать transform от нетипизированного custom property к моменту
+// getBoundingClientRect, и такой замер возвращал геометрию уже сдвинутого
+// пузыря: значение накапливало ошибку от показа к показу.
+function place(tip: HTMLElement, bubble: HTMLElement) {
+  const anchor = tip.getBoundingClientRect();
+  const width = bubble.offsetWidth;
+  if (!width) return; // пузырь ещё не показан — мерить нечего
+
+  const center = anchor.left + anchor.width / 2;
+  const left = center - width / 2;
+  const right = center + width / 2;
   // clientWidth, а не innerWidth: последний считает вместе с вертикальным
   // скроллбаром, и пузырь заезжал под него на его ширину.
   const vw = document.documentElement.clientWidth;
+
   let shift = 0;
-  if (r.right > vw - EDGE_PAD) shift = vw - EDGE_PAD - r.right;
-  else if (r.left < EDGE_PAD) shift = EDGE_PAD - r.left;
+  if (right > vw - EDGE_PAD) shift = vw - EDGE_PAD - right;
+  else if (left < EDGE_PAD) shift = EDGE_PAD - left;
   bubble.style.setProperty('--termtip-shift', `${Math.round(shift)}px`);
 }
-
-const bubbles: HTMLElement[] = [];
 
 document.querySelectorAll<HTMLElement>('.termtip').forEach((tip) => {
   const btn = tip.querySelector<HTMLButtonElement>('.termtip__btn');
   const bubble = tip.querySelector<HTMLElement>('.termtip__bubble');
   if (!btn || !bubble) return;
 
-  bubbles.push(bubble);
-  tip.addEventListener('pointerenter', () => place(bubble));
-  btn.addEventListener('focus', () => place(bubble));
+  // Оба события приходят уже после того, как браузер применил :hover/:focus,
+  // то есть пузырь к этому моменту display: block и измеряем.
+  tip.addEventListener('pointerenter', () => place(tip, bubble));
+  btn.addEventListener('focus', () => place(tip, bubble));
 
   // Esc гасит открытую подсказку. preventDefault/stopPropagation обязательны:
   // без них тот же Esc закроет модалку «О методе», в которой значок тоже есть.
@@ -39,17 +51,4 @@ document.querySelectorAll<HTMLElement>('.termtip').forEach((tip) => {
     e.stopPropagation();
     btn.blur();
   });
-});
-
-// Раскладка сразу, не дожидаясь наведения: visibility: hidden не убирает
-// пузырь из потока, и у термина в конце строки он торчал за правый край —
-// страница получала лишние ~60px горизонтальной прокрутки на мобильном.
-// Пересчёт после загрузки шрифтов (ширина текста меняется) и на resize.
-const placeAll = () => bubbles.forEach(place);
-placeAll();
-document.fonts?.ready.then(placeAll);
-let resizeTimer = 0;
-window.addEventListener('resize', () => {
-  window.clearTimeout(resizeTimer);
-  resizeTimer = window.setTimeout(placeAll, 150);
 });
