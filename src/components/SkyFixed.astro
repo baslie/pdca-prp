@@ -7,10 +7,10 @@ import sky from '../assets/images/sky.jpg';
      DOM-order оказывается под ними — z-index не задан намеренно, как и
      у остальных слоёв (см. docs/STACKING.md).
 
-     Закреплена на все брейкпоинты, включая мобильный: гора там absolute
-     и уезжает вместе с hero, а фон обязан держаться — иначе под ним
-     проступит белый body. Ниже hero слой перекрывают секции с
-     `relative z-10` и непрозрачным фоном.
+     Закреплена только на md+ — том же брейкпоинте, где fixed становятся
+     гора и Денис. На мобильном этот слой скрыт: там небо — absolute-версия
+     внутри Hero.astro, уезжающая вместе с горой и Денисом при скролле.
+     Ниже hero слой перекрывают секции с `relative z-10` и непрозрачным фоном.
 
      object-cover без фиксированной позиции: кадр — ровный облачный слой,
      кропается по любой стороне без потери сюжета. -->
@@ -20,5 +20,5 @@ import sky from '../assets/images/sky.jpg';
   alt=""
   width={sky.width}
   height={sky.height}
-  class="fixed inset-0 w-full h-full object-cover pointer-events-none select-none"
+  class="hidden md:block fixed inset-0 w-full h-full object-cover pointer-events-none select-none"
 />

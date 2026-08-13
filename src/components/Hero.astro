@@ -2,9 +2,24 @@
 import Logo from './Logo.astro';
 import denisBulgin from '../assets/images/denis-bulgin.png';
 import mountain from '../assets/images/mountain.jpg';
+import sky from '../assets/images/sky.jpg';
 ---
 
 <section class="relative min-h-screen overflow-hidden">
+
+  <!-- Мобильное небо: на <md fixed-слой SkyFixed скрыт, и фон живёт здесь —
+       absolute на всю высоту hero, уезжает при скролле вместе с горой и
+       Денисом (они на мобильном тоже absolute). Первый ребёнок секции:
+       по DOM-order ложится под гору (mix-blend-multiply) и текст
+       (mix-blend-difference); секция relative без z-index не создаёт
+       stacking context, поэтому бленды продолжают считаться в контексте body. -->
+  <img
+    src={sky.src}
+    alt=""
+    width={sky.width}
+    height={sky.height}
+    class="md:hidden absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+  />
 
   <!-- Контакты и навигация живут в шапке (Header.astro, fixed z-40) — прежние
        absolute-оверлеи контактов отсюда удалены. Логотип остаётся в потоке
