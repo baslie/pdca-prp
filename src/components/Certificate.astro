@@ -15,7 +15,7 @@ interface Props {
 
 const { image } = Astro.props;
 
-// Регалии Эвклида — то, что делает заверение весомым. Ключ работает как цифра-акцент,
+// Регалии Евклидеса — то, что делает заверение весомым. Ключ работает как цифра-акцент,
 // поэтому набирается плакатным .credential-card__key (см. docs/TYPOGRAPHY.md, §5).
 // Тексты хранят &nbsp; и выводятся через set:html — как caption'ы в OfferStats.
 const credentials = [
@@ -43,7 +43,7 @@ const credentials = [
           </SectionHeading>
         </div>
 
-        <!-- Портрет стоит прямо у лида, где Эвклид назван по имени: читатель видит,
+        <!-- Портрет стоит прямо у лида, где Евклидес назван по имени: читатель видит,
              о ком речь, в момент знакомства. Изображение идёт целиком, в исходной
              пропорции 749×1004 и без подложки — PNG прозрачный, фигура должна
              «стоять» прямо на фоне секции. -->
@@ -53,7 +53,7 @@ const credentials = [
                центрировал подпись по колонке, а не по портрету — она уезжала
                вправо от фотографии. -->
           <figure class="shrink-0 w-32 sm:w-40">
-            <img src={euclidesCoimbra.src} alt="Эвклид Коимбра"
+            <img src={euclidesCoimbra.src} alt="Евклидес Коимбра"
                  width={euclidesCoimbra.width} height={euclidesCoimbra.height} loading="lazy"
                  class="w-full h-auto" />
             <figcaption class="t-meta t-on-muted mt-2 text-center">Euclides Coimbra</figcaption>
@@ -61,7 +61,7 @@ const credentials = [
 
           <p class="t-lead t-on-default max-w-prose">
             Программу «Профессиональное решение проблем» сертифицировал{' '}
-            <strong class="font-semibold t-on-strong">Эвклид&nbsp;Коимбра</strong> —
+            <strong class="font-semibold t-on-strong">Евклидес&nbsp;Коимбра</strong> —
             всемирно признанный эксперт в&nbsp;области кайдзен
             и&nbsp;бережливого производства.
           </p>
@@ -69,8 +69,9 @@ const credentials = [
 
         <!-- Регалии — карточки на panel-фоне, тот же паттерн, что категории
              #examples и offer-stats. Общей рамки нет — стаггер разрешён.
-             Пятая карточка — печать института на всю ширину: она замыкает
-             список так же, как реквизит заверителя замыкает документ. -->
+             Пятая карточка — печать института: на мобильном лента во всю
+             ширину, с sm — обычная ячейка в левой колонке, лого над текстом
+             (см. .credential-card--seal в global.css). -->
         <div class="mt-group grid grid-cols-1 sm:grid-cols-2
                     gap-3 sm:gap-4 lg:gap-5" data-reveal="group">
           {credentials.map((c, i) => (
